@@ -1,11 +1,6 @@
-import Main_page from "./components/Mainpage/mainpage";
-import Navbar from "./components/Nva/Navbar";
+import { RouterProvider } from '@tanstack/react-router'
+import { router } from './router'
 
 export default function App() {
-  return (
-    <>
-      <Navbar />
-      <Main_page />
-    </>
-  );
+  return <RouterProvider router={router} />
 }

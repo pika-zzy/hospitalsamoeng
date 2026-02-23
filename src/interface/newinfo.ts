@@ -1,0 +1,157 @@
+export interface NewInfo {
+    id: number;
+    title: string;
+    description: string;
+    date: string;
+    type: string;
+    link: string;
+    imgUrl?: string;
+}
+
+export const newInfoList: NewInfo[] = [
+    {
+        id: 1,
+        title: "รับสมัครพยาบาลวิชาชีพ",
+        description: "โรงพยาบาลสะเมิงเปิดรับสมัครพยาบาลวิชาชีพ จำนวน 2 อัตรา ตั้งแต่วันที่ 1–15 กุมภาพันธ์ 2568",
+        date: "2025-02-01",
+        type: "job",
+        link: "/news/1",
+        imgUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+    },
+    {
+        id: 2,
+        title: "ปิดปรับปรุงระบบเวชระเบียน",
+        description: "งดให้บริการระบบเวชระเบียนชั่วคราว ในวันที่ 5 กุมภาพันธ์ 2568 เวลา 18.00–22.00 น.",
+        date: "2025-01-28",
+        type: "general",
+        link: "/news/2",
+        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+    },
+    {
+        id: 3,
+        title: "รับสมัครนักวิชาการคอมพิวเตอร์",
+        description: "ประกาศรับสมัครตำแหน่งนักวิชาการคอมพิวเตอร์ 1 อัตรา สังกัดกลุ่มงานเทคโนโลยีสารสนเทศ",
+        date: "2025-02-03",
+        type: "job",
+        link: "/news/3",
+        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+    },
+    {
+        id: 4,
+        title: "ฉีดวัคซีนไข้หวัดใหญ่ฟรี",
+        description: "โรงพยาบาลสะเมิงให้บริการฉีดวัคซีนไข้หวัดใหญ่ฟรีสำหรับผู้สูงอายุ 60 ปีขึ้นไป",
+        date: "2025-01-20",
+        type: "general",
+        link: "/news/4",
+        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+    },
+    {
+        id: 5,
+        title: "รับสมัครพนักงานบริการ",
+        description: "เปิดรับสมัครพนักงานบริการ (รายวัน) จำนวน 3 อัตรา สมัครได้ที่กลุ่มงานบริหารทั่วไป",
+        date: "2025-01-30",
+        type: "job",
+        link: "/news/5",
+        imgUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+    },
+    {
+        id: 6,
+        title: "เปลี่ยนแปลงเวลาให้บริการคลินิก",
+        description: "ตั้งแต่เดือนมีนาคม 2568 คลินิกโรคเรื้อรังปรับเวลาให้บริการเป็น 08.00–16.00 น.",
+        date: "2025-01-18",
+        type: "general",
+        link: "/news/6",
+        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+    },
+    {
+        id: 7,
+        title: "ประกาศรับสมัครเจ้าพนักงานเภสัชกรรม",
+        description: "โรงพยาบาลสะเมิงเปิดรับสมัครเจ้าพนักงานเภสัชกรรม 1 อัตรา สมัครได้ตั้งแต่ 10–20 กุมภาพันธ์ 2568",
+        date: "2025-02-05",
+        type: "job",
+        link: "/news/7",
+        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+    },
+    {
+        id: 8,
+        title: "กิจกรรมตรวจสุขภาพประจำปี",
+        description: "ขอเชิญประชาชนเข้าร่วมกิจกรรมตรวจสุขภาพฟรี ณ อาคารผู้ป่วยนอก วันที่ 12 กุมภาพันธ์ 2568",
+        date: "2025-02-02",
+        type: "general",
+        link: "/news/8",
+        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+    },
+    {
+        id: 9,
+        title: "รับสมัครลูกจ้างชั่วคราวงานการเงิน",
+        description: "เปิดรับสมัครลูกจ้างชั่วคราวตำแหน่งงานการเงินและบัญชี 1 อัตรา วุฒิ ปวส. ขึ้นไป",
+        date: "2025-02-06",
+        type: "job",
+        link: "/news/9",
+        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+    },
+    {
+        id: 10,
+        title: "อบรมการช่วยฟื้นคืนชีพขั้นพื้นฐาน",
+        description: "โรงพยาบาลจัดอบรม CPR สำหรับอาสาสมัครสาธารณสุข วันที่ 18 กุมภาพันธ์ 2568",
+        date: "2025-02-04",
+        type: "general",
+        link: "/news/10",
+        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+    },
+    {
+        id: 11,
+        title: "รับสมัครนักเทคนิคการแพทย์",
+        description: "ประกาศรับสมัครนักเทคนิคการแพทย์ 1 อัตรา สังกัดกลุ่มงานชันสูตรโรคกลาง",
+        date: "2025-02-07",
+        type: "job",
+        link: "/news/11",
+        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+    },
+    {
+        id: 12,
+        title: "งดให้บริการคลินิกทันตกรรม",
+        description: "คลินิกทันตกรรมงดให้บริการชั่วคราว วันที่ 14 กุมภาพันธ์ 2568 เนื่องจากปรับปรุงเครื่องมือ",
+        date: "2025-02-03",
+        type: "general",
+        link: "/news/12",
+        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+    },
+    {
+        id: 13,
+        title: "รับสมัครพนักงานขับรถ",
+        description: "เปิดรับสมัครพนักงานขับรถพยาบาล 1 อัตรา ต้องมีใบขับขี่ประเภท ท.2",
+        date: "2025-02-08",
+        type: "job",
+        link: "/news/13",
+        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+    },
+    {
+        id: 14,
+        title: "โครงการรณรงค์เลิกบุหรี่",
+        description: "เชิญชวนประชาชนเข้าร่วมโครงการเลิกบุหรี่ รับคำปรึกษาฟรีทุกวันพุธ",
+        date: "2025-02-01",
+        type: "general",
+        link: "/news/14",
+        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+    },
+    {
+        id: 15,
+        title: "รับสมัครนักกายภาพบำบัด",
+        description: "โรงพยาบาลสะเมิงรับสมัครนักกายภาพบำบัด 1 อัตรา สมัครได้ถึง 22 กุมภาพันธ์ 2568",
+        date: "2025-02-09",
+        type: "job",
+        link: "/news/15",
+        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+    },
+    {
+        id: 16,
+        title: "แจ้งเปลี่ยนจุดให้บริการผู้ป่วยนอก",
+        description: "ตั้งแต่วันที่ 1 มีนาคม 2568 จุดคัดกรองผู้ป่วยนอกย้ายไปอาคารใหม่ด้านหน้าโรงพยาบาล",
+        date: "2025-02-05",
+        type: "general",
+        link: "/news/16",
+        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+    }
+
+]
