@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { Link, useMatchRoute } from "@tanstack/react-router"
-import { ChevronDown } from "lucide-react"
+import {  Menu, ChevronDown, MenuIcon, X } from "lucide-react"
 import logo from "/src/assets/logo2.png"
-import { Menu } from "@/interface/menu"
+import { Navbarlist } from "@/interface/menu"
+import { Button } from "@/components/ui/button"
 
 const Navbar = () => {
   const matchRoute = useMatchRoute()
@@ -12,6 +13,8 @@ const Navbar = () => {
     matchRoute({ to })
       ? "text-green-600 font-bold"
       : "text-gray-600 font-medium"
+
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100/50 shadow-sm">
@@ -37,8 +40,14 @@ const Navbar = () => {
           </Link>
 
           {/* Menu Section */}
+          <Button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100 transition-colors"
+          >
+            {isMobileMenuOpen ? <X size={28} /> : <MenuIcon size={28} />}
+          </Button>
           <ul className="hidden lg:flex items-center gap-1">
-            {Menu.map((menu) => (
+            {Navbarlist.map((menu) => (
               <li
                 key={menu.id}
                 className="relative py-2" // เพิ่ม padding-y เพื่อสร้างพื้นที่เชื่อมเมาส์
@@ -108,6 +117,58 @@ const Navbar = () => {
           </ul>
         </div>
       </div>
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-white border-t border-gray-100 px-6 py-4 absolute w-full shadow-lg">
+          
+          {Navbarlist.map((menu) => (
+            <div key={menu.id} className="mb-4">
+              {!menu.submenu ? (
+                <Link
+                  to={menu.link}
+                  className={`block px-5 py-2.5 text-[16px] rounded-full transition-all duration-300 hover:bg-green-50/80 ${isActive(menu.link)}`}
+                  onClick={() => setIsMobileMenuOpen(false)} // ปิดเมนูเมื่อคลิก
+                >
+                  {menu.name}
+                </Link>
+              ) : (
+                <div>
+                  <button
+                    className={`flex items-center justify-between w-full px-5 py-2.5 text-[16px] font-medium rounded-full transition-all duration-300
+                    ${openMenuId === menu.id
+                      ? "text-green-600 bg-green-50"
+                      : "text-gray-600 hover:bg-green-50/80"
+                    }`}
+                    onClick={() => setOpenMenuId(openMenuId === menu.id ? null : menu.id)} // Toggle submenu
+                  >
+                    {menu.name}
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-500 ${openMenuId === menu.id ? "rotate-180 text-green-600" : "opacity-30"}`}
+                    />
+                  </button>
+                  {openMenuId === menu.id && (
+                    <div className="mt-2 bg-white rounded-[1.5rem] border border-gray-100 shadow-2xl shadow-green-900/10 p-2">
+                      {menu.submenu.map((sub, i) => (
+                        <Link
+                          key={i}
+                          to={sub.link}
+                          className="block px-4 py-3 text-[14px] font-medium text-gray-500 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all duration-200"
+                          onClick={() => setIsMobileMenuOpen(false)} // ปิดเมนูเมื่อคลิก
+                        >
+                          {sub.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+          <div className="text-gray-500 text-center py-4">
+             ทดสอบ: ถ้าเห็นข้อความนี้แสดงว่าปุ่ม Hamburger ทำงานแล้ว!
+          </div>
+
+        </div>
+      )}
     </nav>
   )
 }

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { sampleActivities } from "@/interface/activity_info";
 import { useNavigate } from "@tanstack/react-router";
@@ -32,13 +33,13 @@ export default function Activity() {
                     <h1 className="text-3xl font-black text-gray-800 tracking-tight">กิจกรรมล่าสุด</h1>
                     <p className="text-gray-500 text-sm mt-1">ภาพบรรยากาศและกิจกรรมต่างๆ ของโรงพยาบาล</p>
                 </div>
-                <button 
+                <Button 
                     onClick={() => navigate({ to: '/activity' })}
                     className="hidden md:flex items-center gap-2 text-green-600 font-bold hover:text-green-700 transition-colors group"
                 >
                     ดูทั้งหมด 
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </Button>
             </div>
 
             {/* Grid Layout - ปรับจาก 2 เป็น 4 ในจอใหญ่ หรือ 2 ในจอกลาง */}

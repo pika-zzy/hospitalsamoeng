@@ -4,7 +4,7 @@ export interface Menu {
 }
 
 
-export const Menu = [
+export const Navbarlist = [
     {
         id: 1,
         name: "หน้าหลัก",

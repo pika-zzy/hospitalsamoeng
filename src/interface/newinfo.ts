@@ -1,3 +1,5 @@
+// interface/newinfo.ts
+
 export interface NewInfo {
     id: number;
     title: string;
@@ -5,8 +7,12 @@ export interface NewInfo {
     date: string;
     type: string;
     link: string;
-    imgUrl?: string;
+    imgUrl?: string; // เก็บไว้เผื่อใช้เป็นหน้าปก (Thumbnail)
+    fileUrl?: string; // เพิ่มฟิลด์นี้สำหรับลิงก์ไฟล์เอกสาร เช่น PDF
 }
+
+// ใช้ลิงก์ PDF จำลองสำหรับทดสอบ
+const dummyPdf = "/dummyPdf.pdf";
 
 export const newInfoList: NewInfo[] = [
     {
@@ -16,7 +22,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-01",
         type: "job",
         link: "/news/1",
-        imgUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+        fileUrl: dummyPdf
     },
     {
         id: 2,
@@ -25,7 +31,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-01-28",
         type: "general",
         link: "/news/2",
-        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+        fileUrl: dummyPdf
     },
     {
         id: 3,
@@ -34,7 +40,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-03",
         type: "job",
         link: "/news/3",
-        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+        fileUrl: dummyPdf
     },
     {
         id: 4,
@@ -43,7 +49,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-01-20",
         type: "general",
         link: "/news/4",
-        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+        fileUrl: dummyPdf
     },
     {
         id: 5,
@@ -52,7 +58,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-01-30",
         type: "job",
         link: "/news/5",
-        imgUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+        fileUrl: dummyPdf
     },
     {
         id: 6,
@@ -61,7 +67,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-01-18",
         type: "general",
         link: "/news/6",
-        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+        fileUrl: dummyPdf
     },
     {
         id: 7,
@@ -70,7 +76,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-05",
         type: "job",
         link: "/news/7",
-        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+        fileUrl: dummyPdf
     },
     {
         id: 8,
@@ -79,7 +85,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-02",
         type: "general",
         link: "/news/8",
-        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+        fileUrl: dummyPdf
     },
     {
         id: 9,
@@ -88,7 +94,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-06",
         type: "job",
         link: "/news/9",
-        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+        fileUrl: dummyPdf
     },
     {
         id: 10,
@@ -97,7 +103,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-04",
         type: "general",
         link: "/news/10",
-        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+        fileUrl: dummyPdf
     },
     {
         id: 11,
@@ -106,7 +112,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-07",
         type: "job",
         link: "/news/11",
-        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+        fileUrl: dummyPdf
     },
     {
         id: 12,
@@ -115,7 +121,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-03",
         type: "general",
         link: "/news/12",
-        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+        fileUrl: dummyPdf
     },
     {
         id: 13,
@@ -124,7 +130,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-08",
         type: "job",
         link: "/news/13",
-        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+        fileUrl: dummyPdf
     },
     {
         id: 14,
@@ -133,7 +139,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-01",
         type: "general",
         link: "/news/14",
-        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+        fileUrl: dummyPdf
     },
     {
         id: 15,
@@ -142,7 +148,7 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-09",
         type: "job",
         link: "/news/15",
-        imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+        fileUrl: dummyPdf
     },
     {
         id: 16,
@@ -151,7 +157,6 @@ export const newInfoList: NewInfo[] = [
         date: "2025-02-05",
         type: "general",
         link: "/news/16",
-        imgUrl: "https://images.unsplash.com/photo-1588776814546-9cbbf0e1b8a4"
+        fileUrl: dummyPdf
     }
-
-]
+];
