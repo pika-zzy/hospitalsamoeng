@@ -165,6 +165,17 @@ export const sampleActivities: ActivityInfo[] = [
         status: "inactive",
         updatedAt: "2024-08-01",
         imgUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3"
+    },
+    {
+        id: "15",
+        name: "กิจกรรมงดให้และรับของขวัญ",
+        description: "กิจกรรมงดให้และรับของขวัญเพื่อส่งเสริมวัฒนธรรมการบริการที่มีความซื่อสัตย์และไม่รับของขวัญ",
+        type: "ethics",
+        startDate: "2025-09-01",
+        endDate: "2025-09-01",
+        status: "completed",
+        updatedAt: "2024-09-01",
+        imgUrl: "/src/assets/nogift.jpg"
     }
 
 ];

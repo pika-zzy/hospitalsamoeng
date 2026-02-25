@@ -6,7 +6,6 @@ export interface NewInfo {
     description: string;
     date: string;
     type: string;
-    link: string;
     imgUrl?: string; // เก็บไว้เผื่อใช้เป็นหน้าปก (Thumbnail)
     fileUrl?: string; // เพิ่มฟิลด์นี้สำหรับลิงก์ไฟล์เอกสาร เช่น PDF
 }
@@ -21,7 +20,6 @@ export const newInfoList: NewInfo[] = [
         description: "โรงพยาบาลสะเมิงเปิดรับสมัครพยาบาลวิชาชีพ จำนวน 2 อัตรา ตั้งแต่วันที่ 1–15 กุมภาพันธ์ 2568",
         date: "2025-02-01",
         type: "job",
-        link: "/news/1",
         fileUrl: dummyPdf
     },
     {
@@ -30,7 +28,6 @@ export const newInfoList: NewInfo[] = [
         description: "งดให้บริการระบบเวชระเบียนชั่วคราว ในวันที่ 5 กุมภาพันธ์ 2568 เวลา 18.00–22.00 น.",
         date: "2025-01-28",
         type: "general",
-        link: "/news/2",
         fileUrl: dummyPdf
     },
     {
@@ -39,7 +36,6 @@ export const newInfoList: NewInfo[] = [
         description: "ประกาศรับสมัครตำแหน่งนักวิชาการคอมพิวเตอร์ 1 อัตรา สังกัดกลุ่มงานเทคโนโลยีสารสนเทศ",
         date: "2025-02-03",
         type: "job",
-        link: "/news/3",
         fileUrl: dummyPdf
     },
     {
@@ -48,7 +44,6 @@ export const newInfoList: NewInfo[] = [
         description: "โรงพยาบาลสะเมิงให้บริการฉีดวัคซีนไข้หวัดใหญ่ฟรีสำหรับผู้สูงอายุ 60 ปีขึ้นไป",
         date: "2025-01-20",
         type: "general",
-        link: "/news/4",
         fileUrl: dummyPdf
     },
     {
@@ -57,7 +52,6 @@ export const newInfoList: NewInfo[] = [
         description: "เปิดรับสมัครพนักงานบริการ (รายวัน) จำนวน 3 อัตรา สมัครได้ที่กลุ่มงานบริหารทั่วไป",
         date: "2025-01-30",
         type: "job",
-        link: "/news/5",
         fileUrl: dummyPdf
     },
     {
@@ -66,7 +60,6 @@ export const newInfoList: NewInfo[] = [
         description: "ตั้งแต่เดือนมีนาคม 2568 คลินิกโรคเรื้อรังปรับเวลาให้บริการเป็น 08.00–16.00 น.",
         date: "2025-01-18",
         type: "general",
-        link: "/news/6",
         fileUrl: dummyPdf
     },
     {
@@ -75,7 +68,6 @@ export const newInfoList: NewInfo[] = [
         description: "โรงพยาบาลสะเมิงเปิดรับสมัครเจ้าพนักงานเภสัชกรรม 1 อัตรา สมัครได้ตั้งแต่ 10–20 กุมภาพันธ์ 2568",
         date: "2025-02-05",
         type: "job",
-        link: "/news/7",
         fileUrl: dummyPdf
     },
     {
@@ -84,7 +76,6 @@ export const newInfoList: NewInfo[] = [
         description: "ขอเชิญประชาชนเข้าร่วมกิจกรรมตรวจสุขภาพฟรี ณ อาคารผู้ป่วยนอก วันที่ 12 กุมภาพันธ์ 2568",
         date: "2025-02-02",
         type: "general",
-        link: "/news/8",
         fileUrl: dummyPdf
     },
     {
@@ -93,7 +84,6 @@ export const newInfoList: NewInfo[] = [
         description: "เปิดรับสมัครลูกจ้างชั่วคราวตำแหน่งงานการเงินและบัญชี 1 อัตรา วุฒิ ปวส. ขึ้นไป",
         date: "2025-02-06",
         type: "job",
-        link: "/news/9",
         fileUrl: dummyPdf
     },
     {
@@ -102,7 +92,6 @@ export const newInfoList: NewInfo[] = [
         description: "โรงพยาบาลจัดอบรม CPR สำหรับอาสาสมัครสาธารณสุข วันที่ 18 กุมภาพันธ์ 2568",
         date: "2025-02-04",
         type: "general",
-        link: "/news/10",
         fileUrl: dummyPdf
     },
     {
@@ -111,7 +100,6 @@ export const newInfoList: NewInfo[] = [
         description: "ประกาศรับสมัครนักเทคนิคการแพทย์ 1 อัตรา สังกัดกลุ่มงานชันสูตรโรคกลาง",
         date: "2025-02-07",
         type: "job",
-        link: "/news/11",
         fileUrl: dummyPdf
     },
     {
@@ -120,7 +108,6 @@ export const newInfoList: NewInfo[] = [
         description: "คลินิกทันตกรรมงดให้บริการชั่วคราว วันที่ 14 กุมภาพันธ์ 2568 เนื่องจากปรับปรุงเครื่องมือ",
         date: "2025-02-03",
         type: "general",
-        link: "/news/12",
         fileUrl: dummyPdf
     },
     {
@@ -129,7 +116,6 @@ export const newInfoList: NewInfo[] = [
         description: "เปิดรับสมัครพนักงานขับรถพยาบาล 1 อัตรา ต้องมีใบขับขี่ประเภท ท.2",
         date: "2025-02-08",
         type: "job",
-        link: "/news/13",
         fileUrl: dummyPdf
     },
     {
@@ -138,7 +124,6 @@ export const newInfoList: NewInfo[] = [
         description: "เชิญชวนประชาชนเข้าร่วมโครงการเลิกบุหรี่ รับคำปรึกษาฟรีทุกวันพุธ",
         date: "2025-02-01",
         type: "general",
-        link: "/news/14",
         fileUrl: dummyPdf
     },
     {
@@ -147,7 +132,6 @@ export const newInfoList: NewInfo[] = [
         description: "โรงพยาบาลสะเมิงรับสมัครนักกายภาพบำบัด 1 อัตรา สมัครได้ถึง 22 กุมภาพันธ์ 2568",
         date: "2025-02-09",
         type: "job",
-        link: "/news/15",
         fileUrl: dummyPdf
     },
     {
@@ -156,7 +140,6 @@ export const newInfoList: NewInfo[] = [
         description: "ตั้งแต่วันที่ 1 มีนาคม 2568 จุดคัดกรองผู้ป่วยนอกย้ายไปอาคารใหม่ด้านหน้าโรงพยาบาล",
         date: "2025-02-05",
         type: "general",
-        link: "/news/16",
         fileUrl: dummyPdf
     }
 ];

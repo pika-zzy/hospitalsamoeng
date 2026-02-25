@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link, useMatchRoute } from "@tanstack/react-router"
-import {  Menu, ChevronDown, MenuIcon, X } from "lucide-react"
+import { ChevronDown, MenuIcon, X } from "lucide-react"
 import logo from "/src/assets/logo2.png"
 import { Navbarlist } from "@/interface/menu"
 import { Button } from "@/components/ui/button"
@@ -118,7 +118,7 @@ const Navbar = () => {
         </div>
       </div>
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-100 px-6 py-4 absolute w-full shadow-lg">
+        <div className="lg:hidden border-t border-gray-100 px-6 py-4 absolute w-full shadow-lg bg-white/90 backdrop-blur-xl">
           
           {Navbarlist.map((menu) => (
             <div key={menu.id} className="mb-4">
@@ -163,9 +163,7 @@ const Navbar = () => {
               )}
             </div>
           ))}
-          <div className="text-gray-500 text-center py-4">
-             ทดสอบ: ถ้าเห็นข้อความนี้แสดงว่าปุ่ม Hamburger ทำงานแล้ว!
-          </div>
+          
 
         </div>
       )}

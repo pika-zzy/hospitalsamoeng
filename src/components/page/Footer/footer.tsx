@@ -6,7 +6,6 @@ const Footer = () => {
   return (
     <footer className="w-full bg-[#0f172a] pt-20 pb-10 text-slate-400 mt-20">
       <div className="container mx-auto px-6">
-        
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-16">
           
           {/* Section 1: Brand & Core Teams */}
