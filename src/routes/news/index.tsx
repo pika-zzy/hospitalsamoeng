@@ -1,33 +1,54 @@
 import { Card } from '@/components/ui/card'
-import { newInfoList } from '@/interface/newinfo'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react';
 import { Megaphone, Briefcase, Calendar, ChevronRight, FileText } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { requestAPI } from '@/lib/api';
+import type { NewInfo } from '@/interface/newinfo';
 
-export const Route = createFileRoute('/new/')({
+export const Route = createFileRoute('/news/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  
+  const { data } = useQuery<NewInfo[]>({
+    queryKey: ["news"],
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
+    queryFn: async () => {
+      const resp = await requestAPI<NewInfo[]>({
+        method: "GET",
+        url: "/news",
+      });
+      if (resp.success) {
+        return resp.data;
+      }
+      throw new Error("Failed to fetch news");
+    },
+  });
+
   const navigate = useNavigate();
   const [tap, setTap] = useState<'job' | 'general'>('general');
 
   const { latestJob, latestGeneral } = useMemo(() => {
-    const job = newInfoList.filter(n => n.type === "job");
-    const genera = newInfoList.filter(n => n.type === "general");
+    const job = data?.filter(n => n.type === "ประกาศจัดซื้อจัดจ้าง") || [];
+    const genera = data?.filter(n => n.type === "ประชาสัมพันธ์") || [];
 
-    const sortByDate = (arr: typeof newInfoList) => {
+    const sortByDate = (arr: NewInfo[]) => {
       return [...arr].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }
     return {
       latestJob: sortByDate(job),
       latestGeneral: sortByDate(genera),
     }
-  }, []);
+  }, [data]);
 
   const latestList = tap === 'job' ? latestJob : latestGeneral;
 
+
   return (
+    console.log(data),
     <div className="min-h-screen bg-slate-50/50 pb-20">
       {/* Header Section */}
       <div className="bg-white border-b border-gray-100 mb-8">
@@ -79,8 +100,8 @@ function RouteComponent() {
                 className='group relative flex flex-col bg-white rounded-[2rem] border-0 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer p-6' 
                 onClick={() =>
                   navigate({
-                    to: "/new/$id",
-                    params: { id: info.id.toString() },
+                    to: "/news/$id",
+                    params: { id: String(info.id) },
                   })
                 }
               >

@@ -11,12 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServiceIndexRouteImport } from './routes/service/index'
-import { Route as NewIndexRouteImport } from './routes/new/index'
+import { Route as NewsIndexRouteImport } from './routes/news/index'
 import { Route as DocumentIndexRouteImport } from './routes/document/index'
 import { Route as ComplaintIndexRouteImport } from './routes/complaint/index'
 import { Route as ActivityIndexRouteImport } from './routes/activity/index'
-import { Route as NewIdRouteImport } from './routes/new/$id'
+import { Route as NewsIdRouteImport } from './routes/news/$id'
+import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as ActivityIdRouteImport } from './routes/activity/$id'
+import { Route as AdminNewsIndexRouteImport } from './routes/admin/news/index'
+import { Route as AdminLoginIndexRouteImport } from './routes/admin/login/index'
 import { Route as AboutHistoryIndexRouteImport } from './routes/about/history/index'
 import { Route as AboutDoctorIndexRouteImport } from './routes/about/doctor/index'
 import { Route as AboutContactIndexRouteImport } from './routes/about/contact/index'
@@ -31,9 +34,9 @@ const ServiceIndexRoute = ServiceIndexRouteImport.update({
   path: '/service/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewIndexRoute = NewIndexRouteImport.update({
-  id: '/new/',
-  path: '/new/',
+const NewsIndexRoute = NewsIndexRouteImport.update({
+  id: '/news/',
+  path: '/news/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocumentIndexRoute = DocumentIndexRouteImport.update({
@@ -51,14 +54,29 @@ const ActivityIndexRoute = ActivityIndexRouteImport.update({
   path: '/activity/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewIdRoute = NewIdRouteImport.update({
-  id: '/new/$id',
-  path: '/new/$id',
+const NewsIdRoute = NewsIdRouteImport.update({
+  id: '/news/$id',
+  path: '/news/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ActivityIdRoute = ActivityIdRouteImport.update({
   id: '/activity/$id',
   path: '/activity/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminNewsIndexRoute = AdminNewsIndexRouteImport.update({
+  id: '/admin/news/',
+  path: '/admin/news/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginIndexRoute = AdminLoginIndexRouteImport.update({
+  id: '/admin/login/',
+  path: '/admin/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutHistoryIndexRoute = AboutHistoryIndexRouteImport.update({
@@ -80,97 +98,118 @@ const AboutContactIndexRoute = AboutContactIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/activity/$id': typeof ActivityIdRoute
-  '/new/$id': typeof NewIdRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/news/$id': typeof NewsIdRoute
   '/activity/': typeof ActivityIndexRoute
   '/complaint/': typeof ComplaintIndexRoute
   '/document/': typeof DocumentIndexRoute
-  '/new/': typeof NewIndexRoute
+  '/news/': typeof NewsIndexRoute
   '/service/': typeof ServiceIndexRoute
   '/about/contact/': typeof AboutContactIndexRoute
   '/about/doctor/': typeof AboutDoctorIndexRoute
   '/about/history/': typeof AboutHistoryIndexRoute
+  '/admin/login/': typeof AdminLoginIndexRoute
+  '/admin/news/': typeof AdminNewsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activity/$id': typeof ActivityIdRoute
-  '/new/$id': typeof NewIdRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/news/$id': typeof NewsIdRoute
   '/activity': typeof ActivityIndexRoute
   '/complaint': typeof ComplaintIndexRoute
   '/document': typeof DocumentIndexRoute
-  '/new': typeof NewIndexRoute
+  '/news': typeof NewsIndexRoute
   '/service': typeof ServiceIndexRoute
   '/about/contact': typeof AboutContactIndexRoute
   '/about/doctor': typeof AboutDoctorIndexRoute
   '/about/history': typeof AboutHistoryIndexRoute
+  '/admin/login': typeof AdminLoginIndexRoute
+  '/admin/news': typeof AdminNewsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/activity/$id': typeof ActivityIdRoute
-  '/new/$id': typeof NewIdRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/news/$id': typeof NewsIdRoute
   '/activity/': typeof ActivityIndexRoute
   '/complaint/': typeof ComplaintIndexRoute
   '/document/': typeof DocumentIndexRoute
-  '/new/': typeof NewIndexRoute
+  '/news/': typeof NewsIndexRoute
   '/service/': typeof ServiceIndexRoute
   '/about/contact/': typeof AboutContactIndexRoute
   '/about/doctor/': typeof AboutDoctorIndexRoute
   '/about/history/': typeof AboutHistoryIndexRoute
+  '/admin/login/': typeof AdminLoginIndexRoute
+  '/admin/news/': typeof AdminNewsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/activity/$id'
-    | '/new/$id'
+    | '/admin/dashboard'
+    | '/news/$id'
     | '/activity/'
     | '/complaint/'
     | '/document/'
-    | '/new/'
+    | '/news/'
     | '/service/'
     | '/about/contact/'
     | '/about/doctor/'
     | '/about/history/'
+    | '/admin/login/'
+    | '/admin/news/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/activity/$id'
-    | '/new/$id'
+    | '/admin/dashboard'
+    | '/news/$id'
     | '/activity'
     | '/complaint'
     | '/document'
-    | '/new'
+    | '/news'
     | '/service'
     | '/about/contact'
     | '/about/doctor'
     | '/about/history'
+    | '/admin/login'
+    | '/admin/news'
   id:
     | '__root__'
     | '/'
     | '/activity/$id'
-    | '/new/$id'
+    | '/admin/dashboard'
+    | '/news/$id'
     | '/activity/'
     | '/complaint/'
     | '/document/'
-    | '/new/'
+    | '/news/'
     | '/service/'
     | '/about/contact/'
     | '/about/doctor/'
     | '/about/history/'
+    | '/admin/login/'
+    | '/admin/news/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ActivityIdRoute: typeof ActivityIdRoute
-  NewIdRoute: typeof NewIdRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  NewsIdRoute: typeof NewsIdRoute
   ActivityIndexRoute: typeof ActivityIndexRoute
   ComplaintIndexRoute: typeof ComplaintIndexRoute
   DocumentIndexRoute: typeof DocumentIndexRoute
-  NewIndexRoute: typeof NewIndexRoute
+  NewsIndexRoute: typeof NewsIndexRoute
   ServiceIndexRoute: typeof ServiceIndexRoute
   AboutContactIndexRoute: typeof AboutContactIndexRoute
   AboutDoctorIndexRoute: typeof AboutDoctorIndexRoute
   AboutHistoryIndexRoute: typeof AboutHistoryIndexRoute
+  AdminLoginIndexRoute: typeof AdminLoginIndexRoute
+  AdminNewsIndexRoute: typeof AdminNewsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -189,11 +228,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServiceIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/new/': {
-      id: '/new/'
-      path: '/new'
-      fullPath: '/new/'
-      preLoaderRoute: typeof NewIndexRouteImport
+    '/news/': {
+      id: '/news/'
+      path: '/news'
+      fullPath: '/news/'
+      preLoaderRoute: typeof NewsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/document/': {
@@ -217,11 +256,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivityIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/new/$id': {
-      id: '/new/$id'
-      path: '/new/$id'
-      fullPath: '/new/$id'
-      preLoaderRoute: typeof NewIdRouteImport
+    '/news/$id': {
+      id: '/news/$id'
+      path: '/news/$id'
+      fullPath: '/news/$id'
+      preLoaderRoute: typeof NewsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/activity/$id': {
@@ -229,6 +275,20 @@ declare module '@tanstack/react-router' {
       path: '/activity/$id'
       fullPath: '/activity/$id'
       preLoaderRoute: typeof ActivityIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/news/': {
+      id: '/admin/news/'
+      path: '/admin/news'
+      fullPath: '/admin/news/'
+      preLoaderRoute: typeof AdminNewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login/': {
+      id: '/admin/login/'
+      path: '/admin/login'
+      fullPath: '/admin/login/'
+      preLoaderRoute: typeof AdminLoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/history/': {
@@ -258,15 +318,18 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ActivityIdRoute: ActivityIdRoute,
-  NewIdRoute: NewIdRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
+  NewsIdRoute: NewsIdRoute,
   ActivityIndexRoute: ActivityIndexRoute,
   ComplaintIndexRoute: ComplaintIndexRoute,
   DocumentIndexRoute: DocumentIndexRoute,
-  NewIndexRoute: NewIndexRoute,
+  NewsIndexRoute: NewsIndexRoute,
   ServiceIndexRoute: ServiceIndexRoute,
   AboutContactIndexRoute: AboutContactIndexRoute,
   AboutDoctorIndexRoute: AboutDoctorIndexRoute,
   AboutHistoryIndexRoute: AboutHistoryIndexRoute,
+  AdminLoginIndexRoute: AdminLoginIndexRoute,
+  AdminNewsIndexRoute: AdminNewsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
