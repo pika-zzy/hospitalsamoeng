@@ -38,7 +38,7 @@ export const Navbarlist = [
     {
         id: 5,
         name: "ข่าวสาร",
-        link: "/new/",
+        link: "/news/",
     },
     {
         id: 6,
