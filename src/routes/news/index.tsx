@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { Megaphone, Briefcase, Calendar, ChevronRight, FileText } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { requestAPI } from '@/lib/api';
-import type { NewInfo } from '@/interface/newinfo';
+import type { NewsInfo } from '@/interface/newinfo';
 
 export const Route = createFileRoute('/news/')({
   component: RouteComponent,
@@ -12,12 +12,12 @@ export const Route = createFileRoute('/news/')({
 
 function RouteComponent() {
   
-  const { data } = useQuery<NewInfo[]>({
+  const { data } = useQuery<NewsInfo[]>({
     queryKey: ["news"],
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
     queryFn: async () => {
-      const resp = await requestAPI<NewInfo[]>({
+      const resp = await requestAPI<NewsInfo[]>({
         method: "GET",
         url: "/news",
       });
@@ -35,7 +35,7 @@ function RouteComponent() {
     const job = data?.filter(n => n.type === "ประกาศจัดซื้อจัดจ้าง") || [];
     const genera = data?.filter(n => n.type === "ประชาสัมพันธ์") || [];
 
-    const sortByDate = (arr: NewInfo[]) => {
+    const sortByDate = (arr: NewsInfo[]) => {
       return [...arr].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }
     return {

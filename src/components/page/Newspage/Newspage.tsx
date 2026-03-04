@@ -3,72 +3,43 @@ import { Card, CardAction, CardHeader } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
-const newsInfo = [
-  {
-    id: 1,
-    title: "รับสมัครพยาบาลวิชาชีพ",
-    description: "โรงพยาบาลสะเมิงเปิดรับสมัครพยาบาลวิชาชีพ จำนวน 2 อัตรา ตั้งแต่วันที่ 1–15 กุมภาพันธ์ 2568",
-    date: "2025-02-01",
-    type: "job",
-    link: "/news/1"
-  },
-  {
-    id: 2,
-    title: "ปิดปรับปรุงระบบเวชระเบียน",
-    description: "งดให้บริการระบบเวชระเบียนชั่วคราว ในวันที่ 5 กุมภาพันธ์ 2568 เวลา 18.00–22.00 น.พะัพะัพะัพะัพะัพะัพะัพะ",
-    date: "2025-01-28",
-    type: "general",
-    link: "/news/2"
-  },
-  {
-    id: 3,
-    title: "รับสมัครนักวิชาการคอมพิวเตอร์",
-    description: "ประกาศรับสมัครตำแหน่งนักวิชาการคอมพิวเตอร์ 1 อัตรา สังกัดกลุ่มงานเทคโนโลยีสารสนเทศ",
-    date: "2025-02-03",
-    type: "job",
-    link: "/news/3"
-  },
-  {
-    id: 4,
-    title: "ฉีดวัคซีนไข้หวัดใหญ่ฟรี",
-    description: "โรงพยาบาลสะเมิงให้บริการฉีดวัคซีนไข้หวัดใหญ่ฟรีสำหรับผู้สูงอายุ 60 ปีขึ้นไปัพัพัพัพัพะัพะัพัพะัพะัพะัพ",
-    date: "2025-01-20",
-    type: "general",
-    link: "/news/4"
-  },
-  {
-    id: 5,
-    title: "รับสมัครพนักงานบริการ",
-    description: "เปิดรับสมัครพนักงานบริการ (รายวัน) จำนวน 3 อัตรา สมัครได้ที่กลุ่มงานบริหารทั่วไป",
-    date: "2025-01-30",
-    type: "job",
-    link: "/news/5"
-  },
-  {
-    id: 6,
-    title: "เปลี่ยนแปลงเวลาให้บริการคลินิก",
-    description: "ตั้งแต่เดือนมีนาคม 2568 คลินิกโรคเรื้อรังปรับเวลาให้บริการเป็น 08.00–16.00 น.พะัพัพัพัพัพัพัพัพัพะัพัพัพัพ",
-    date: "2025-01-18",
-    type: "general",
-    link: "/news/6"
-  }
-];
+import { requestAPI } from "@/lib/api";
+import type { NewsInfo } from "@/interface/newinfo";
+import { useQuery } from "@tanstack/react-query";
 
-const jobNews = newsInfo.filter(n => n.type === "job");
-const generalNews = newsInfo.filter(n => n.type === "general");
-
-const latestJob = [...jobNews]
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  .slice(0, 3);
-
-const latestGeneral = [...generalNews]
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  .slice(0, 3);
 
 
 
 export default function News_page (){
   const navigate = useNavigate();
+
+  const { data } = useQuery<NewsInfo[]>({
+    queryKey: ["news"],
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
+    queryFn: async () => {
+      const resp = await requestAPI<NewsInfo[]>({
+        method: "GET",
+        url: "/news",
+      });
+      if (resp.success) {
+        return resp.data;
+      }
+      throw new Error("Failed to fetch news");
+    },
+  });
+
+  const jobNews = data?.filter(n => n.type === "job") || [];
+  const generalNews = data?.filter(n => n.type === "general") || [];
+  const latestJob = [...jobNews]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
+
+  const latestGeneral = [...generalNews]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
+
+
   return (
     <>
         {/* Header Section */}
@@ -77,7 +48,7 @@ export default function News_page (){
           ข่าวสาร / <span className="text-green-500">ประกาศ</span>
         </h2>
         <Button 
-            onClick={() => navigate({ to: '/new' })}
+            onClick={() => navigate({ to: '/news' })}
             className="hidden md:flex items-center gap-2 text-green-600 font-bold hover:text-green-700 transition-colors group"
         >
             ดูทั้งหมด 
