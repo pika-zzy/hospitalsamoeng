@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { requestAPI } from '@/lib/api';
 import type { NewsInfo } from '@/interface/newinfo';
 
-export const Route = createFileRoute('/news/')({
+export const Route = createFileRoute('/_user/news/')({
   component: RouteComponent,
 })
 

@@ -1,5 +1,4 @@
-
-import type { NewInfo } from '@/interface/newinfo'
+import {  type NewsInfo } from '@/interface/newinfo'
 import { requestAPI } from '@/lib/api'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
@@ -8,18 +7,18 @@ import { ArrowLeft, FileText, ExternalLink } from 'lucide-react'
 
 
 
-export const Route = createFileRoute('/news/$id')({
+export const Route = createFileRoute('/_user/news/$id')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const { id } = Route.useParams()
 
-  const { data} = useQuery<NewInfo>({
+  const { data} = useQuery<NewsInfo>({
     queryKey: ["news", id],
     refetchOnWindowFocus: false,
     queryFn: async () => {
-      const resp = await requestAPI<NewInfo>({
+      const resp = await requestAPI<NewsInfo>({
         method: "GET",
         url: `/news/${id}`,
       });
@@ -46,17 +45,18 @@ function RouteComponent() {
   console.log(news.fileUrl);
 
   // 1. สร้างตัวแปร URL แบบเต็มๆ เตรียมไว้
-// ดึง Base URL มาจาก .env หรือใช้ localhost:8080 เป็นค่า default
-const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  // ดึง Base URL มาจาก .env หรือใช้ localhost:8080 เป็นค่า default
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
-// เช็คว่า fileUrl มีคำว่า http ไหม? ถ้าไม่มี ให้เอา apiBase ไปแปะข้างหน้า
-const fullFileUrl = news.fileUrl?.startsWith('http') 
-  ? news.fileUrl 
-  : `${apiBase}${news.fileUrl}`;
+  // เช็คว่า fileUrl มีคำว่า http ไหม? ถ้าไม่มี ให้เอา apiBase ไปแปะข้างหน้า
+  const fullFileUrl = news.fileUrl?.startsWith('http') 
+    ? news.fileUrl 
+    : `${apiBase}${news.fileUrl}`;
 
-// ---------------------------------------------------
+  // ---------------------------------------------------
 
   return (
+    <>
     <div className="bg-gray-50 min-h-screen pb-16">
       
       {/* Header Section */}
@@ -126,9 +126,11 @@ const fullFileUrl = news.fileUrl?.startsWith('http')
               ย้อนกลับ
             </Link>
           </div>
-
         </div>
       </div>
     </div>
+    </>
   )
 }
+
+

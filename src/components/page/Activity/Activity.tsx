@@ -1,30 +1,36 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { sampleActivities } from "@/interface/activity_info";
+import type ActivityInfo from "@/interface/activity_info";
+import { requestAPI } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Calendar, Tag, ArrowRight } from "lucide-react"; // แนะนำให้ใช้ lucide-react เพิ่มความพรีเมียม
+import { Calendar, ArrowRight } from "lucide-react"; // แนะนำให้ใช้ lucide-react เพิ่มความพรีเมียม
 
-const activities = [...sampleActivities]
-    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
-    .slice(0, 4);
 
 export default function Activity() {
     const navigate = useNavigate();
 
-    const statusMap = {
-        'active': { text: 'เปิดรับสมัคร', color: 'bg-green-100 text-green-700' },
-        'inactive': { text: 'ปิดรับสมัคร', color: 'bg-gray-100 text-gray-600' },
-        'completed': { text: 'เสร็จสิ้นแล้ว', color: 'bg-blue-100 text-blue-700' }
-    };
+     const { data } = useQuery<ActivityInfo[]>({
+        queryKey: ["activities"],
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        queryFn: async () => {
+          const resp = await requestAPI<ActivityInfo[]>({
+            method: "GET",
+            url: "/activities",
+          });
+          if (resp.success) {
+            return resp.data;
+          }
+          throw new Error("Failed to fetch news");
+        },
+      });
+    
+    const activities = [...( data ?? [])]
+        .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
+        .slice(0, 4);   
 
-    const typeMap = {
-        'health': 'สุขภาพ',
-        'charity': 'การกุศล',
-        'education': 'การศึกษา',
-        'environment': 'สิ่งแวดล้อม',
-        'fitness': 'การออกกำลังกาย'
-    };
-
+    const API_URL = import.meta.env.VITE_API_URL
     return (
         <div className="max-w-7xl mx-auto px-6 py-20">
             {/* Header Section */}
@@ -53,27 +59,23 @@ export default function Activity() {
                         {/* Image Wrap */}
                         <div className="relative h-48 overflow-hidden">
                             <img
-                                src={activity.imgUrl}
-                                alt={activity.name}
+                                src={`${API_URL}${activity.img_url}`}
+                                alt={activity.title}
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                             />
                             {/* Status Tag Overlay */}
                             <div className="absolute top-3 right-3">
-                                <span className={`text-[10px] font-bold px-3 py-1 rounded-full shadow-sm ${statusMap[activity.status]?.color || 'bg-gray-100'}`}>
-                                    {statusMap[activity.status]?.text}
+                                <span className={`text-[10px] font-bold px-3 py-1 rounded-full shadow-sm ${ 'bg-gray-100'}`}>
+                                    {}
                                 </span>
                             </div>
                         </div>
 
                         {/* Content */}
                         <div className="p-5 flex flex-col flex-1">
-                            <div className="flex items-center gap-2 text-[10px] text-green-600 font-bold uppercase tracking-wider mb-2">
-                                <Tag className="w-3 h-3" />
-                                {typeMap[activity.type as keyof typeof typeMap] || 'ไม่ระบุประเภท'}
-                            </div>
                             
                             <h2 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1 group-hover:text-green-600 transition-colors">
-                                {activity.name}
+                                {activity.title}
                             </h2>
                             
                             <p className="text-gray-500 text-xs line-clamp-2 mb-4 leading-relaxed">
@@ -83,7 +85,7 @@ export default function Activity() {
                             <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 font-medium">
                                 <div className="flex items-center gap-1">
                                     <Calendar className="w-3.5 h-3.5" />
-                                    {new Date(activity.startDate).toLocaleDateString("th-TH", {
+                                    {new Date(activity.start_date).toLocaleDateString("th-TH", {
                                         day: "numeric",
                                         month: "short",
                                         year: "2-digit"

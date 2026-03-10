@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label'; // ตรวจสอบว่ามี component นี้ หรือเปลี่ยนเป็น label ธรรมดาได้
+import { Label } from '@/components/ui/label';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/admin/news/')({
+export const Route = createFileRoute('/_admin/admin/news/')({
   component: RouteComponent,
 });
 
@@ -122,6 +122,7 @@ function RouteComponent() {
                   onChange={handleChange}
                   className="w-full appearance-none px-4 py-2.5 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all cursor-pointer"
                 >
+                  <option value="">-- เลือกประเภท --</option>
                   <option value="ประชาสัมพันธ์">📢 ประชาสัมพันธ์</option>
                   <option value="ประกาศจัดซื้อจัดจ้าง">📑 ประกาศจัดซื้อจัดจ้าง</option>
                 </select>

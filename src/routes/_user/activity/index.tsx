@@ -1,13 +1,33 @@
 import { Card } from '@/components/ui/card'
-import { sampleActivities } from '@/interface/activity_info'
+import type ActivityInfo from '@/interface/activity_info';
+import { requestAPI } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/activity/')({
+export const Route = createFileRoute('/_user/activity/')({
     component: RouteComponent,
 })
 
 function RouteComponent() {
     const navigate = useNavigate();
+
+      const { data } = useQuery<ActivityInfo[]>({
+        queryKey: ["activities"],
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        queryFn: async () => {
+          const resp = await requestAPI<ActivityInfo[]>({
+            method: "GET",
+            url: "/activities",
+          });
+          if (resp.success) {
+            return resp.data;
+          }
+          throw new Error("Failed to fetch news");
+        },
+      });
+    
+      
     return (
         <>
             <div className="min-h-screen bg-slate-50 py-12">
@@ -26,7 +46,7 @@ function RouteComponent() {
                 {/* Gallery Grid */}
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                        {sampleActivities.map((activity) => (
+                        {data?.map((activity) => (
                             <Card
                                 key={activity.id}
                                 onClick={() => navigate({ to: `/activity/${activity.id}` })}
@@ -34,8 +54,8 @@ function RouteComponent() {
                             >
                                 {/* Main Image */}
                                 <img
-                                    src={activity.imgUrl}
-                                    alt={activity.name}
+                                    src={activity.img_url}
+                                    alt={activity.title}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
 
@@ -44,11 +64,9 @@ function RouteComponent() {
 
                                 {/* Content on Image */}
                                 <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                    <span className="inline-block px-3 py-1 bg-green-500 text-white text-[10px] font-bold rounded-full mb-3 uppercase tracking-wider shadow-lg shadow-green-900/20">
-                                        {activity.type}
-                                    </span>
+                                    
                                     <h2 className="text-white text-xl font-bold leading-tight mb-2 drop-shadow-md">
-                                        {activity.name}
+                                        {activity.title}
                                     </h2>
                                     
                                     {/* ส่วนที่โผล่มาตอน Hover */}

@@ -29,8 +29,8 @@ export default function News_page (){
     },
   });
 
-  const jobNews = data?.filter(n => n.type === "job") || [];
-  const generalNews = data?.filter(n => n.type === "general") || [];
+  const jobNews = data?.filter(n => n.type === "ประกาศจัดซื้อจัดจ้าง") || [];
+  const generalNews = data?.filter(n => n.type === "ประชาสัมพันธ์") || [];
   const latestJob = [...jobNews]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
@@ -131,12 +131,12 @@ export default function News_page (){
                     <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
                       {info.description}
                     </p>
-                    <CardAction className="mt-2" onClick={() => window.location.href = `/new/${info.id}`}>
+                    <CardAction className="mt-2" onClick={() => window.location.href = `/news/${info.id}`}>
                       <Button className="text-sm text-green-600 hover:text-green-800 font-medium p-0">
                         ดูรายละเอียดเพิ่มเติม
                       </Button>
                     </CardAction>
-                  </div>
+                  </div>  
                 ))
               ) : (
                 <p className="text-center text-gray-400 mt-10 italic">ไม่มีข้อมูลการสมัครงาน</p>

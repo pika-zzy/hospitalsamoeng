@@ -9,327 +9,421 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ServiceIndexRouteImport } from './routes/service/index'
-import { Route as NewsIndexRouteImport } from './routes/news/index'
-import { Route as DocumentIndexRouteImport } from './routes/document/index'
-import { Route as ComplaintIndexRouteImport } from './routes/complaint/index'
-import { Route as ActivityIndexRouteImport } from './routes/activity/index'
-import { Route as NewsIdRouteImport } from './routes/news/$id'
-import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
-import { Route as ActivityIdRouteImport } from './routes/activity/$id'
-import { Route as AdminNewsIndexRouteImport } from './routes/admin/news/index'
-import { Route as AdminLoginIndexRouteImport } from './routes/admin/login/index'
-import { Route as AboutHistoryIndexRouteImport } from './routes/about/history/index'
-import { Route as AboutDoctorIndexRouteImport } from './routes/about/doctor/index'
-import { Route as AboutContactIndexRouteImport } from './routes/about/contact/index'
+import { Route as UserRouteRouteImport } from './routes/_user/route'
+import { Route as AdminRouteRouteImport } from './routes/_admin/route'
+import { Route as UserIndexRouteImport } from './routes/_user/index'
+import { Route as UserServiceIndexRouteImport } from './routes/_user/service/index'
+import { Route as UserNewsIndexRouteImport } from './routes/_user/news/index'
+import { Route as UserDocumentIndexRouteImport } from './routes/_user/document/index'
+import { Route as UserComplaintIndexRouteImport } from './routes/_user/complaint/index'
+import { Route as UserActivityIndexRouteImport } from './routes/_user/activity/index'
+import { Route as AdminAdminIndexRouteImport } from './routes/_admin/admin/index'
+import { Route as UserNewsIdRouteImport } from './routes/_user/news/$id'
+import { Route as UserActivityIdRouteImport } from './routes/_user/activity/$id'
+import { Route as AdminAdminDashboardRouteImport } from './routes/_admin/admin/dashboard'
+import { Route as UserAboutHistoryIndexRouteImport } from './routes/_user/about/history/index'
+import { Route as UserAboutDoctorIndexRouteImport } from './routes/_user/about/doctor/index'
+import { Route as UserAboutContactIndexRouteImport } from './routes/_user/about/contact/index'
+import { Route as AdminAdminNewsIndexRouteImport } from './routes/_admin/admin/news/index'
+import { Route as AdminAdminLoginIndexRouteImport } from './routes/_admin/admin/login/index'
+import { Route as AdminAdminActivityIndexRouteImport } from './routes/_admin/admin/activity/index'
 
-const IndexRoute = IndexRouteImport.update({
+const UserRouteRoute = UserRouteRouteImport.update({
+  id: '/_user',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserIndexRoute = UserIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const ServiceIndexRoute = ServiceIndexRouteImport.update({
+const UserServiceIndexRoute = UserServiceIndexRouteImport.update({
   id: '/service/',
   path: '/service/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const NewsIndexRoute = NewsIndexRouteImport.update({
+const UserNewsIndexRoute = UserNewsIndexRouteImport.update({
   id: '/news/',
   path: '/news/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const DocumentIndexRoute = DocumentIndexRouteImport.update({
+const UserDocumentIndexRoute = UserDocumentIndexRouteImport.update({
   id: '/document/',
   path: '/document/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const ComplaintIndexRoute = ComplaintIndexRouteImport.update({
+const UserComplaintIndexRoute = UserComplaintIndexRouteImport.update({
   id: '/complaint/',
   path: '/complaint/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const ActivityIndexRoute = ActivityIndexRouteImport.update({
+const UserActivityIndexRoute = UserActivityIndexRouteImport.update({
   id: '/activity/',
   path: '/activity/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const NewsIdRoute = NewsIdRouteImport.update({
+const AdminAdminIndexRoute = AdminAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const UserNewsIdRoute = UserNewsIdRouteImport.update({
   id: '/news/$id',
   path: '/news/$id',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const AdminDashboardRoute = AdminDashboardRouteImport.update({
-  id: '/admin/dashboard',
-  path: '/admin/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ActivityIdRoute = ActivityIdRouteImport.update({
+const UserActivityIdRoute = UserActivityIdRouteImport.update({
   id: '/activity/$id',
   path: '/activity/$id',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const AdminNewsIndexRoute = AdminNewsIndexRouteImport.update({
-  id: '/admin/news/',
-  path: '/admin/news/',
-  getParentRoute: () => rootRouteImport,
+const AdminAdminDashboardRoute = AdminAdminDashboardRouteImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminLoginIndexRoute = AdminLoginIndexRouteImport.update({
-  id: '/admin/login/',
-  path: '/admin/login/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutHistoryIndexRoute = AboutHistoryIndexRouteImport.update({
+const UserAboutHistoryIndexRoute = UserAboutHistoryIndexRouteImport.update({
   id: '/about/history/',
   path: '/about/history/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const AboutDoctorIndexRoute = AboutDoctorIndexRouteImport.update({
+const UserAboutDoctorIndexRoute = UserAboutDoctorIndexRouteImport.update({
   id: '/about/doctor/',
   path: '/about/doctor/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
 } as any)
-const AboutContactIndexRoute = AboutContactIndexRouteImport.update({
+const UserAboutContactIndexRoute = UserAboutContactIndexRouteImport.update({
   id: '/about/contact/',
   path: '/about/contact/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const AdminAdminNewsIndexRoute = AdminAdminNewsIndexRouteImport.update({
+  id: '/admin/news/',
+  path: '/admin/news/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAdminLoginIndexRoute = AdminAdminLoginIndexRouteImport.update({
+  id: '/admin/login/',
+  path: '/admin/login/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAdminActivityIndexRoute = AdminAdminActivityIndexRouteImport.update({
+  id: '/admin/activity/',
+  path: '/admin/activity/',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/activity/$id': typeof ActivityIdRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/news/$id': typeof NewsIdRoute
-  '/activity/': typeof ActivityIndexRoute
-  '/complaint/': typeof ComplaintIndexRoute
-  '/document/': typeof DocumentIndexRoute
-  '/news/': typeof NewsIndexRoute
-  '/service/': typeof ServiceIndexRoute
-  '/about/contact/': typeof AboutContactIndexRoute
-  '/about/doctor/': typeof AboutDoctorIndexRoute
-  '/about/history/': typeof AboutHistoryIndexRoute
-  '/admin/login/': typeof AdminLoginIndexRoute
-  '/admin/news/': typeof AdminNewsIndexRoute
+  '/': typeof UserIndexRoute
+  '/admin/dashboard': typeof AdminAdminDashboardRoute
+  '/activity/$id': typeof UserActivityIdRoute
+  '/news/$id': typeof UserNewsIdRoute
+  '/admin/': typeof AdminAdminIndexRoute
+  '/activity/': typeof UserActivityIndexRoute
+  '/complaint/': typeof UserComplaintIndexRoute
+  '/document/': typeof UserDocumentIndexRoute
+  '/news/': typeof UserNewsIndexRoute
+  '/service/': typeof UserServiceIndexRoute
+  '/admin/activity/': typeof AdminAdminActivityIndexRoute
+  '/admin/login/': typeof AdminAdminLoginIndexRoute
+  '/admin/news/': typeof AdminAdminNewsIndexRoute
+  '/about/contact/': typeof UserAboutContactIndexRoute
+  '/about/doctor/': typeof UserAboutDoctorIndexRoute
+  '/about/history/': typeof UserAboutHistoryIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/activity/$id': typeof ActivityIdRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/news/$id': typeof NewsIdRoute
-  '/activity': typeof ActivityIndexRoute
-  '/complaint': typeof ComplaintIndexRoute
-  '/document': typeof DocumentIndexRoute
-  '/news': typeof NewsIndexRoute
-  '/service': typeof ServiceIndexRoute
-  '/about/contact': typeof AboutContactIndexRoute
-  '/about/doctor': typeof AboutDoctorIndexRoute
-  '/about/history': typeof AboutHistoryIndexRoute
-  '/admin/login': typeof AdminLoginIndexRoute
-  '/admin/news': typeof AdminNewsIndexRoute
+  '/': typeof UserIndexRoute
+  '/admin/dashboard': typeof AdminAdminDashboardRoute
+  '/activity/$id': typeof UserActivityIdRoute
+  '/news/$id': typeof UserNewsIdRoute
+  '/admin': typeof AdminAdminIndexRoute
+  '/activity': typeof UserActivityIndexRoute
+  '/complaint': typeof UserComplaintIndexRoute
+  '/document': typeof UserDocumentIndexRoute
+  '/news': typeof UserNewsIndexRoute
+  '/service': typeof UserServiceIndexRoute
+  '/admin/activity': typeof AdminAdminActivityIndexRoute
+  '/admin/login': typeof AdminAdminLoginIndexRoute
+  '/admin/news': typeof AdminAdminNewsIndexRoute
+  '/about/contact': typeof UserAboutContactIndexRoute
+  '/about/doctor': typeof UserAboutDoctorIndexRoute
+  '/about/history': typeof UserAboutHistoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/activity/$id': typeof ActivityIdRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/news/$id': typeof NewsIdRoute
-  '/activity/': typeof ActivityIndexRoute
-  '/complaint/': typeof ComplaintIndexRoute
-  '/document/': typeof DocumentIndexRoute
-  '/news/': typeof NewsIndexRoute
-  '/service/': typeof ServiceIndexRoute
-  '/about/contact/': typeof AboutContactIndexRoute
-  '/about/doctor/': typeof AboutDoctorIndexRoute
-  '/about/history/': typeof AboutHistoryIndexRoute
-  '/admin/login/': typeof AdminLoginIndexRoute
-  '/admin/news/': typeof AdminNewsIndexRoute
+  '/_admin': typeof AdminRouteRouteWithChildren
+  '/_user': typeof UserRouteRouteWithChildren
+  '/_user/': typeof UserIndexRoute
+  '/_admin/admin/dashboard': typeof AdminAdminDashboardRoute
+  '/_user/activity/$id': typeof UserActivityIdRoute
+  '/_user/news/$id': typeof UserNewsIdRoute
+  '/_admin/admin/': typeof AdminAdminIndexRoute
+  '/_user/activity/': typeof UserActivityIndexRoute
+  '/_user/complaint/': typeof UserComplaintIndexRoute
+  '/_user/document/': typeof UserDocumentIndexRoute
+  '/_user/news/': typeof UserNewsIndexRoute
+  '/_user/service/': typeof UserServiceIndexRoute
+  '/_admin/admin/activity/': typeof AdminAdminActivityIndexRoute
+  '/_admin/admin/login/': typeof AdminAdminLoginIndexRoute
+  '/_admin/admin/news/': typeof AdminAdminNewsIndexRoute
+  '/_user/about/contact/': typeof UserAboutContactIndexRoute
+  '/_user/about/doctor/': typeof UserAboutDoctorIndexRoute
+  '/_user/about/history/': typeof UserAboutHistoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/activity/$id'
     | '/admin/dashboard'
+    | '/activity/$id'
     | '/news/$id'
+    | '/admin/'
     | '/activity/'
     | '/complaint/'
     | '/document/'
     | '/news/'
     | '/service/'
+    | '/admin/activity/'
+    | '/admin/login/'
+    | '/admin/news/'
     | '/about/contact/'
     | '/about/doctor/'
     | '/about/history/'
-    | '/admin/login/'
-    | '/admin/news/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/activity/$id'
     | '/admin/dashboard'
+    | '/activity/$id'
     | '/news/$id'
+    | '/admin'
     | '/activity'
     | '/complaint'
     | '/document'
     | '/news'
     | '/service'
+    | '/admin/activity'
+    | '/admin/login'
+    | '/admin/news'
     | '/about/contact'
     | '/about/doctor'
     | '/about/history'
-    | '/admin/login'
-    | '/admin/news'
   id:
     | '__root__'
-    | '/'
-    | '/activity/$id'
-    | '/admin/dashboard'
-    | '/news/$id'
-    | '/activity/'
-    | '/complaint/'
-    | '/document/'
-    | '/news/'
-    | '/service/'
-    | '/about/contact/'
-    | '/about/doctor/'
-    | '/about/history/'
-    | '/admin/login/'
-    | '/admin/news/'
+    | '/_admin'
+    | '/_user'
+    | '/_user/'
+    | '/_admin/admin/dashboard'
+    | '/_user/activity/$id'
+    | '/_user/news/$id'
+    | '/_admin/admin/'
+    | '/_user/activity/'
+    | '/_user/complaint/'
+    | '/_user/document/'
+    | '/_user/news/'
+    | '/_user/service/'
+    | '/_admin/admin/activity/'
+    | '/_admin/admin/login/'
+    | '/_admin/admin/news/'
+    | '/_user/about/contact/'
+    | '/_user/about/doctor/'
+    | '/_user/about/history/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ActivityIdRoute: typeof ActivityIdRoute
-  AdminDashboardRoute: typeof AdminDashboardRoute
-  NewsIdRoute: typeof NewsIdRoute
-  ActivityIndexRoute: typeof ActivityIndexRoute
-  ComplaintIndexRoute: typeof ComplaintIndexRoute
-  DocumentIndexRoute: typeof DocumentIndexRoute
-  NewsIndexRoute: typeof NewsIndexRoute
-  ServiceIndexRoute: typeof ServiceIndexRoute
-  AboutContactIndexRoute: typeof AboutContactIndexRoute
-  AboutDoctorIndexRoute: typeof AboutDoctorIndexRoute
-  AboutHistoryIndexRoute: typeof AboutHistoryIndexRoute
-  AdminLoginIndexRoute: typeof AdminLoginIndexRoute
-  AdminNewsIndexRoute: typeof AdminNewsIndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  UserRouteRoute: typeof UserRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_user': {
+      id: '/_user'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof UserRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_admin': {
+      id: '/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_user/': {
+      id: '/_user/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserIndexRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/service/': {
-      id: '/service/'
+    '/_user/service/': {
+      id: '/_user/service/'
       path: '/service'
       fullPath: '/service/'
-      preLoaderRoute: typeof ServiceIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserServiceIndexRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/news/': {
-      id: '/news/'
+    '/_user/news/': {
+      id: '/_user/news/'
       path: '/news'
       fullPath: '/news/'
-      preLoaderRoute: typeof NewsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserNewsIndexRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/document/': {
-      id: '/document/'
+    '/_user/document/': {
+      id: '/_user/document/'
       path: '/document'
       fullPath: '/document/'
-      preLoaderRoute: typeof DocumentIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserDocumentIndexRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/complaint/': {
-      id: '/complaint/'
+    '/_user/complaint/': {
+      id: '/_user/complaint/'
       path: '/complaint'
       fullPath: '/complaint/'
-      preLoaderRoute: typeof ComplaintIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserComplaintIndexRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/activity/': {
-      id: '/activity/'
+    '/_user/activity/': {
+      id: '/_user/activity/'
       path: '/activity'
       fullPath: '/activity/'
-      preLoaderRoute: typeof ActivityIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserActivityIndexRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/news/$id': {
-      id: '/news/$id'
+    '/_admin/admin/': {
+      id: '/_admin/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminAdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_user/news/$id': {
+      id: '/_user/news/$id'
       path: '/news/$id'
       fullPath: '/news/$id'
-      preLoaderRoute: typeof NewsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserNewsIdRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
-      path: '/admin/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/activity/$id': {
-      id: '/activity/$id'
+    '/_user/activity/$id': {
+      id: '/_user/activity/$id'
       path: '/activity/$id'
       fullPath: '/activity/$id'
-      preLoaderRoute: typeof ActivityIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserActivityIdRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/admin/news/': {
-      id: '/admin/news/'
-      path: '/admin/news'
-      fullPath: '/admin/news/'
-      preLoaderRoute: typeof AdminNewsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_admin/admin/dashboard': {
+      id: '/_admin/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminAdminDashboardRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
-    '/admin/login/': {
-      id: '/admin/login/'
-      path: '/admin/login'
-      fullPath: '/admin/login/'
-      preLoaderRoute: typeof AdminLoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about/history/': {
-      id: '/about/history/'
+    '/_user/about/history/': {
+      id: '/_user/about/history/'
       path: '/about/history'
       fullPath: '/about/history/'
-      preLoaderRoute: typeof AboutHistoryIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserAboutHistoryIndexRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/about/doctor/': {
-      id: '/about/doctor/'
+    '/_user/about/doctor/': {
+      id: '/_user/about/doctor/'
       path: '/about/doctor'
       fullPath: '/about/doctor/'
-      preLoaderRoute: typeof AboutDoctorIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserAboutDoctorIndexRouteImport
+      parentRoute: typeof UserRouteRoute
     }
-    '/about/contact/': {
-      id: '/about/contact/'
+    '/_user/about/contact/': {
+      id: '/_user/about/contact/'
       path: '/about/contact'
       fullPath: '/about/contact/'
-      preLoaderRoute: typeof AboutContactIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserAboutContactIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_admin/admin/news/': {
+      id: '/_admin/admin/news/'
+      path: '/admin/news'
+      fullPath: '/admin/news/'
+      preLoaderRoute: typeof AdminAdminNewsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/admin/login/': {
+      id: '/_admin/admin/login/'
+      path: '/admin/login'
+      fullPath: '/admin/login/'
+      preLoaderRoute: typeof AdminAdminLoginIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/admin/activity/': {
+      id: '/_admin/admin/activity/'
+      path: '/admin/activity'
+      fullPath: '/admin/activity/'
+      preLoaderRoute: typeof AdminAdminActivityIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
   }
 }
 
+interface AdminRouteRouteChildren {
+  AdminAdminDashboardRoute: typeof AdminAdminDashboardRoute
+  AdminAdminIndexRoute: typeof AdminAdminIndexRoute
+  AdminAdminActivityIndexRoute: typeof AdminAdminActivityIndexRoute
+  AdminAdminLoginIndexRoute: typeof AdminAdminLoginIndexRoute
+  AdminAdminNewsIndexRoute: typeof AdminAdminNewsIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAdminDashboardRoute: AdminAdminDashboardRoute,
+  AdminAdminIndexRoute: AdminAdminIndexRoute,
+  AdminAdminActivityIndexRoute: AdminAdminActivityIndexRoute,
+  AdminAdminLoginIndexRoute: AdminAdminLoginIndexRoute,
+  AdminAdminNewsIndexRoute: AdminAdminNewsIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
+interface UserRouteRouteChildren {
+  UserIndexRoute: typeof UserIndexRoute
+  UserActivityIdRoute: typeof UserActivityIdRoute
+  UserNewsIdRoute: typeof UserNewsIdRoute
+  UserActivityIndexRoute: typeof UserActivityIndexRoute
+  UserComplaintIndexRoute: typeof UserComplaintIndexRoute
+  UserDocumentIndexRoute: typeof UserDocumentIndexRoute
+  UserNewsIndexRoute: typeof UserNewsIndexRoute
+  UserServiceIndexRoute: typeof UserServiceIndexRoute
+  UserAboutContactIndexRoute: typeof UserAboutContactIndexRoute
+  UserAboutDoctorIndexRoute: typeof UserAboutDoctorIndexRoute
+  UserAboutHistoryIndexRoute: typeof UserAboutHistoryIndexRoute
+}
+
+const UserRouteRouteChildren: UserRouteRouteChildren = {
+  UserIndexRoute: UserIndexRoute,
+  UserActivityIdRoute: UserActivityIdRoute,
+  UserNewsIdRoute: UserNewsIdRoute,
+  UserActivityIndexRoute: UserActivityIndexRoute,
+  UserComplaintIndexRoute: UserComplaintIndexRoute,
+  UserDocumentIndexRoute: UserDocumentIndexRoute,
+  UserNewsIndexRoute: UserNewsIndexRoute,
+  UserServiceIndexRoute: UserServiceIndexRoute,
+  UserAboutContactIndexRoute: UserAboutContactIndexRoute,
+  UserAboutDoctorIndexRoute: UserAboutDoctorIndexRoute,
+  UserAboutHistoryIndexRoute: UserAboutHistoryIndexRoute,
+}
+
+const UserRouteRouteWithChildren = UserRouteRoute._addFileChildren(
+  UserRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ActivityIdRoute: ActivityIdRoute,
-  AdminDashboardRoute: AdminDashboardRoute,
-  NewsIdRoute: NewsIdRoute,
-  ActivityIndexRoute: ActivityIndexRoute,
-  ComplaintIndexRoute: ComplaintIndexRoute,
-  DocumentIndexRoute: DocumentIndexRoute,
-  NewsIndexRoute: NewsIndexRoute,
-  ServiceIndexRoute: ServiceIndexRoute,
-  AboutContactIndexRoute: AboutContactIndexRoute,
-  AboutDoctorIndexRoute: AboutDoctorIndexRoute,
-  AboutHistoryIndexRoute: AboutHistoryIndexRoute,
-  AdminLoginIndexRoute: AdminLoginIndexRoute,
-  AdminNewsIndexRoute: AdminNewsIndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
+  UserRouteRoute: UserRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

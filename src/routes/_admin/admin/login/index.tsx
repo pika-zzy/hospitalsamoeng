@@ -1,13 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { User, Lock, Eye, EyeOff, ShieldCheck } from 'lucide-react'
 
-export const Route = createFileRoute('/admin/login/')({
+export const Route = createFileRoute('/_admin/admin/login/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({ username: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -20,15 +20,19 @@ function RouteComponent() {
     e.preventDefault()
     setLoading(true)
 
-    // จำลองการเรียก API Login
-    console.log('Logging in with:', formData)
-    
-    setTimeout(() => {
-        // เมื่อ Login สำเร็จ (ตัวอย่าง)
-        setLoading(false)
-        window.location.href = '/admin/dashboard' // บรรทัดนี้ไว้ Redirect ไปหน้า Dashboard หลัง Login สำเร็จ
-        // router.navigate({ to: '/admin/dashboard' }) // บรรทัดนี้ไว้ Redirect
-    }, 1500)
+    try {
+      // สมมติเรียก API
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+
+      localStorage.setItem("admin_token", "mock_token")
+
+      navigate({ to: "/admin/dashboard", replace: true })
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+    console.log('Login data:', formData)
   }
 
   return (

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Code, Layout, Smartphone, ArrowRight } from 'lucide-react'
 
-export const Route = createFileRoute('/service/')({
+export const Route = createFileRoute('/_user/service/')({
   component: RouteComponent,
 })
 

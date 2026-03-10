@@ -1,16 +1,36 @@
-import { sampleActivities } from '@/interface/activity_info'
+
+import type ActivityInfo from '@/interface/activity_info';
+import { requestAPI } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Calendar, Tag, Info, Clock, ChevronLeft } from 'lucide-react'
 
-export const Route = createFileRoute('/activity/$id')({
+export const Route = createFileRoute('/_user/activity/$id')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { id } = Route.useParams()
-  const navigate = useNavigate()
+   const { id } = Route.useParams()
 
-  const activity = sampleActivities.find((item) => item.id === id)
+    const { data : activity } = useQuery<ActivityInfo>({
+        queryKey: ["activities",id],
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        queryFn: async () => {
+          const resp = await requestAPI<ActivityInfo>({
+            method: "GET",
+            url: `/activities/${id}`,
+          });
+          if (resp.success) {
+            return resp.data;
+          }
+          throw new Error("Failed to fetch news");
+        },
+      });
+    
+      
+ 
+  const navigate = useNavigate()
 
   if (!activity) {
     return (
@@ -21,12 +41,6 @@ function RouteComponent() {
       </div>
     )
   }
-
-  const statusMap = {
-    'active': { text: 'กำลังดำเนินการ', color: 'bg-green-100 text-green-700 border-green-200' },
-    'inactive': { text: 'ปิดรับสมัคร', color: 'bg-gray-100 text-gray-600 border-gray-200' },
-    'completed': { text: 'เสร็จสิ้นกิจกรรม', color: 'bg-blue-100 text-blue-700 border-blue-200' }
-  };
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -45,17 +59,17 @@ function RouteComponent() {
       <div className="max-w-5xl mx-auto px-4 mb-10">
         <div className="relative h-100 md:h-125 w-full rounded-[2.5rem] overflow-hidden shadow-2xl">
           <img 
-            src={activity.imgUrl} 
-            alt={activity.name} 
+            src={activity.img_url} 
+            alt={activity.title} 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
           
           {/* Status Badge on Image */}
           <div className="absolute bottom-8 left-8">
-            <span className={`px-4 py-1.5 rounded-full text-xs font-bold border backdrop-blur-md shadow-lg ${statusMap[activity.status]?.color || 'bg-white text-black'}`}>
+           {/* <span className={`px-4 py-1.5 rounded-full text-xs font-bold border backdrop-blur-md shadow-lg ${statusMap[activity.status]?.color || 'bg-white text-black'}`}>
               {statusMap[activity.status]?.text}
-            </span>
+            </span>*/}
           </div>
         </div>
       </div>
@@ -65,10 +79,10 @@ function RouteComponent() {
         <div className="mb-8">
           <div className="flex items-center gap-2 text-green-600 font-bold text-sm mb-3 uppercase tracking-widest">
             <Tag className="w-4 h-4" />
-            {activity.type}
+           
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-gray-800 leading-tight">
-            {activity.name}
+            {activity.title}
           </h1>
         </div>
 
@@ -81,8 +95,8 @@ function RouteComponent() {
             <div>
               <p className="text-[10px] uppercase text-gray-400 font-bold tracking-wider">วันที่จัดกิจกรรม</p>
               <p className="text-sm font-semibold">
-                {new Date(activity.startDate).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}
-                {activity.endDate && ` - ${new Date(activity.endDate).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}`}
+                {new Date(activity.start_date).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}
+                {activity.end_date && ` - ${new Date(activity.end_date).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}`}
               </p>
             </div>
           </div>
@@ -93,7 +107,7 @@ function RouteComponent() {
             <div>
               <p className="text-[10px] uppercase text-gray-400 font-bold tracking-wider">อัปเดตล่าสุดเมื่อ</p>
               <p className="text-sm font-semibold">
-                {new Date(activity.updatedAt).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}
+                ............
               </p>
             </div>
           </div>

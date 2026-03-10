@@ -4,7 +4,7 @@ import News_page from '@/components/page/Newspage/Newspage'
 import Activity from '@/components/page/Activity/Activity'
 
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_user/')({
   component: Home,
 })
 

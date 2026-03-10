@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Button } from '@/components/ui/button'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { 
   Plus, 
   FileText, 
@@ -9,11 +10,16 @@ import {
   ChevronRight 
 } from 'lucide-react'
 
-export const Route = createFileRoute('/admin/dashboard')({
+export const Route = createFileRoute('/_admin/admin/dashboard')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+  const handleLogout = () => {
+  localStorage.removeItem("admin_token")
+  navigate({ to: "/admin/login", replace: true })
+}
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       
@@ -26,9 +32,9 @@ function RouteComponent() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500 hidden sm:inline">สวัสดี, Admin</span>
-            <button className="p-2 text-gray-400 hover:text-red-500 transition-colors">
+            <Button className="p-2 text-gray-400 hover:text-red-500 transition-colors" onClick={handleLogout}>
               <LogOut className="w-5 h-5" />
-            </button>
+            </Button>
           </div>
         </div>
       </header>
@@ -66,6 +72,7 @@ function RouteComponent() {
           </Link>
 
           {/* Card 2: เพิ่มกิจกรรม */}
+          <Link to='/admin/activity'>
           <div className="group bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-green-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between h-48 cursor-pointer relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Calendar className="w-24 h-24 text-green-600" />
@@ -81,6 +88,7 @@ function RouteComponent() {
               สร้างกิจกรรม <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
+          </Link>
 
           {/* Card 3: สรุปข้อมูล (Stat) */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-center h-48">

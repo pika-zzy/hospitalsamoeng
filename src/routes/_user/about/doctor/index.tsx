@@ -5,7 +5,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import {  Stethoscope, User, ChevronRight, MenuIcon, X } from 'lucide-react'
 import { useState } from 'react'
 
-export const Route = createFileRoute('/about/doctor/')({
+export const Route = createFileRoute('/_user/about/doctor/')({
 component: RouteComponent,
 })
 
