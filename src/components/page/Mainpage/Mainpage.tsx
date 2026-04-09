@@ -1,5 +1,6 @@
 
 //import hospitalImg from "/src/assets/iioo.jpg"
+import { Link } from "@tanstack/react-router";
 import hospitalsamoeng from "../../../assets/samoeng.jpg"
 
 
@@ -68,9 +69,12 @@ export default function Main_page() {
                     เราให้บริการทางการแพทย์ที่หลากหลาย <br />
                     เข้าถึงง่าย ด้วยมาตรฐานสากล เพื่อสุขภาวะที่ดีของชุมชน
                     </p>
-                    <button className="mt-8 px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-full shadow-lg transition-all transform hover:scale-105">
-                    ติดต่อเรา
-                    </button>
+                    <Link to={"/about/contact"}>
+                        <button className="mt-8 px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-full shadow-lg transition-all transform hover:scale-105">
+                        ติดต่อเรา
+                        </button>
+                    </Link>
+                    
                 </div>
                 </div>
             </div>

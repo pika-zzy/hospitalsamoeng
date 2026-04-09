@@ -13,7 +13,6 @@ export const Route = createFileRoute('/_user/news/$id')({
 
 function RouteComponent() {
   const { id } = Route.useParams()
-
   const { data} = useQuery<NewsInfo>({
     queryKey: ["news", id],
     refetchOnWindowFocus: false,
@@ -42,16 +41,21 @@ function RouteComponent() {
   const isJob = news.type === 'ประกาศจัดซื้อจัดจ้าง';
   // สมมติว่าในฐานข้อมูลตอนนี้ใช้ชื่อ field ว่า fileUrl (หรือถ้ายังใช้ imgUrl ก็เปลี่ยนชื่อตัวแปรตรงนี้ได้ครับ)
 
-  console.log(news.fileUrl);
+  console.log(news.file_url);
 
   // 1. สร้างตัวแปร URL แบบเต็มๆ เตรียมไว้
   // ดึง Base URL มาจาก .env หรือใช้ localhost:8080 เป็นค่า default
-  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  const apiBase = import.meta.env.VITE_API_URL || "" 
 
   // เช็คว่า fileUrl มีคำว่า http ไหม? ถ้าไม่มี ให้เอา apiBase ไปแปะข้างหน้า
-  const fullFileUrl = news.fileUrl?.startsWith('http') 
-    ? news.fileUrl 
-    : `${apiBase}${news.fileUrl}`;
+  const fullFileUrl = news.file_url?.startsWith('http') 
+    ? news.file_url 
+    : `${apiBase}${news.file_url}`;
+
+
+  const fullImageUrl = news.img_url?.startsWith('http')
+  ? news.img_url
+  : `${apiBase}${news.img_url}`;
 
   // ---------------------------------------------------
 
@@ -81,12 +85,12 @@ function RouteComponent() {
             <p className="text-sm text-gray-500 border-b border-gray-200 mb-4 pb-2">
               เผยแพร่เมื่อ: {news.date}
             </p>
-
+ 
             <div className="text-gray-700 leading-relaxed whitespace-pre-line text-lg bg-gray-50 p-6 rounded-2xl">
               {news.description}
             </div>
           </div>
-          { news.fileUrl ? 
+          { news.file_url ? 
           (<>
             {/* PDF Viewer Section */}
             <div className="bg-gray-100 p-4 px-8 flex items-center justify-between">
@@ -97,7 +101,7 @@ function RouteComponent() {
               
               {/* ปุ่มสำหรับเปิด PDF แถบใหม่ (จำเป็นมากสำหรับมือถือที่มักจะแสดง iframe PDF ไม่ค่อยดี) */}
               <a 
-                href={fullFileUrl} 
+                href={`${fullFileUrl}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-sm bg-white border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-700 shadow-sm"
@@ -114,7 +118,25 @@ function RouteComponent() {
                 className="w-full h-full border-0"
               />
             </div>
-          </> ) : (<></>)}
+          </> ) : (<>
+          <div className="max-w-5xl mx-auto px-4 mb-10">
+            <div className="relative h-100 md:h-125 w-full rounded-[2.5rem] overflow-hidden shadow-2xl">
+              <img 
+                src={`${fullImageUrl}`} 
+                alt={news.title} 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+              
+              {/* Status Badge on Image */}
+              <div className="absolute bottom-8 left-8">
+              {/* <span className={`px-4 py-1.5 rounded-full text-xs font-bold border backdrop-blur-md shadow-lg ${statusMap[activity.status]?.color || 'bg-white text-black'}`}>
+                  {statusMap[activity.status]?.text}
+                </span>*/}
+              </div>
+            </div>
+          </div>
+          </>)}
 
           {/* Back Button */}
           <div className="p-8 md:p-10 bg-white">

@@ -6,5 +6,6 @@ export interface NewsInfo {
     description: string;
     date: string;
     type: string;
-    fileUrl?: string; // เพิ่มฟิลด์นี้สำหรับลิงก์ไฟล์เอกสาร เช่น PDF
+    file_url?: string; // เพิ่มฟิลด์นี้สำหรับลิงก์ไฟล์เอกสาร เช่น PDF
+    img_url? : string
 }

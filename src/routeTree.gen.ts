@@ -27,6 +27,7 @@ import { Route as UserAboutContactIndexRouteImport } from './routes/_user/about/
 import { Route as AdminAdminNewsIndexRouteImport } from './routes/_admin/admin/news/index'
 import { Route as AdminAdminLoginIndexRouteImport } from './routes/_admin/admin/login/index'
 import { Route as AdminAdminActivityIndexRouteImport } from './routes/_admin/admin/activity/index'
+import { Route as AdminAdminITAIndexRouteImport } from './routes/_admin/admin/ITA/index'
 
 const UserRouteRoute = UserRouteRouteImport.update({
   id: '/_user',
@@ -116,6 +117,11 @@ const AdminAdminActivityIndexRoute = AdminAdminActivityIndexRouteImport.update({
   path: '/admin/activity/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAdminITAIndexRoute = AdminAdminITAIndexRouteImport.update({
+  id: '/admin/ITA/',
+  path: '/admin/ITA/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof UserIndexRoute
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/document/': typeof UserDocumentIndexRoute
   '/news/': typeof UserNewsIndexRoute
   '/service/': typeof UserServiceIndexRoute
+  '/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/admin/login/': typeof AdminAdminLoginIndexRoute
   '/admin/news/': typeof AdminAdminNewsIndexRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/document': typeof UserDocumentIndexRoute
   '/news': typeof UserNewsIndexRoute
   '/service': typeof UserServiceIndexRoute
+  '/admin/ITA': typeof AdminAdminITAIndexRoute
   '/admin/activity': typeof AdminAdminActivityIndexRoute
   '/admin/login': typeof AdminAdminLoginIndexRoute
   '/admin/news': typeof AdminAdminNewsIndexRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/_user/document/': typeof UserDocumentIndexRoute
   '/_user/news/': typeof UserNewsIndexRoute
   '/_user/service/': typeof UserServiceIndexRoute
+  '/_admin/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/_admin/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/_admin/admin/login/': typeof AdminAdminLoginIndexRoute
   '/_admin/admin/news/': typeof AdminAdminNewsIndexRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/document/'
     | '/news/'
     | '/service/'
+    | '/admin/ITA/'
     | '/admin/activity/'
     | '/admin/login/'
     | '/admin/news/'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/document'
     | '/news'
     | '/service'
+    | '/admin/ITA'
     | '/admin/activity'
     | '/admin/login'
     | '/admin/news'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/_user/document/'
     | '/_user/news/'
     | '/_user/service/'
+    | '/_admin/admin/ITA/'
     | '/_admin/admin/activity/'
     | '/_admin/admin/login/'
     | '/_admin/admin/news/'
@@ -366,12 +378,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminActivityIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/admin/ITA/': {
+      id: '/_admin/admin/ITA/'
+      path: '/admin/ITA'
+      fullPath: '/admin/ITA/'
+      preLoaderRoute: typeof AdminAdminITAIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
   AdminAdminDashboardRoute: typeof AdminAdminDashboardRoute
   AdminAdminIndexRoute: typeof AdminAdminIndexRoute
+  AdminAdminITAIndexRoute: typeof AdminAdminITAIndexRoute
   AdminAdminActivityIndexRoute: typeof AdminAdminActivityIndexRoute
   AdminAdminLoginIndexRoute: typeof AdminAdminLoginIndexRoute
   AdminAdminNewsIndexRoute: typeof AdminAdminNewsIndexRoute
@@ -380,6 +400,7 @@ interface AdminRouteRouteChildren {
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAdminDashboardRoute: AdminAdminDashboardRoute,
   AdminAdminIndexRoute: AdminAdminIndexRoute,
+  AdminAdminITAIndexRoute: AdminAdminITAIndexRoute,
   AdminAdminActivityIndexRoute: AdminAdminActivityIndexRoute,
   AdminAdminLoginIndexRoute: AdminAdminLoginIndexRoute,
   AdminAdminNewsIndexRoute: AdminAdminNewsIndexRoute,

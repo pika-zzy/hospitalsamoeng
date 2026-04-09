@@ -43,6 +43,11 @@ export async function requestAPI<D extends {}>(options: {
     const headers: HeadersInit = {
         ...options.headers,
     };
+    const token = localStorage.getItem("admin_token");
+
+    if (token && !options.disableToken) {
+    headers["Authorization"] = `Bearer ${token}`;
+    }
 
     if (options.body instanceof FormData) {
         body = options.body;

@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { requestAPI } from '@/lib/api';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { CloudUpload, X } from 'lucide-react';
+import { useRef, useState } from 'react';
 
 export const Route = createFileRoute('/_admin/admin/news/')({
   component: RouteComponent,
@@ -17,7 +19,9 @@ function RouteComponent() {
     date: new Date().toISOString().split('T')[0], // Default เป็นวันปัจจุบัน (Format YYYY-MM-DD)
     type: '',
     file: null as File | null, // เก็บไฟล์ .pdf
+    img : null as File | null,
   });
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -30,13 +34,29 @@ function RouteComponent() {
 
   // เพิ่ม function สำหรับจัดการไฟล์โดยเฉพาะ
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData({
-        ...formData,
-        file: e.target.files[0],
-      });
-    }
-  };
+  const file = e.target.files?.[0];
+
+  if (!file) return;
+
+  if (file.type !== "application/pdf") {
+    alert("อัปโหลดได้เฉพาะ PDF");
+    return;
+  }
+
+  setFormData({
+    ...formData,
+    file: file,
+  });
+};
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files && e.target.files[0]) {
+    setFormData({
+      ...formData,
+      img: e.target.files[0],
+    });
+  }
+};
 
   const addnews = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -49,28 +69,20 @@ function RouteComponent() {
       if (data.file) {
         submitData.append('file', data.file); // ส่งไฟล์ไปในชื่อ 'file'
       }
-
-      const response = await fetch('http://localhost:8080/news', {
-        method: 'POST',
-        // ไม่ต้องใส่ Content-Type: application/json เพราะ fetch จะจัดการ FormData ให้เอง (เป็น multipart/form-data)
-        body: submitData, 
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      if (data.img) {
+        submitData.append('image', data.img);
       }
-      return response.json();
-    },
-    onSuccess: () => {
-      alert('✅ บันทึกข่าวสำเร็จ!');
-      setFormData({
-        title: '',
-        description: '',
-        date: new Date().toISOString().split('T')[0],
-        type: '',
-        file: null,
-      });
-    },
+
+      return requestAPI({
+      url: "/news",
+      method: "POST",
+      body: submitData,
+    });
+  },
+  onSuccess: () => {
+    alert('✅ บันทึกข่าวสำเร็จ!');
+  },
+  
   });
 
   return (
@@ -169,10 +181,25 @@ function RouteComponent() {
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   {formData.file ? (
                      // แสดงชื่อไฟล์เมื่อเลือกแล้ว
-                     (<div className="text-center">
+                     (<div className="text-center relative w-full">
                        <svg className="w-8 h-8 mb-2 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                        <p className="text-sm text-gray-900 font-medium">{formData.file.name}</p>
                        <p className="text-xs text-gray-500">พร้อมอัปโหลด</p>
+                       <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-3 right-3 rounded-full h-8 w-8"
+                          onClick={() => {
+                            setFormData({ ...formData, file: null });
+
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = "";
+                            }
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
                      </div>)
                   ) : (
                     // ยังไม่เลือกไฟล์
@@ -186,11 +213,49 @@ function RouteComponent() {
                 <input 
                   type="file" 
                   accept=".pdf" 
+                  ref={fileInputRef}
                   className="hidden" 
                   onChange={handleFileChange} 
                 />
               </label>
             </div>
+          </div>
+          <div className="space-y-2.5">
+            <Label className="text-sm font-semibold text-gray-700">รูปภาพหน้าปกกิจกรรม</Label>
+            {formData.img ? (
+              <div className="relative w-full aspect-video md:aspect-21/9 rounded-xl overflow-hidden shadow-sm border border-gray-200 group">
+                <img src={URL.createObjectURL(formData.img)} alt="Preview" className="w-full h-full object-cover" />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-3 right-3 rounded-full h-8 w-8 opacity-90 hover:opacity-100 shadow-md"
+                  onClick={() => setFormData({ ...formData, img: null })}
+                >
+                  <X className="h-4 w-4 bg-red-500  " />
+                </Button>
+              </div>
+            ) : (
+              <label 
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50/50 hover:bg-green-50/50 hover:border-green-400 transition-colors"
+              >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <CloudUpload className="w-7 h-7 text-gray-400 mb-2" strokeWidth={1.5} />
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold text-green-600">คลิกเพื่ออัปโหลด</span> หรือลากไฟล์มาวาง
+                  </p>
+                  <p className="text-[13px] text-gray-400 mt-1">
+                    PNG, JPG ขนาดไม่เกิน 5MB
+                  </p>
+                </div>
+                <input 
+                  type="file" 
+                  accept="image/jpeg, image/png"
+                  className="hidden" 
+                  onChange={handleImageChange}
+                />
+              </label>
+            )}
           </div>
 
           {/* ปุ่ม Submit */}

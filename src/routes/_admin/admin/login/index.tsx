@@ -1,6 +1,9 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { User, Lock, Eye, EyeOff, ShieldCheck } from 'lucide-react'
+import { useMutation } from '@tanstack/react-query'
+import type { LoginData, UserInfo,  } from '@/interface/login'
+import { requestAPI, type IAPIResponse } from '@/lib/api'
 
 export const Route = createFileRoute('/_admin/admin/login/')({
   component: RouteComponent,
@@ -10,7 +13,16 @@ function RouteComponent() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({ username: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
+
+  const loginadmin =  useMutation<IAPIResponse<LoginData>, Error, UserInfo>({
+      mutationFn: async (data: UserInfo) => {
+      return requestAPI({
+        url: "/login",
+        method: "POST",
+        body: data, 
+      })
+    }
+  })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -18,22 +30,25 @@ function RouteComponent() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    
+  loginadmin.mutate(formData, {
+    onSuccess: (res) => {
+      if (!res.success || !res.data) {
+        return
+      }
+      console.log("login success", res)
 
-    try {
-      // สมมติเรียก API
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      localStorage.setItem("admin_token", "mock_token")
+      localStorage.setItem("admin_token", res.data.token) // หรือเอาจาก backend จริง
 
       navigate({ to: "/admin/dashboard", replace: true })
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-    console.log('Login data:', formData)
+    },
+    onError: (err) => {
+      console.error("login error", err)
+    },
+  })
   }
+
+  
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -112,10 +127,10 @@ function RouteComponent() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading}
-              className={`w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              disabled={loginadmin.isPending}
+              className={`w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center ${loginadmin.isPending ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              {loading ? (
+              {loginadmin.isPending ? (
                 <>
                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

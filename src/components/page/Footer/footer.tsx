@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Phone, MapPin, Monitor, ShieldCheck, Facebook, Heart } from "lucide-react";
+import { Phone, MapPin, Monitor, ShieldCheck, Facebook, Heart, } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -25,7 +25,7 @@ const Footer = () => {
                   <Monitor className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white uppercase tracking-tight">งาน IT</p>
+                  <p className="text-sm font-bold text-white uppercase tracking-tight">นักวิชาการคอมพิวเตอร์</p>
                   <p className="text-xs text-slate-500">Digital Health & Infrastructure</p>
                 </div>
               </div>
@@ -50,15 +50,17 @@ const Footer = () => {
             <ul className="space-y-5 text-[13px] font-medium">
               <li className="flex items-start gap-3 hover:text-green-400 transition-colors">
                 <MapPin className="w-4 h-4 shrink-0 text-green-500" />
-                <span>เลขที่ 168 หมู่ 2 ต.สะเมิงใต้ <br />อ.สะเมิง จ.เชียงใหม่ 50250</span>
+                <span>1766 1269 ต.สะเมิงใต้  <br />อ.สะเมิง จ.เชียงใหม่ 50250</span>
               </li>
               <li className="flex items-center gap-3 hover:text-green-400 transition-colors">
                 <Phone className="w-4 h-4 shrink-0 text-green-500" />
                 <span>053-487-114</span>
               </li>
               <li className="flex items-center gap-3 hover:text-green-400 transition-colors">
-                <Facebook className="w-4 h-4 shrink-0 text-green-500" />
-                <span>โรงพยาบาลสะเมิง Samoeng Hospital</span>
+                <a href={"https://www.facebook.com/p/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B4%E0%B8%87-%E0%B8%88%E0%B8%B1%E0%B8%87%E0%B8%AB%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B9%80%E0%B8%8A%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88-100066989703921/"} target="_blank" className="flex items-center gap-1">
+                  <Facebook className="w-4 h-4 shrink-0 text-green-500" />
+                  <span>โรงพยาบาลสะเมิง Samoeng Hospital</span>
+                </a>
               </li>
             </ul>
           </div>
@@ -71,7 +73,7 @@ const Footer = () => {
             <Card className="bg-slate-800 border-0 rounded-2xl shadow-lg p-6">
               <iframe
                 title="Samoeng Hospital Location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3779.1234567890123!2d98.12345678901234!3d18.12345678901234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da123456789012%3A0xabcdef1234567890!2sSamoeng%20Hospital!5e0!3m2!1sth!2sth!4v1700000000000"
+                src="https://maps.app.goo.gl/AnAQwPAHe7StQ35w5"
                 width="100%"
                 height="250"
                 className="rounded-2xl border-0"
