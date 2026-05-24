@@ -4,7 +4,7 @@ import { requestAPI } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Calendar, Tag, Info, Clock, ChevronLeft } from 'lucide-react'
-
+const API_URL = import.meta.env.VITE_API_URL;
 export const Route = createFileRoute('/_user/activity/$id')({
   component: RouteComponent,
 })
@@ -59,7 +59,7 @@ function RouteComponent() {
       <div className="max-w-5xl mx-auto px-4 mb-10">
         <div className="relative h-100 md:h-125 w-full rounded-[2.5rem] overflow-hidden shadow-2xl">
           <img 
-            src={activity.img_url} 
+            src={`${API_URL}${activity.img_url}`}
             alt={activity.title} 
             className="w-full h-full object-cover"
           />
