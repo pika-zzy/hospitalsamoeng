@@ -16,7 +16,7 @@ export const Navbarlist = [
         submenu: [
             { name: "ประวัติ", link: "/about/history" },
             { name: "ทีมแพทย์", link: "/about/doctor" },
-            { name: "ข้อมูลความปลอดภัยด้านยา", link: "/about" },
+            /*{ name: "ข้อมูลความปลอดภัยด้านยา", link: "/about" },*/
         ],
     },
     {

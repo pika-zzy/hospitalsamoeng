@@ -43,7 +43,11 @@ function RouteComponent() {
               </li>
               <li className="flex items-center gap-3">
                 <Facebook className="w-4 h-4 shrink-0 text-blue-600" />
-                <a href="#" className="hover:underline text-blue-600">Facebook Page</a>
+                <a 
+                  href="https://www.facebook.com/p/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B4%E0%B8%87-%E0%B8%88%E0%B8%B1%E0%B8%87%E0%B8%AB%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B9%80%E0%B8%8A%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88-100066989703921/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline text-blue-600">Facebook Page</a>
               </li>
             </ul>
           </Card>
