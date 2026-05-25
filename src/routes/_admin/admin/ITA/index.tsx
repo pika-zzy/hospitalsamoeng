@@ -384,7 +384,7 @@ function RouteComponent() {
         {saveSuccess && (
           <div className="mb-6 flex items-center gap-3 bg-emerald-50 border border-emerald-100
                           text-emerald-700 text-sm px-4 py-3 rounded-xl">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
             บันทึกข้อมูลสำเร็จแล้วครับ
           </div>
         )}
@@ -543,7 +543,7 @@ function RouteComponent() {
                     .map((topic) => (
                       <div key={topic.ID} className="px-6 py-5">
                         <div className="flex items-start gap-2 mb-4">
-                          <ChevronRight className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <ChevronRight className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
                           <p className="text-sm font-semibold text-gray-700 leading-snug">
                             {topic.Label}
                           </p>
@@ -584,11 +584,11 @@ function RouteComponent() {
                                       )}
                                     </div>
 
-                                    <div className="flex-shrink-0 flex items-center gap-2">
+                                    <div className="shrink-0 flex items-center gap-2">
                                       {hasFile ? (
                                         <>
                                           <span className="text-[11px] text-emerald-600 font-medium
-                                                           max-w-[100px] truncate hidden sm:block">
+                                                           max-w-25 truncate hidden sm:block">
                                             {row.file!.name}
                                           </span>
                                           <button

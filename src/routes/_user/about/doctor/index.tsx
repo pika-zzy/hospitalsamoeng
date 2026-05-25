@@ -116,7 +116,7 @@ function RouteComponent() {
                            transition-all duration-300 cursor-pointer"
               >
                 {/* Colored top */}
-                <div className={`h-24 bg-gradient-to-br ${cardBg} flex items-end justify-center`}>
+                <div className={`h-24 bg-linear-to-br ${cardBg} flex items-end justify-center`}>
                   <div className="w-16 h-16 rounded-full border-[3px] border-white shadow-md
                                   bg-gray-100 overflow-hidden flex items-center justify-center
                                   translate-y-8 group-hover:scale-105 transition-transform duration-300">
@@ -153,7 +153,7 @@ function RouteComponent() {
               <div
                 key={`ghost-${i}`}
                 className={`hidden sm:flex flex-col items-center justify-center rounded-3xl
-                  border border-dashed border-gray-200 min-h-[200px] gap-2
+                  border border-dashed border-gray-200 min-h-50 gap-2
                   ${i >= 2 ? 'md:flex lg:hidden xl:flex' : ''}`}
                 style={{ opacity: 0.25 - i * 0.07 }}
               >
