@@ -22,18 +22,7 @@ export const Navbarlist = [
     {
         id: 3,
         name: "ITA",
-        submenu: [
-            { name: "ITA2569", link: "/menu/info" },
-            { name: "ITA2568", link: "/menu/info2" },
-            { name: "ITA2567", link: "/menu/info3" },
-            { name: "ITA2566", link: "/menu/info4" },
-        ],
-        link: "/menu",
-    },
-    {
-        id: 4,
-        name: "บริการ",
-        link: "/services",
+        link: "/ita/",
     },
     {
         id: 5,

@@ -3,7 +3,7 @@ import type ActivityInfo from '@/interface/activity_info';
 import { requestAPI } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-
+const API_URL = import.meta.env.VITE_API_URL;
 export const Route = createFileRoute('/_user/activity/')({
     component: RouteComponent,
 })
@@ -54,7 +54,7 @@ function RouteComponent() {
                             >
                                 {/* Main Image */}
                                 <img
-                                    src={activity.img_url}
+                                    src={`${API_URL}${activity.img_url}`}
                                     alt={activity.title}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />

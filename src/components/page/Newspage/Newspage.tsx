@@ -1,16 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardHeader } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Megaphone, Briefcase, Clock, ChevronRight } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
-
 import { requestAPI } from "@/lib/api";
 import type { NewsInfo } from "@/interface/newinfo";
 import { useQuery } from "@tanstack/react-query";
 
-
-
-
-export default function News_page (){
+export default function News_page() {
   const navigate = useNavigate();
 
   const { data } = useQuery<NewsInfo[]>({
@@ -29,8 +24,9 @@ export default function News_page (){
     },
   });
 
-  const jobNews = data?.filter(n => n.type === "ประกาศจัดซื้อจัดจ้าง") || [];
-  const generalNews = data?.filter(n => n.type === "ประชาสัมพันธ์") || [];
+  const jobNews = data?.filter((n) => n.type === "ประกาศจัดซื้อจัดจ้าง") || [];
+  const generalNews = data?.filter((n) => n.type === "ประชาสัมพันธ์") || [];
+
   const latestJob = [...jobNews]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
@@ -39,112 +35,187 @@ export default function News_page (){
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
 
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("th-TH", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   return (
-    <>
-        {/* Header Section */}
-      <div className="max-w-7xl mx-auto px-4 mb-10 border-l-8 border-green-500 pl-6 py-2 flex justify-between items-end">
-        <h2 className="text-4xl font-black text-gray-800 tracking-tight">
-          ข่าวสาร / <span className="text-green-500">ประกาศ</span>
-        </h2>
-        <Button 
-            onClick={() => navigate({ to: '/news' })}
-            className="hidden md:flex items-center gap-2 text-green-600 font-bold hover:text-green-700 transition-colors group"
-        >
-            ดูทั้งหมด 
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </Button>
-      </div>
+    <section className="py-16 px-4 bg-linear-to-b from-gray-50 to-white">
+      <div className="max-w-7xl mx-auto">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto mb-10 px-4">
-          
-          {/* ===== หมวดประชาสัมพันธ์ ===== */}
-          <Card className="h-125 flex flex-col border border-gray-100 shadow-xl shadow-blue-900/5 rounded-[2rem] overflow-hidden bg-white">
-            <CardHeader className="bg-linear-to-br from-blue-50/50 to-white pb-6 border-b border-gray-50">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-500 text-white rounded-2xl shadow-lg shadow-blue-200">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-800 leading-tight">
-                    ข่าวประชาสัมพันธ์ทั่วไป
-                  </h1>
-                  <p className="text-sm font-medium text-blue-500/80">
-                    General Announcement
-                  </p>
-                </div>
+        {/* ─── Section Header ─── */}
+        <div className="flex items-end justify-between mb-10">
+          <div className="flex items-center gap-4">
+            <div className="w-1.5 h-12 rounded-full bg-linear-to-b from-green-400 to-green-600" />
+            <div>
+              <p className="text-xs font-semibold tracking-widest text-green-500 uppercase mb-0.5">
+                Latest Updates
+              </p>
+              <h2 className="text-3xl font-black text-gray-900 leading-none">
+                ข่าวสาร &amp;{" "}
+                <span className="text-green-500">ประกาศ</span>
+              </h2>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate({ to: "/news" })}
+            className="hidden md:inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-green-600 transition-colors group"
+          >
+            ดูทั้งหมด
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 group-hover:bg-green-50 group-hover:text-green-600 transition-all">
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </span>
+          </button>
+        </div>
+
+        {/* ─── Two Columns ─── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          {/* ══ ประชาสัมพันธ์ ══ */}
+          <div className="flex flex-col rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-white">
+            {/* Card header strip */}
+            <div className="flex items-center gap-3 px-6 py-5 bg-gradient-to-r from-blue-600 to-blue-500">
+              <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm">
+                <Megaphone className="w-5 h-5 text-white" />
               </div>
-            </CardHeader>
+              <div>
+                <h3 className="text-lg font-bold text-white leading-none">
+                  ข่าวประชาสัมพันธ์
+                </h3>
+                <p className="text-xs text-blue-100 mt-0.5">General Announcement</p>
+              </div>
+            </div>
 
-            <div className="space-y-4 overflow-y-auto flex-1 p-6 scrollbar-thin scrollbar-thumb-gray-100">
+            {/* Items */}
+            <div className="flex-1 divide-y divide-gray-50 overflow-y-auto max-h-[320px]">
               {latestGeneral.length > 0 ? (
-                latestGeneral.map((info) => (
+                latestGeneral.map((info, idx) => (
                   <div
                     key={info.id}
-                    className="group p-4 bg-white border border-gray-100 rounded-2xl hover:border-blue-400 hover:shadow-md transition-all duration-300 cursor-pointer"
+                    onClick={() => (window.location.href = `/news/${info.id}`)}
+                    className="group flex gap-4 px-6 py-4 hover:bg-blue-50/40 transition-colors duration-200 cursor-pointer"
                   >
-                    <p className="text-[16px] font-bold text-gray-700 group-hover:text-blue-600 transition-colors mb-1">
-                      {info.title}
-                    </p>
-                    <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
-                      {info.description}
-                    </p>
+                    {/* Index number */}
+                    <span className="flex-shrink-0 mt-0.5 text-2xl font-black text-blue-100 group-hover:text-blue-200 transition-colors w-7 leading-none select-none">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-700 transition-colors line-clamp-2 leading-snug">
+                        {info.title}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1 line-clamp-1">
+                        {info.description}
+                      </p>
+                      {info.date && (
+                        <div className="flex items-center gap-1 mt-1.5 text-[11px] text-gray-400">
+                          <Clock className="w-3 h-3" />
+                          {formatDate(info.date)}
+                        </div>
+                      )}
+                    </div>
+                    <ChevronRight className="shrink-0 w-4 h-4 text-gray-300 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all mt-0.5" />
                   </div>
                 ))
               ) : (
-                <p className="text-center text-gray-400 mt-10 italic">ไม่มีข้อมูลประกาศ</p>
+                <div className="flex flex-col items-center justify-center py-16 text-gray-300">
+                  <Megaphone className="w-10 h-10 mb-3 opacity-40" />
+                  <p className="text-sm italic">ไม่มีประกาศในขณะนี้</p>
+                </div>
               )}
             </div>
-          </Card>
 
-          {/* ===== หมวดรับสมัครงาน ===== */}
-          <Card className="h-125 flex flex-col border border-gray-100 shadow-xl shadow-green-900/5 rounded-[2rem] overflow-hidden bg-white">
-            <CardHeader className="bg-linear-to-br from-green-50/50 to-white pb-6 border-b border-gray-50">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-500 text-white rounded-2xl shadow-lg shadow-green-200">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-800 leading-tight">
-                    ข่าวรับสมัครงาน
-                  </h1>
-                  <p className="text-sm font-medium text-green-600/80">
-                    Career Opportunities
-                  </p>
-                </div>
+            {/* Footer */}
+            <div className="px-6 py-3 border-t border-gray-50 bg-gray-50/50">
+              <button
+                onClick={() => navigate({ to: "/news" })}
+                className="text-xs font-semibold text-blue-500 hover:text-blue-700 transition-colors"
+              >
+                ดูประกาศทั้งหมด →
+              </button>
+            </div>
+          </div>
+
+          {/* ══ รับสมัครงาน ══ */}
+          <div className="flex flex-col rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-white">
+            {/* Card header strip */}
+            <div className="flex items-center gap-3 px-6 py-5 bg-gradient-to-r from-green-600 to-green-500">
+              <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm">
+                <Briefcase className="w-5 h-5 text-white" />
               </div>
-            </CardHeader>
+              <div>
+                <h3 className="text-lg font-bold text-white leading-none">
+                  ข่าวรับสมัครงาน
+                </h3>
+                <p className="text-xs text-green-100 mt-0.5">Career Opportunities</p>
+              </div>
+            </div>
 
-            <div className="space-y-4 overflow-y-auto flex-1 p-6">
+            {/* Items */}
+            <div className="flex-1 divide-y divide-gray-50 overflow-y-auto max-h-[320px]">
               {latestJob.length > 0 ? (
                 latestJob.map((info) => (
                   <div
                     key={info.id}
-                    className="group p-4 bg-white border border-gray-100 rounded-2xl hover:border-green-400 hover:shadow-md transition-all duration-300 cursor-pointer"
+                    onClick={() => (window.location.href = `/news/${info.id}`)}
+                    className="group flex gap-4 px-6 py-4 hover:bg-green-50/40 transition-colors duration-200 cursor-pointer"
                   >
-                    <div className="flex justify-between items-start">
-                      <p className="text-[16px] font-bold text-gray-700 group-hover:text-green-600 transition-colors mb-1">
-                        {info.title}
-                      </p>
-                      <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">New</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="text-sm font-semibold text-gray-800 group-hover:text-green-700 transition-colors line-clamp-2 leading-snug">
+                          {info.title}
+                        </p>
+                        <span className="flex-shrink-0 text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                          ใหม่
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 line-clamp-1">{info.description}</p>
+                      {info.date && (
+                        <div className="flex items-center gap-1 mt-1.5 text-[11px] text-gray-400">
+                          <Clock className="w-3 h-3" />
+                          {formatDate(info.date)}
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
-                      {info.description}
-                    </p>
-                    <CardAction className="mt-2" onClick={() => window.location.href = `/news/${info.id}`}>
-                      <Button className="text-sm text-green-600 hover:text-green-800 font-medium p-0">
-                        ดูรายละเอียดเพิ่มเติม
-                      </Button>
-                    </CardAction>
-                  </div>  
+                    <ChevronRight className="flex-shrink-0 w-4 h-4 text-gray-300 group-hover:text-green-400 group-hover:translate-x-0.5 transition-all mt-0.5" />
+                  </div>
                 ))
               ) : (
-                <p className="text-center text-gray-400 mt-10 italic">ไม่มีข้อมูลการสมัครงาน</p>
+                <div className="flex flex-col items-center justify-center py-16 text-gray-300">
+                  <Briefcase className="w-10 h-10 mb-3 opacity-40" />
+                  <p className="text-sm italic">ไม่มีตำแหน่งงานว่างในขณะนี้</p>
+                </div>
               )}
             </div>
-          </Card>
-          
+
+            {/* Footer */}
+            <div className="px-6 py-3 border-t border-gray-50 bg-gray-50/50">
+              <button
+                onClick={() => navigate({ to: "/news" })}
+                className="text-xs font-semibold text-green-600 hover:text-green-800 transition-colors"
+              >
+                ดูตำแหน่งงานทั้งหมด →
+              </button>
+            </div>
+          </div>
+
         </div>
-      </>
-    )
+
+        {/* ─── Mobile "ดูทั้งหมด" ─── */}
+        <div className="mt-6 flex justify-center md:hidden">
+          <Button
+            onClick={() => navigate({ to: "/news" })}
+            className="flex items-center gap-2 text-green-600 font-bold"
+          >
+            ดูทั้งหมด <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
+
+      </div>
+    </section>
+  );
 }

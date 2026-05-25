@@ -14,6 +14,7 @@ import { Route as AdminRouteRouteImport } from './routes/_admin/route'
 import { Route as UserIndexRouteImport } from './routes/_user/index'
 import { Route as UserServiceIndexRouteImport } from './routes/_user/service/index'
 import { Route as UserNewsIndexRouteImport } from './routes/_user/news/index'
+import { Route as UserItaIndexRouteImport } from './routes/_user/ita/index'
 import { Route as UserDocumentIndexRouteImport } from './routes/_user/document/index'
 import { Route as UserComplaintIndexRouteImport } from './routes/_user/complaint/index'
 import { Route as UserActivityIndexRouteImport } from './routes/_user/activity/index'
@@ -25,6 +26,7 @@ import { Route as UserAboutHistoryIndexRouteImport } from './routes/_user/about/
 import { Route as UserAboutDoctorIndexRouteImport } from './routes/_user/about/doctor/index'
 import { Route as UserAboutContactIndexRouteImport } from './routes/_user/about/contact/index'
 import { Route as AdminAdminNewsIndexRouteImport } from './routes/_admin/admin/news/index'
+import { Route as AdminAdminMoitIndexRouteImport } from './routes/_admin/admin/moit/index'
 import { Route as AdminAdminLoginIndexRouteImport } from './routes/_admin/admin/login/index'
 import { Route as AdminAdminActivityIndexRouteImport } from './routes/_admin/admin/activity/index'
 import { Route as AdminAdminITAIndexRouteImport } from './routes/_admin/admin/ITA/index'
@@ -50,6 +52,11 @@ const UserServiceIndexRoute = UserServiceIndexRouteImport.update({
 const UserNewsIndexRoute = UserNewsIndexRouteImport.update({
   id: '/news/',
   path: '/news/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const UserItaIndexRoute = UserItaIndexRouteImport.update({
+  id: '/ita/',
+  path: '/ita/',
   getParentRoute: () => UserRouteRoute,
 } as any)
 const UserDocumentIndexRoute = UserDocumentIndexRouteImport.update({
@@ -107,6 +114,11 @@ const AdminAdminNewsIndexRoute = AdminAdminNewsIndexRouteImport.update({
   path: '/admin/news/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAdminMoitIndexRoute = AdminAdminMoitIndexRouteImport.update({
+  id: '/admin/moit/',
+  path: '/admin/moit/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminAdminLoginIndexRoute = AdminAdminLoginIndexRouteImport.update({
   id: '/admin/login/',
   path: '/admin/login/',
@@ -132,11 +144,13 @@ export interface FileRoutesByFullPath {
   '/activity/': typeof UserActivityIndexRoute
   '/complaint/': typeof UserComplaintIndexRoute
   '/document/': typeof UserDocumentIndexRoute
+  '/ita/': typeof UserItaIndexRoute
   '/news/': typeof UserNewsIndexRoute
   '/service/': typeof UserServiceIndexRoute
   '/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/admin/login/': typeof AdminAdminLoginIndexRoute
+  '/admin/moit/': typeof AdminAdminMoitIndexRoute
   '/admin/news/': typeof AdminAdminNewsIndexRoute
   '/about/contact/': typeof UserAboutContactIndexRoute
   '/about/doctor/': typeof UserAboutDoctorIndexRoute
@@ -151,11 +165,13 @@ export interface FileRoutesByTo {
   '/activity': typeof UserActivityIndexRoute
   '/complaint': typeof UserComplaintIndexRoute
   '/document': typeof UserDocumentIndexRoute
+  '/ita': typeof UserItaIndexRoute
   '/news': typeof UserNewsIndexRoute
   '/service': typeof UserServiceIndexRoute
   '/admin/ITA': typeof AdminAdminITAIndexRoute
   '/admin/activity': typeof AdminAdminActivityIndexRoute
   '/admin/login': typeof AdminAdminLoginIndexRoute
+  '/admin/moit': typeof AdminAdminMoitIndexRoute
   '/admin/news': typeof AdminAdminNewsIndexRoute
   '/about/contact': typeof UserAboutContactIndexRoute
   '/about/doctor': typeof UserAboutDoctorIndexRoute
@@ -173,11 +189,13 @@ export interface FileRoutesById {
   '/_user/activity/': typeof UserActivityIndexRoute
   '/_user/complaint/': typeof UserComplaintIndexRoute
   '/_user/document/': typeof UserDocumentIndexRoute
+  '/_user/ita/': typeof UserItaIndexRoute
   '/_user/news/': typeof UserNewsIndexRoute
   '/_user/service/': typeof UserServiceIndexRoute
   '/_admin/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/_admin/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/_admin/admin/login/': typeof AdminAdminLoginIndexRoute
+  '/_admin/admin/moit/': typeof AdminAdminMoitIndexRoute
   '/_admin/admin/news/': typeof AdminAdminNewsIndexRoute
   '/_user/about/contact/': typeof UserAboutContactIndexRoute
   '/_user/about/doctor/': typeof UserAboutDoctorIndexRoute
@@ -194,11 +212,13 @@ export interface FileRouteTypes {
     | '/activity/'
     | '/complaint/'
     | '/document/'
+    | '/ita/'
     | '/news/'
     | '/service/'
     | '/admin/ITA/'
     | '/admin/activity/'
     | '/admin/login/'
+    | '/admin/moit/'
     | '/admin/news/'
     | '/about/contact/'
     | '/about/doctor/'
@@ -213,11 +233,13 @@ export interface FileRouteTypes {
     | '/activity'
     | '/complaint'
     | '/document'
+    | '/ita'
     | '/news'
     | '/service'
     | '/admin/ITA'
     | '/admin/activity'
     | '/admin/login'
+    | '/admin/moit'
     | '/admin/news'
     | '/about/contact'
     | '/about/doctor'
@@ -234,11 +256,13 @@ export interface FileRouteTypes {
     | '/_user/activity/'
     | '/_user/complaint/'
     | '/_user/document/'
+    | '/_user/ita/'
     | '/_user/news/'
     | '/_user/service/'
     | '/_admin/admin/ITA/'
     | '/_admin/admin/activity/'
     | '/_admin/admin/login/'
+    | '/_admin/admin/moit/'
     | '/_admin/admin/news/'
     | '/_user/about/contact/'
     | '/_user/about/doctor/'
@@ -285,6 +309,13 @@ declare module '@tanstack/react-router' {
       path: '/news'
       fullPath: '/news/'
       preLoaderRoute: typeof UserNewsIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/ita/': {
+      id: '/_user/ita/'
+      path: '/ita'
+      fullPath: '/ita/'
+      preLoaderRoute: typeof UserItaIndexRouteImport
       parentRoute: typeof UserRouteRoute
     }
     '/_user/document/': {
@@ -364,6 +395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminNewsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/admin/moit/': {
+      id: '/_admin/admin/moit/'
+      path: '/admin/moit'
+      fullPath: '/admin/moit/'
+      preLoaderRoute: typeof AdminAdminMoitIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/admin/login/': {
       id: '/_admin/admin/login/'
       path: '/admin/login'
@@ -394,6 +432,7 @@ interface AdminRouteRouteChildren {
   AdminAdminITAIndexRoute: typeof AdminAdminITAIndexRoute
   AdminAdminActivityIndexRoute: typeof AdminAdminActivityIndexRoute
   AdminAdminLoginIndexRoute: typeof AdminAdminLoginIndexRoute
+  AdminAdminMoitIndexRoute: typeof AdminAdminMoitIndexRoute
   AdminAdminNewsIndexRoute: typeof AdminAdminNewsIndexRoute
 }
 
@@ -403,6 +442,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAdminITAIndexRoute: AdminAdminITAIndexRoute,
   AdminAdminActivityIndexRoute: AdminAdminActivityIndexRoute,
   AdminAdminLoginIndexRoute: AdminAdminLoginIndexRoute,
+  AdminAdminMoitIndexRoute: AdminAdminMoitIndexRoute,
   AdminAdminNewsIndexRoute: AdminAdminNewsIndexRoute,
 }
 
@@ -417,6 +457,7 @@ interface UserRouteRouteChildren {
   UserActivityIndexRoute: typeof UserActivityIndexRoute
   UserComplaintIndexRoute: typeof UserComplaintIndexRoute
   UserDocumentIndexRoute: typeof UserDocumentIndexRoute
+  UserItaIndexRoute: typeof UserItaIndexRoute
   UserNewsIndexRoute: typeof UserNewsIndexRoute
   UserServiceIndexRoute: typeof UserServiceIndexRoute
   UserAboutContactIndexRoute: typeof UserAboutContactIndexRoute
@@ -431,6 +472,7 @@ const UserRouteRouteChildren: UserRouteRouteChildren = {
   UserActivityIndexRoute: UserActivityIndexRoute,
   UserComplaintIndexRoute: UserComplaintIndexRoute,
   UserDocumentIndexRoute: UserDocumentIndexRoute,
+  UserItaIndexRoute: UserItaIndexRoute,
   UserNewsIndexRoute: UserNewsIndexRoute,
   UserServiceIndexRoute: UserServiceIndexRoute,
   UserAboutContactIndexRoute: UserAboutContactIndexRoute,

@@ -107,7 +107,7 @@ function RouteComponent() {
             </div>
             </div>
           </Link>
-          <Link to={'/'}>
+          <Link to={'/admin/moit'}>
             <div className="group bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-green-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between h-48 cursor-pointer relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <FileText className="w-24 h-24 text-gray-600" />
