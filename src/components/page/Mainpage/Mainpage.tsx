@@ -1,7 +1,7 @@
 
 //import hospitalImg from "/src/assets/iioo.jpg"
 import { Link } from "@tanstack/react-router";
-import hospitalsamoeng from "../../../assets/samoeng.jpg"
+import hospitalsamoeng from "../../../assets/S__7766030.jpg"
 
 
 {/*const Info = [
