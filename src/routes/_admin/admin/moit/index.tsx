@@ -27,11 +27,11 @@ function InlineEdit({ value, onSave, onCancel, placeholder = '', multiline = fal
           className="flex-1 px-3 py-1.5 text-sm border border-emerald-400 rounded-lg focus:ring-2 focus:ring-emerald-500/20 outline-none" />
       )}
       <button onClick={() => val.trim() && onSave(val.trim())}
-        className="w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 flex items-center justify-center flex-shrink-0 transition-colors mt-0.5">
+        className="w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 flex items-center justify-center shrink-0 transition-colors mt-0.5">
         <Check className="w-3.5 h-3.5 text-white" />
       </button>
       <button onClick={onCancel}
-        className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center flex-shrink-0 transition-colors mt-0.5">
+        className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center shrink-0 transition-colors mt-0.5">
         <X className="w-3.5 h-3.5 text-gray-500" />
       </button>
     </div>
@@ -244,7 +244,7 @@ function RouteComponent() {
                   <div className="flex items-center gap-3 px-5 py-4 group">
                     <button onClick={() => { setOpenMoit(isOpen ? null : moit.ID); setOpenTopic(null) }}
                       className="flex items-center gap-3 flex-1 min-w-0 text-left">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
                         <span className="text-xs font-bold text-emerald-600">{moit.ID}</span>
                       </div>
                       {!isEditing && (
@@ -288,7 +288,7 @@ function RouteComponent() {
                                 <InlineEdit value={topic.Label} multiline placeholder="หัวข้อหลัก..."
                                   onSave={(label) => updateTopic.mutate({ id: topic.ID, label })} onCancel={() => setEditingTopic(null)} />
                               ) : (
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                                   <button onClick={() => setEditingTopic(topic.ID)} className="w-6 h-6 rounded-lg hover:bg-gray-200 flex items-center justify-center">
                                     <Pencil className="w-3 h-3 text-gray-400" />
                                   </button>
@@ -304,14 +304,14 @@ function RouteComponent() {
                               <div className="px-4 py-2 space-y-1.5">
                                 {(topic.Items ?? []).map((item) => (
                                   <div key={item.ID} className="flex items-start gap-2 py-1.5 group/item">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 mt-1.5" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 mt-1.5" />
                                     {editingItem === item.ID ? (
                                       <InlineEdit value={item.Label} multiline placeholder="หัวข้อย่อย..."
                                         onSave={(label) => updateItem.mutate({ id: item.ID, label })} onCancel={() => setEditingItem(null)} />
                                     ) : (
                                       <>
                                         <p className="flex-1 text-xs text-gray-600 leading-relaxed">{item.Label}</p>
-                                        <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity flex-shrink-0">
+                                        <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity shrink-0">
                                           <button onClick={() => setEditingItem(item.ID)} className="w-6 h-6 rounded-lg hover:bg-gray-100 flex items-center justify-center">
                                             <Pencil className="w-3 h-3 text-gray-400" />
                                           </button>
@@ -326,7 +326,7 @@ function RouteComponent() {
 
                                 {addingItemFor === topic.ID ? (
                                   <div className="flex items-center gap-2 mt-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-300 flex-shrink-0" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-300 shrink-0" />
                                     <InlineEdit value="" multiline placeholder="เช่น 1.1 มีบันทึกข้อความ..."
                                       onSave={(label) => createItem.mutate({ topicId: topic.ID, label })} onCancel={() => setAddingItemFor(null)} />
                                   </div>
@@ -378,7 +378,7 @@ function AddMoitForm({ defaultName = '', defaultDesc = '', onSave, onCancel }: {
         <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="คำอธิบาย เช่น หน่วยงานมีการวางระบบ..." rows={2}
           className="px-3 py-1.5 text-sm border border-emerald-400 rounded-lg focus:ring-2 focus:ring-emerald-500/20 outline-none resize-none" />
       </div>
-      <div className="flex flex-col gap-1.5 flex-shrink-0">
+      <div className="flex flex-col gap-1.5 shrink-0">
         <button onClick={() => name.trim() && desc.trim() && onSave(name.trim(), desc.trim())}
           className="w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 flex items-center justify-center transition-colors">
           <Check className="w-3.5 h-3.5 text-white" />

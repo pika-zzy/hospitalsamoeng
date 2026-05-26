@@ -116,11 +116,11 @@ function RouteComponent() {
               <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-green-600 mb-4 group-hover:scale-110 transition-transform">
                 <Plus className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">เพิ่มงาน ITA</h3>
-              <p className="text-sm text-gray-500 mt-1">เพิ่มงาน ITA เป็นไฟล์ .pdf </p>
+              <h3 className="text-lg font-semibold text-gray-900">เพิ่มหัวข้อ MOIT</h3>
+              <p className="text-sm text-gray-500 mt-1">เพิ่มหัวข้อย่อยของ MOIT </p>
             </div>
             <div className="mt-4 flex items-center text-green-600 text-sm font-medium">
-              ลงงาน ITA <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              เพิ่มหัวข้อ MOIT <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </div>
             </div>
           </Link>
