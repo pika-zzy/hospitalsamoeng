@@ -11,7 +11,7 @@ export const Route = createFileRoute('/_user/')({
 
 function Home() {
   return (
-  <div className="flex flex-col gap-0 overflow-x-hidden">
+  <div className="flex flex-col gap-0 overflow-x-hidden font-sarabun">
       {/* 1. ส่วนต้อนรับ (Hero) */}
       <section className="relative">
         <Main_page />

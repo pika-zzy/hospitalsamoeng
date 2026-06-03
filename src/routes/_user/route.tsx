@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_user")({
 
 function UserLayout() {
   return( 
-    <div> 
+    <div className=" font-sarabun text-2xl"> 
       <Navbar />
       <Outlet />
       <Footer />

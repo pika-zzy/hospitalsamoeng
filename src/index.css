@@ -4,9 +4,11 @@
   src: url("/font/THSarabunNew.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
+  
 }
 @layer utilities {
   .font-sarabun {
     font-family: "THSarabun";
   }
+  
 }
