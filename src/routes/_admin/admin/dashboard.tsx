@@ -124,6 +124,23 @@ function RouteComponent() {
             </div>
             </div>
           </Link>
+          <Link to={'/admin/staffservice'}>
+            <div className="group bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-green-500 hover:shadow-md transition-all duration-300 flex flex-col justify-between h-48 cursor-pointer relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <FileText className="w-24 h-24 text-gray-600" />
+            </div>
+            <div>
+              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-green-600 mb-4 group-hover:scale-110 transition-transform">
+                <Plus className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">เพิ่มเมนูสำหรับเจ้าหน้าที่</h3>
+              <p className="text-sm text-gray-500 mt-1">เพิ่มหัวข้อย่อยของ MOIT </p>
+            </div>
+            <div className="mt-4 flex items-center text-green-600 text-sm font-medium">
+              เพิ่มหัวข้อ MOIT <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </div>
+            </div>
+          </Link>
         </div>
 
         {/* 4. Recent Section: รายการล่าสุด (แบบย่อ) 
