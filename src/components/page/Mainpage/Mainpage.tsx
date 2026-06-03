@@ -60,21 +60,21 @@ export default function Main_page() {
                 
                 <div className="relative z-10 max-w-7xl mx-auto w-full px-6 md:px-12">
                 <div className="max-w-2xl pt-15 ">
-  <h2 className="text-5xl md:text-5xl lg:text-7xl font-sarabun font-bold text-white leading-snug drop-shadow-lg mb-4">
-    ยินดีต้อนรับสู่ <br />
-    <span className="text-green-400 text-5xl md:text-6xl lg:text-7xl leading-none">โรงพยาบาลสะเมิง</span>
-  </h2>
-  <div className="h-1 w-16 bg-green-400 mb-6 rounded-full"></div>
-  <p className="text-3xl md:text-lg lg:text-3xl font-sarabun text-gray-200 leading-none">
-    เราให้บริการทางการแพทย์ที่หลากหลาย <br />
-    เข้าถึงง่าย ด้วยมาตรฐานสากล เพื่อสุขภาวะที่ดีของชุมชน
-  </p>
-  <Link to={"/about/contact"}>
-    <button className="mt-8 px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-full shadow-lg transition-all duration-300 transform hover:scale-105">
-      ติดต่อเรา
-    </button>
-  </Link>
-</div>
+                    <h2 className="text-5xl md:text-5xl lg:text-7xl font-sarabun font-bold text-white leading-snug drop-shadow-lg mb-4">
+                        ยินดีต้อนรับสู่ <br />
+                        <span className="text-green-400 text-5xl md:text-6xl lg:text-7xl leading-none">โรงพยาบาลสะเมิง</span>
+                    </h2>
+                    <div className="h-1 w-16 bg-green-400 mb-6 rounded-full"></div>
+                    <p className="text-3xl md:text-lg lg:text-3xl font-sarabun text-gray-200 leading-none">
+                        เราให้บริการทางการแพทย์ที่หลากหลาย <br />
+                        เข้าถึงง่าย ด้วยมาตรฐานสากล เพื่อสุขภาวะที่ดีของชุมชน
+                    </p>
+                    <Link to={"/about/contact"}>
+                        <button className="mt-8 px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-full shadow-lg transition-all duration-300 transform hover:scale-105">
+                        ติดต่อเรา
+                        </button>
+                    </Link>
+                    </div>
                 </div>
             </div>
         </>
