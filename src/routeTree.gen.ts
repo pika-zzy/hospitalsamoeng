@@ -31,6 +31,7 @@ import { Route as AdminAdminMoitIndexRouteImport } from './routes/_admin/admin/m
 import { Route as AdminAdminLoginIndexRouteImport } from './routes/_admin/admin/login/index'
 import { Route as AdminAdminActivityIndexRouteImport } from './routes/_admin/admin/activity/index'
 import { Route as AdminAdminITAIndexRouteImport } from './routes/_admin/admin/ITA/index'
+import { Route as AdminAdminStaffserviceIdRouteImport } from './routes/_admin/admin/staffservice/$id'
 
 const UserRouteRoute = UserRouteRouteImport.update({
   id: '/_user',
@@ -141,6 +142,12 @@ const AdminAdminITAIndexRoute = AdminAdminITAIndexRouteImport.update({
   path: '/admin/ITA/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAdminStaffserviceIdRoute =
+  AdminAdminStaffserviceIdRouteImport.update({
+    id: '/admin/staffservice/$id',
+    path: '/admin/staffservice/$id',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof UserIndexRoute
@@ -154,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/ita/': typeof UserItaIndexRoute
   '/news/': typeof UserNewsIndexRoute
   '/service/': typeof UserServiceIndexRoute
+  '/admin/staffservice/$id': typeof AdminAdminStaffserviceIdRoute
   '/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/admin/login/': typeof AdminAdminLoginIndexRoute
@@ -176,6 +184,7 @@ export interface FileRoutesByTo {
   '/ita': typeof UserItaIndexRoute
   '/news': typeof UserNewsIndexRoute
   '/service': typeof UserServiceIndexRoute
+  '/admin/staffservice/$id': typeof AdminAdminStaffserviceIdRoute
   '/admin/ITA': typeof AdminAdminITAIndexRoute
   '/admin/activity': typeof AdminAdminActivityIndexRoute
   '/admin/login': typeof AdminAdminLoginIndexRoute
@@ -201,6 +210,7 @@ export interface FileRoutesById {
   '/_user/ita/': typeof UserItaIndexRoute
   '/_user/news/': typeof UserNewsIndexRoute
   '/_user/service/': typeof UserServiceIndexRoute
+  '/_admin/admin/staffservice/$id': typeof AdminAdminStaffserviceIdRoute
   '/_admin/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/_admin/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/_admin/admin/login/': typeof AdminAdminLoginIndexRoute
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/ita/'
     | '/news/'
     | '/service/'
+    | '/admin/staffservice/$id'
     | '/admin/ITA/'
     | '/admin/activity/'
     | '/admin/login/'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/ita'
     | '/news'
     | '/service'
+    | '/admin/staffservice/$id'
     | '/admin/ITA'
     | '/admin/activity'
     | '/admin/login'
@@ -271,6 +283,7 @@ export interface FileRouteTypes {
     | '/_user/ita/'
     | '/_user/news/'
     | '/_user/service/'
+    | '/_admin/admin/staffservice/$id'
     | '/_admin/admin/ITA/'
     | '/_admin/admin/activity/'
     | '/_admin/admin/login/'
@@ -443,12 +456,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminITAIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/admin/staffservice/$id': {
+      id: '/_admin/admin/staffservice/$id'
+      path: '/admin/staffservice/$id'
+      fullPath: '/admin/staffservice/$id'
+      preLoaderRoute: typeof AdminAdminStaffserviceIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
   AdminAdminDashboardRoute: typeof AdminAdminDashboardRoute
   AdminAdminIndexRoute: typeof AdminAdminIndexRoute
+  AdminAdminStaffserviceIdRoute: typeof AdminAdminStaffserviceIdRoute
   AdminAdminITAIndexRoute: typeof AdminAdminITAIndexRoute
   AdminAdminActivityIndexRoute: typeof AdminAdminActivityIndexRoute
   AdminAdminLoginIndexRoute: typeof AdminAdminLoginIndexRoute
@@ -460,6 +481,7 @@ interface AdminRouteRouteChildren {
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAdminDashboardRoute: AdminAdminDashboardRoute,
   AdminAdminIndexRoute: AdminAdminIndexRoute,
+  AdminAdminStaffserviceIdRoute: AdminAdminStaffserviceIdRoute,
   AdminAdminITAIndexRoute: AdminAdminITAIndexRoute,
   AdminAdminActivityIndexRoute: AdminAdminActivityIndexRoute,
   AdminAdminLoginIndexRoute: AdminAdminLoginIndexRoute,

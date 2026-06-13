@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { icons } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
@@ -50,10 +50,14 @@ function RouteComponent() {
   ? (icons[selectedIcon as keyof typeof icons] as React.ElementType)
   : null
 
+    const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-black/60 flex items-center justify-center p-6">
-      <div className="w-full max-w-lg bg-neutral-800 border border-neutral-700 rounded-2xl p-6 space-y-5">
-
+    <div className="min-h-screen flex items-center justify-center p-6">
+      
+      <div className="w-full max-w-lg border border-neutral-700 rounded-2xl p-6 space-y-5">
+          <h1>
+            เพิ่มเมนูบริการของเจ้าหน้าที่
+        </h1>
         {/* ชื่อเมนู */}
         <div className="space-y-1.5">
           <label className="flex items-center gap-1.5 text-sm text-neutral-400">
@@ -217,7 +221,9 @@ function RouteComponent() {
           <button className="px-5 py-2 rounded-xl text-sm font-medium text-neutral-300 bg-neutral-700 border border-neutral-600 hover:bg-neutral-600 transition-colors">
             ยกเลิก
           </button>
-          <button className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-neutral-700 border border-neutral-500 hover:bg-neutral-600 transition-colors flex items-center gap-2">
+          <button
+                onClick={() => navigate({ to: "/admin/staffservice/$id" , params: { id: "1" } })}
+            className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-neutral-700 border border-neutral-500 hover:bg-neutral-600 transition-colors flex items-center gap-2">
             {SelectedIconComponent && (
               <SelectedIconComponent size={14} color={selectedColor.borderHex} />
             )}
