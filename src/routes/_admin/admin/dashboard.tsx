@@ -134,55 +134,14 @@ function RouteComponent() {
                 <Plus className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900">เพิ่มเมนูสำหรับเจ้าหน้าที่</h3>
-              <p className="text-sm text-gray-500 mt-1">เพิ่มหัวข้อย่อยของ MOIT </p>
+              <p className="text-sm text-gray-500 mt-1">เพิ่มเมนูสำหรับแสดงบนระบบบริการเจ้าหน้าที่</p>
             </div>
             <div className="mt-4 flex items-center text-green-600 text-sm font-medium">
-              เพิ่มหัวข้อ MOIT <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              เพิ่มเมนูสำหรับเจ้าหน้าที่ <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </div>
             </div>
           </Link>
         </div>
-
-        {/* 4. Recent Section: รายการล่าสุด (แบบย่อ) 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-800">รายการล่าสุด</h3>
-            <button className="text-sm text-blue-600 hover:text-blue-700">ดูทั้งหมด</button>
-          </div>
-          <div className="divide-y divide-gray-100">
-            {/* Mock Data Row 1 
-            <div className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded bg-blue-100 flex items-center justify-center text-blue-600">
-                  <Megaphone className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">เปิดรับสมัครฉีดวัคซีนป้องกันโรคพิษสุนัขบ้า</p>
-                  <p className="text-xs text-gray-500">วันนี้ 10:30 น. • ประชาสัมพันธ์</p>
-                </div>
-              </div>
-              <span className="px-3 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">เผยแพร่แล้ว</span>
-            </div>
-            
-            {/* Mock Data Row 2 *
-            <div className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded bg-green-100 flex items-center justify-center text-green-600">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">กิจกรรมวันเด็กแห่งชาติ 2568</p>
-                  <p className="text-xs text-gray-500">เมื่อวานนี้ • กิจกรรม</p>
-                </div>
-              </div>
-              <span className="px-3 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">เผยแพร่แล้ว</span>
-            </div>
-
-            {/* Empty State (ถ้าไม่มีข้อมูล) - เลือกใช้ได้ *
-            {/* <div className="p-8 text-center text-gray-400">ยังไม่มีรายการล่าสุด</div> *
-          </div>
-        </div>
-*/}
       </main>
     </div>
   )
