@@ -1,9 +1,9 @@
-
 import type ActivityInfo from '@/interface/activity_info';
 import { requestAPI } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Calendar, Tag, Info, Clock, ChevronLeft } from 'lucide-react'
+import { Calendar, Tag, Info, ChevronLeft } from 'lucide-react'
+import { useState } from 'react'
 const API_URL = import.meta.env.VITE_API_URL;
 export const Route = createFileRoute('/_user/activity/$id')({
   component: RouteComponent,
@@ -31,6 +31,7 @@ function RouteComponent() {
       
  
   const navigate = useNavigate()
+  const [isPortrait, setIsPortrait] = useState(false)
 
   if (!activity) {
     return (
@@ -57,20 +58,23 @@ function RouteComponent() {
 
       {/* 2. Hero Image Section */}
       <div className="max-w-5xl mx-auto px-4 mb-10">
-        <div className="relative h-100 md:h-125 w-full rounded-[2.5rem] overflow-hidden shadow-2xl">
+        <div
+          className={`relative w-full rounded-3xl overflow-hidden shadow-lg border border-gray-100 bg-slate-50 ${
+            isPortrait
+              ? 'h-128 flex items-center justify-center'
+              : 'h-96 md:h-112'
+          }`}
+        >
           <img 
             src={`${API_URL}${activity.img_url}`}
-            alt={activity.title} 
-            className="w-full h-full object-cover"
+            alt={activity.title}
+            onLoad={(e) => {
+              const img = e.currentTarget
+              setIsPortrait(img.naturalHeight > img.naturalWidth)
+            }}
+            className={isPortrait ? 'h-full w-auto max-w-full object-contain' : 'w-full h-full object-cover'}
           />
-          <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
-          
-          {/* Status Badge on Image */}
-          <div className="absolute bottom-8 left-8">
-           {/* <span className={`px-4 py-1.5 rounded-full text-xs font-bold border backdrop-blur-md shadow-lg ${statusMap[activity.status]?.color || 'bg-white text-black'}`}>
-              {statusMap[activity.status]?.text}
-            </span>*/}
-          </div>
+          <div className={`absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent ${isPortrait ? 'opacity-0' : ''}`} />
         </div>
       </div>
 
@@ -79,37 +83,24 @@ function RouteComponent() {
         <div className="mb-8">
           <div className="flex items-center gap-2 text-green-600 font-bold text-sm mb-3 uppercase tracking-widest">
             <Tag className="w-4 h-4" />
-           
+            กิจกรรม
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-gray-800 leading-tight">
             {activity.title}
           </h1>
         </div>
 
-        {/* Quick Info Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-          <div className="flex items-center gap-3 text-gray-600">
-            <div className="p-2 bg-white rounded-xl shadow-sm">
-              <Calendar className="w-5 h-5 text-green-500" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase text-gray-400 font-bold tracking-wider">วันที่จัดกิจกรรม</p>
-              <p className="text-sm font-semibold">
-                {new Date(activity.start_date).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}
-                {activity.end_date && ` - ${new Date(activity.end_date).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}`}
-              </p>
-            </div>
+        {/* Quick Info */}
+        <div className="flex items-center gap-4 mb-10 p-5 bg-slate-50 rounded-2xl border border-slate-100 max-w-md">
+          <div className="p-2.5 bg-white rounded-xl shadow-sm">
+            <Calendar className="w-5 h-5 text-green-500" />
           </div>
-          <div className="flex items-center gap-3 text-gray-600">
-            <div className="p-2 bg-white rounded-xl shadow-sm">
-              <Clock className="w-5 h-5 text-green-500" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase text-gray-400 font-bold tracking-wider">อัปเดตล่าสุดเมื่อ</p>
-              <p className="text-sm font-semibold">
-                ............
-              </p>
-            </div>
+          <div>
+            <p className="text-[10px] uppercase text-gray-400 font-bold tracking-wider">วันที่จัดกิจกรรม</p>
+            <p className="text-sm font-semibold text-gray-700">
+              {new Date(activity.start_date).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}
+              {activity.end_date && ` - ${new Date(activity.end_date).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}`}
+            </p>
           </div>
         </div>
 
@@ -122,17 +113,6 @@ function RouteComponent() {
           <p className="text-gray-600 leading-loose text-lg whitespace-pre-line">
             {activity.description}
           </p>
-        </div>
-
-        {/* Footer Actions */}
-        <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col sm:flex-row gap-4 justify-between items-center">
-          <p className="text-sm text-gray-400 font-medium italic">โรงพยาบาลสะเมิง - มุ่งมั่นให้บริการด้วยหัวใจ</p>
-          <button 
-            onClick={() => window.print()}
-            className="px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-bold rounded-full transition-colors"
-          >
-            พิมพ์เอกสารนี้
-          </button>
         </div>
       </div>
     </div>

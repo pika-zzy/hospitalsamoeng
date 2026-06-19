@@ -32,10 +32,10 @@ const Navbar = () => {
               <div className="absolute inset-0 bg-green-500/10 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
             <div className="flex flex-col uppercase">
-              <span className="text-xl font-black text-gray-800 tracking-tight leading-none">
+              <span className="text-2xl font-black text-gray-800 tracking-tight leading-none">
                 Samoeng <span className="text-green-600 font-bold">Hospital</span>
               </span>
-              <span className="text-[9px] text-gray-400 tracking-[0.2em] font-bold mt-1">Healthcare Center</span>
+              <span className="text-xs text-gray-400 tracking-[0.2em] font-bold mt-1">Healthcare Center</span>
             </div>
           </Link>
 
