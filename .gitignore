@@ -26,3 +26,5 @@ dist-ssr
 # env
 .env
 .claude/settings.local.json
+
+CLAUDE.md

@@ -31,6 +31,10 @@ import { Route as AdminAdminMoitIndexRouteImport } from './routes/_admin/admin/m
 import { Route as AdminAdminLoginIndexRouteImport } from './routes/_admin/admin/login/index'
 import { Route as AdminAdminActivityIndexRouteImport } from './routes/_admin/admin/activity/index'
 import { Route as AdminAdminITAIndexRouteImport } from './routes/_admin/admin/ITA/index'
+import { Route as AdminAdminEmployeeUsermanetmintRouteImport } from './routes/_admin/admin/employee/usermanetmint'
+import { Route as AdminAdminNewsNewsSummaryRouteImport } from './routes/_admin/admin/news/news.summary'
+import { Route as AdminAdminEmployeeStaffserviceSummaryRouteImport } from './routes/_admin/admin/employee/staffservice.summary'
+import { Route as AdminAdminActivityActivitySummaryRouteImport } from './routes/_admin/admin/activity/activity.summary'
 
 const UserRouteRoute = UserRouteRouteImport.update({
   id: '/_user',
@@ -141,6 +145,30 @@ const AdminAdminITAIndexRoute = AdminAdminITAIndexRouteImport.update({
   path: '/admin/ITA/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAdminEmployeeUsermanetmintRoute =
+  AdminAdminEmployeeUsermanetmintRouteImport.update({
+    id: '/admin/employee/usermanetmint',
+    path: '/admin/employee/usermanetmint',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminAdminNewsNewsSummaryRoute =
+  AdminAdminNewsNewsSummaryRouteImport.update({
+    id: '/admin/news/news/summary',
+    path: '/admin/news/news/summary',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminAdminEmployeeStaffserviceSummaryRoute =
+  AdminAdminEmployeeStaffserviceSummaryRouteImport.update({
+    id: '/admin/employee/staffservice/summary',
+    path: '/admin/employee/staffservice/summary',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminAdminActivityActivitySummaryRoute =
+  AdminAdminActivityActivitySummaryRouteImport.update({
+    id: '/admin/activity/activity/summary',
+    path: '/admin/activity/activity/summary',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof UserIndexRoute
@@ -154,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/ita/': typeof UserItaIndexRoute
   '/news/': typeof UserNewsIndexRoute
   '/service/': typeof UserServiceIndexRoute
+  '/admin/employee/usermanetmint': typeof AdminAdminEmployeeUsermanetmintRoute
   '/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/admin/login/': typeof AdminAdminLoginIndexRoute
@@ -163,6 +192,9 @@ export interface FileRoutesByFullPath {
   '/about/contact/': typeof UserAboutContactIndexRoute
   '/about/doctor/': typeof UserAboutDoctorIndexRoute
   '/about/history/': typeof UserAboutHistoryIndexRoute
+  '/admin/activity/activity/summary': typeof AdminAdminActivityActivitySummaryRoute
+  '/admin/employee/staffservice/summary': typeof AdminAdminEmployeeStaffserviceSummaryRoute
+  '/admin/news/news/summary': typeof AdminAdminNewsNewsSummaryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof UserIndexRoute
@@ -176,6 +208,7 @@ export interface FileRoutesByTo {
   '/ita': typeof UserItaIndexRoute
   '/news': typeof UserNewsIndexRoute
   '/service': typeof UserServiceIndexRoute
+  '/admin/employee/usermanetmint': typeof AdminAdminEmployeeUsermanetmintRoute
   '/admin/ITA': typeof AdminAdminITAIndexRoute
   '/admin/activity': typeof AdminAdminActivityIndexRoute
   '/admin/login': typeof AdminAdminLoginIndexRoute
@@ -185,6 +218,9 @@ export interface FileRoutesByTo {
   '/about/contact': typeof UserAboutContactIndexRoute
   '/about/doctor': typeof UserAboutDoctorIndexRoute
   '/about/history': typeof UserAboutHistoryIndexRoute
+  '/admin/activity/activity/summary': typeof AdminAdminActivityActivitySummaryRoute
+  '/admin/employee/staffservice/summary': typeof AdminAdminEmployeeStaffserviceSummaryRoute
+  '/admin/news/news/summary': typeof AdminAdminNewsNewsSummaryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -201,6 +237,7 @@ export interface FileRoutesById {
   '/_user/ita/': typeof UserItaIndexRoute
   '/_user/news/': typeof UserNewsIndexRoute
   '/_user/service/': typeof UserServiceIndexRoute
+  '/_admin/admin/employee/usermanetmint': typeof AdminAdminEmployeeUsermanetmintRoute
   '/_admin/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/_admin/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/_admin/admin/login/': typeof AdminAdminLoginIndexRoute
@@ -210,6 +247,9 @@ export interface FileRoutesById {
   '/_user/about/contact/': typeof UserAboutContactIndexRoute
   '/_user/about/doctor/': typeof UserAboutDoctorIndexRoute
   '/_user/about/history/': typeof UserAboutHistoryIndexRoute
+  '/_admin/admin/activity/activity/summary': typeof AdminAdminActivityActivitySummaryRoute
+  '/_admin/admin/employee/staffservice/summary': typeof AdminAdminEmployeeStaffserviceSummaryRoute
+  '/_admin/admin/news/news/summary': typeof AdminAdminNewsNewsSummaryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -225,6 +265,7 @@ export interface FileRouteTypes {
     | '/ita/'
     | '/news/'
     | '/service/'
+    | '/admin/employee/usermanetmint'
     | '/admin/ITA/'
     | '/admin/activity/'
     | '/admin/login/'
@@ -234,6 +275,9 @@ export interface FileRouteTypes {
     | '/about/contact/'
     | '/about/doctor/'
     | '/about/history/'
+    | '/admin/activity/activity/summary'
+    | '/admin/employee/staffservice/summary'
+    | '/admin/news/news/summary'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -247,6 +291,7 @@ export interface FileRouteTypes {
     | '/ita'
     | '/news'
     | '/service'
+    | '/admin/employee/usermanetmint'
     | '/admin/ITA'
     | '/admin/activity'
     | '/admin/login'
@@ -256,6 +301,9 @@ export interface FileRouteTypes {
     | '/about/contact'
     | '/about/doctor'
     | '/about/history'
+    | '/admin/activity/activity/summary'
+    | '/admin/employee/staffservice/summary'
+    | '/admin/news/news/summary'
   id:
     | '__root__'
     | '/_admin'
@@ -271,6 +319,7 @@ export interface FileRouteTypes {
     | '/_user/ita/'
     | '/_user/news/'
     | '/_user/service/'
+    | '/_admin/admin/employee/usermanetmint'
     | '/_admin/admin/ITA/'
     | '/_admin/admin/activity/'
     | '/_admin/admin/login/'
@@ -280,6 +329,9 @@ export interface FileRouteTypes {
     | '/_user/about/contact/'
     | '/_user/about/doctor/'
     | '/_user/about/history/'
+    | '/_admin/admin/activity/activity/summary'
+    | '/_admin/admin/employee/staffservice/summary'
+    | '/_admin/admin/news/news/summary'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -443,29 +495,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminITAIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/admin/employee/usermanetmint': {
+      id: '/_admin/admin/employee/usermanetmint'
+      path: '/admin/employee/usermanetmint'
+      fullPath: '/admin/employee/usermanetmint'
+      preLoaderRoute: typeof AdminAdminEmployeeUsermanetmintRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/admin/news/news/summary': {
+      id: '/_admin/admin/news/news/summary'
+      path: '/admin/news/news/summary'
+      fullPath: '/admin/news/news/summary'
+      preLoaderRoute: typeof AdminAdminNewsNewsSummaryRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/admin/employee/staffservice/summary': {
+      id: '/_admin/admin/employee/staffservice/summary'
+      path: '/admin/employee/staffservice/summary'
+      fullPath: '/admin/employee/staffservice/summary'
+      preLoaderRoute: typeof AdminAdminEmployeeStaffserviceSummaryRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/admin/activity/activity/summary': {
+      id: '/_admin/admin/activity/activity/summary'
+      path: '/admin/activity/activity/summary'
+      fullPath: '/admin/activity/activity/summary'
+      preLoaderRoute: typeof AdminAdminActivityActivitySummaryRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
   AdminAdminDashboardRoute: typeof AdminAdminDashboardRoute
   AdminAdminIndexRoute: typeof AdminAdminIndexRoute
+  AdminAdminEmployeeUsermanetmintRoute: typeof AdminAdminEmployeeUsermanetmintRoute
   AdminAdminITAIndexRoute: typeof AdminAdminITAIndexRoute
   AdminAdminActivityIndexRoute: typeof AdminAdminActivityIndexRoute
   AdminAdminLoginIndexRoute: typeof AdminAdminLoginIndexRoute
   AdminAdminMoitIndexRoute: typeof AdminAdminMoitIndexRoute
   AdminAdminNewsIndexRoute: typeof AdminAdminNewsIndexRoute
   AdminAdminStaffserviceIndexRoute: typeof AdminAdminStaffserviceIndexRoute
+  AdminAdminActivityActivitySummaryRoute: typeof AdminAdminActivityActivitySummaryRoute
+  AdminAdminEmployeeStaffserviceSummaryRoute: typeof AdminAdminEmployeeStaffserviceSummaryRoute
+  AdminAdminNewsNewsSummaryRoute: typeof AdminAdminNewsNewsSummaryRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAdminDashboardRoute: AdminAdminDashboardRoute,
   AdminAdminIndexRoute: AdminAdminIndexRoute,
+  AdminAdminEmployeeUsermanetmintRoute: AdminAdminEmployeeUsermanetmintRoute,
   AdminAdminITAIndexRoute: AdminAdminITAIndexRoute,
   AdminAdminActivityIndexRoute: AdminAdminActivityIndexRoute,
   AdminAdminLoginIndexRoute: AdminAdminLoginIndexRoute,
   AdminAdminMoitIndexRoute: AdminAdminMoitIndexRoute,
   AdminAdminNewsIndexRoute: AdminAdminNewsIndexRoute,
   AdminAdminStaffserviceIndexRoute: AdminAdminStaffserviceIndexRoute,
+  AdminAdminActivityActivitySummaryRoute:
+    AdminAdminActivityActivitySummaryRoute,
+  AdminAdminEmployeeStaffserviceSummaryRoute:
+    AdminAdminEmployeeStaffserviceSummaryRoute,
+  AdminAdminNewsNewsSummaryRoute: AdminAdminNewsNewsSummaryRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

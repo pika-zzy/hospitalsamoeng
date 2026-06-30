@@ -1,5 +1,5 @@
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router"
-//import { AdminShell } from "@/components/layout/AdminShell"
+import { Outlet, createFileRoute, redirect, useLocation } from "@tanstack/react-router"
+import { AdminShell } from "@/components/layout/AdminShell"
 
 // ── Token helper (แก้ที่เดียว ใช้ทั่วโปรเจค) ──────
 const AUTH_KEY = "admin_token"
@@ -40,10 +40,17 @@ export const Route = createFileRoute("/_admin")({
 
 // ── Layout ────────────────────────────────────────
 function AdminLayout() {
+  const location = useLocation()
+  const isLoginPage = location.pathname === "/admin/login"
+
+  if (isLoginPage) {
+    return <Outlet />
+  }
+
   return (
-    <>
+    <AdminShell>
       <Outlet />
-    </>
+    </AdminShell>
   )
 }
 
