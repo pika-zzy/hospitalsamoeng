@@ -3,10 +3,8 @@ import {
   Users,
   FileText,
   Calendar,
-  Megaphone,
   ChevronRight,
-  Settings,
-  ShieldCheck,
+ 
   ArrowUp,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
