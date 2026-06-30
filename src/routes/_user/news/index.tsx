@@ -55,7 +55,7 @@ function RouteComponent() {
           <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-3">
             ศูนย์ข้อมูลข่าวสาร<span className="text-green-600">โรงพยาบาล</span>
           </h1>
-          <p className="text-gray-400 max-w-lg mx-auto text-[15px] leading-relaxed">
+          <p className="text-gray-500 max-w-lg mx-auto text-[15px] leading-relaxed">
             ติดตามข่าวประชาสัมพันธ์ ประกาศจัดซื้อจัดจ้าง และกิจกรรมต่างๆ ของโรงพยาบาลสะเมิง
           </p>
 
@@ -67,13 +67,13 @@ function RouteComponent() {
                 className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200
                   ${!isJob
                     ? 'bg-white text-green-700 shadow-sm'
-                    : 'text-gray-400 hover:text-gray-600'
+                    : 'text-gray-500 hover:text-gray-600'
                   }`}
               >
                 <Megaphone className="w-4 h-4" />
                 ประชาสัมพันธ์
                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none
-                  ${!isJob ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-400'}`}>
+                  ${!isJob ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
                   {latestGeneral.length}
                 </span>
               </button>
@@ -82,13 +82,13 @@ function RouteComponent() {
                 className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200
                   ${isJob
                     ? 'bg-white text-green-700 shadow-sm'
-                    : 'text-gray-400 hover:text-gray-600'
+                    : 'text-gray-500 hover:text-gray-600'
                   }`}
               >
                 <Briefcase className="w-4 h-4" />
                 ประกาศจัดซื้อจัดจ้าง
                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none
-                  ${isJob ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-400'}`}>
+                  ${isJob ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
                   {latestJob.length}
                 </span>
               </button>
@@ -102,7 +102,7 @@ function RouteComponent() {
 
         {/* count label */}
         {latestList.length > 0 && (
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-5">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-5">
             {isJob ? 'ประกาศจัดซื้อจัดจ้าง' : 'ข่าวประชาสัมพันธ์'} · {latestList.length} รายการ
           </p>
         )}
@@ -118,19 +118,19 @@ function RouteComponent() {
                            transition-all duration-300"
               >
                 {/* Colored top strip */}
-                <div className={`h-1.5 w-full ${isJob ? 'bg-linear-to-r from-green-400 to-emerald-500' : 'bg-linear-to-r from-green-500 to-teal-500'}`} />
+                <div className={`h-1.5 w-full ${isJob ? 'bg-linear-to-r from-green-500 to-green-600' : 'bg-linear-to-r from-teal-500 to-teal-600'}`} />
 
                 <div className="p-5 flex flex-col flex-1">
                   {/* Icon + Date row */}
                   <div className="flex items-center justify-between mb-4">
                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center
-                      ${isJob ? 'bg-green-50 text-green-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                      ${isJob ? 'bg-green-50 text-green-600' : 'bg-teal-50 text-teal-600'}`}>
                       {isJob
                         ? <FileText className="w-4 h-4" />
                         : <Megaphone className="w-4 h-4" />
                       }
                     </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                    <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
                       <Calendar className="w-3 h-3" />
                       {new Date(info.date).toLocaleDateString("th-TH", {
                         day: 'numeric', month: 'short', year: '2-digit'
@@ -145,7 +145,7 @@ function RouteComponent() {
                   </h2>
 
                   {/* Description */}
-                  <p className="text-[12.5px] text-gray-400 leading-relaxed line-clamp-2 mb-4">
+                  <p className="text-[12.5px] text-gray-500 leading-relaxed line-clamp-2 mb-4">
                     {info.description}
                   </p>
 
@@ -169,7 +169,7 @@ function RouteComponent() {
                 <FileText className="w-7 h-7 text-gray-300" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-semibold text-gray-400">ยังไม่มีข้อมูลในหมวดนี้</p>
+                <p className="text-sm font-semibold text-gray-500">ยังไม่มีข้อมูลในหมวดนี้</p>
                 <p className="text-xs text-gray-300 mt-1">โปรดติดตามประกาศใหม่เร็วๆ นี้</p>
               </div>
             </div>

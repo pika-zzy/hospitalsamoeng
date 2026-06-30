@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { FileText, Calendar, Users, TrendingUp, Activity, Clock, CheckCircle, AlertCircle } from "lucide-react"
+import { FileText, Calendar, Users, CheckCircle } from "lucide-react"
 
 interface SummaryCardProps {
   title: string

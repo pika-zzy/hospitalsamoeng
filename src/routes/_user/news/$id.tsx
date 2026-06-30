@@ -41,8 +41,6 @@ function RouteComponent() {
   const isJob = news.type === 'ประกาศจัดซื้อจัดจ้าง';
   // สมมติว่าในฐานข้อมูลตอนนี้ใช้ชื่อ field ว่า fileUrl (หรือถ้ายังใช้ imgUrl ก็เปลี่ยนชื่อตัวแปรตรงนี้ได้ครับ)
 
-  console.log(news.file_url);
-
   // 1. สร้างตัวแปร URL แบบเต็มๆ เตรียมไว้
   // ดึง Base URL มาจาก .env หรือใช้ localhost:8080 เป็นค่า default
   const apiBase = import.meta.env.VITE_API_URL || "" 
@@ -64,7 +62,7 @@ function RouteComponent() {
     <div className="bg-gray-50 min-h-screen pb-16">
       
       {/* Header Section */}
-      <div className={`pt-10 pb-20 ${isJob ? 'bg-green-600' : 'bg-blue-600'}`}>
+      <div className={`pt-10 pb-20 ${isJob ? 'bg-green-600' : 'bg-teal-600'}`}>
         <div className="max-w-4xl mx-auto px-6 text-white">
           <p className="text-sm opacity-90 mb-1">ข่าวสาร / รายละเอียดเอกสาร</p>
           <h2 className="text-3xl font-semibold">
@@ -75,7 +73,7 @@ function RouteComponent() {
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 -mt-12">
-        <div className="bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
           
           {/* Text Content (ย้ายข้อความมาไว้ด้านบนเอกสาร) */}
           <div className="p-8 md:p-10 border-b border-gray-100">
@@ -120,7 +118,7 @@ function RouteComponent() {
             </div>
           </> ) : (<>
           <div className="max-w-5xl mx-auto px-4 mb-10">
-            <div className="relative h-100 md:h-125 w-full rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div className="relative h-100 md:h-125 w-full rounded-2xl overflow-hidden shadow-lg">
               <img 
                 src={`${fullImageUrl}`} 
                 alt={news.title} 
@@ -142,7 +140,7 @@ function RouteComponent() {
           <div className="p-8 md:p-10 bg-white">
             <Link
               to="/news"
-              className={`inline-flex items-center gap-2 text-base font-medium text-gray-600 ${isJob ? 'hover:text-green-600' : 'hover:text-blue-600'} transition-colors bg-gray-100 hover:bg-gray-200 px-5 py-2.5 rounded-xl`}
+              className={`inline-flex items-center gap-2 text-base font-medium text-gray-600 ${isJob ? 'hover:text-green-600' : 'hover:text-teal-600'} transition-colors bg-gray-100 hover:bg-gray-200 px-5 py-2.5 rounded-xl`}
             >
               <ArrowLeft size={18} />
               ย้อนกลับ

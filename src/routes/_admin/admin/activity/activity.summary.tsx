@@ -19,43 +19,28 @@ function ActivitySummaryPage() {
     staleTime: 5 * 60 * 1000,
   })
 
-  // Adjust field names below to match the real ActivityInfo shape if it differs.
+  const formatDate = (d: string) => {
+    if (!d) return '-'
+    const date = new Date(d)
+    return isNaN(date.getTime()) ? d : date.toLocaleDateString('th-TH')
+  }
+
   const columns: DataTableColumn<ActivityInfo>[] = [
     {
       key: 'title',
       header: 'ชื่อกิจกรรม',
-      render: (row: any) => row.title ?? row.name ?? '-',
-      searchValue: (row: any) => row.title ?? row.name ?? '',
+      render: (row) => row.title,
+      searchValue: (row) => row.title,
     },
     {
-      key: 'location',
-      header: 'สถานที่',
-      render: (row: any) => row.location ?? row.place ?? '-',
+      key: 'start_date',
+      header: 'วันที่เริ่ม',
+      render: (row) => formatDate(row.start_date),
     },
     {
-      key: 'date',
-      header: 'วันที่จัดกิจกรรม',
-      render: (row: any) => {
-        const d = row.date ?? row.event_date ?? row.created_at
-        if (!d) return '-'
-        const date = new Date(d)
-        return isNaN(date.getTime()) ? String(d) : date.toLocaleDateString('th-TH')
-      },
-    },
-    {
-      key: 'status',
-      header: 'สถานะ',
-      render: (row: any) => (
-        <span
-          className="text-xs px-2 py-0.5 rounded-sm border"
-          style={{
-            borderColor: '#E4DECF',
-            color: row.status === 'published' || row.status === 'active' ? '#225C57' : '#8B93A1',
-          }}
-        >
-          {row.status ?? 'เผยแพร่แล้ว'}
-        </span>
-      ),
+      key: 'end_date',
+      header: 'วันที่สิ้นสุด',
+      render: (row) => formatDate(row.end_date),
     },
   ]
 
@@ -74,7 +59,7 @@ function ActivitySummaryPage() {
         isLoading={isLoading}
         searchPlaceholder="ค้นหากิจกรรม..."
         emptyLabel="ยังไม่มีกิจกรรมในระบบ"
-        rowKey={(row: any) => row.id ?? row._id ?? JSON.stringify(row)}
+        rowKey={(row) => row.id}
       />
     </SummaryPageShell>
   )

@@ -10,13 +10,13 @@ export default function StaffPortal() {
         {/* ─── Header ─── */}
         <div className="flex items-end justify-between mb-10">
           <div className="flex items-center gap-4">
-            <div className="w-1.5 h-12 rounded-full bg-linear-to-b from-emerald-400 to-emerald-600 shrink-0" />
+            <div className="w-1.5 h-12 rounded-full bg-linear-to-b from-green-400 to-green-600 shrink-0" />
             <div>
-              <p className="text-[11px] font-semibold tracking-widest text-emerald-500 uppercase mb-0.5">
+              <p className="text-[11px] font-semibold tracking-widest text-green-500 uppercase mb-0.5">
                 Staff &amp; Portal
               </p>
               <h2 className="text-3xl font-black text-gray-900 leading-none">
-                สำหรับเจ้าหน้าที่<span className="text-emerald-500"></span>
+                สำหรับเจ้าหน้าที่<span className="text-green-500"></span>
               </h2>
             </div>
           </div>
@@ -41,7 +41,7 @@ export default function StaffPortal() {
               <p className="text-[13.5px] font-bold text-gray-900 leading-snug mb-1.5 group-hover:text-green-700 transition-colors">
                 {sys.name}
               </p>
-              <p className="text-[11.5px] text-gray-400 leading-relaxed flex-1">
+              <p className="text-[11.5px] text-gray-500 leading-relaxed flex-1">
                 {sys.desc}
               </p>
 

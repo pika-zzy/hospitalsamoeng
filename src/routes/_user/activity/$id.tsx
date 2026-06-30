@@ -59,7 +59,7 @@ function RouteComponent() {
       {/* 2. Hero Image Section */}
       <div className="max-w-5xl mx-auto px-4 mb-10">
         <div
-          className={`relative w-full rounded-3xl overflow-hidden shadow-lg border border-gray-100 bg-slate-50 ${
+          className={`relative w-full rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-gray-50 ${
             isPortrait
               ? 'h-128 flex items-center justify-center'
               : 'h-96 md:h-112'
@@ -91,12 +91,12 @@ function RouteComponent() {
         </div>
 
         {/* Quick Info */}
-        <div className="flex items-center gap-4 mb-10 p-5 bg-slate-50 rounded-2xl border border-slate-100 max-w-md">
+        <div className="flex items-center gap-4 mb-10 p-5 bg-gray-50 rounded-2xl border border-gray-100 max-w-md">
           <div className="p-2.5 bg-white rounded-xl shadow-sm">
             <Calendar className="w-5 h-5 text-green-500" />
           </div>
           <div>
-            <p className="text-[10px] uppercase text-gray-400 font-bold tracking-wider">วันที่จัดกิจกรรม</p>
+            <p className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">วันที่จัดกิจกรรม</p>
             <p className="text-sm font-semibold text-gray-700">
               {new Date(activity.start_date).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}
               {activity.end_date && ` - ${new Date(activity.end_date).toLocaleDateString("th-TH", { day: 'numeric', month: 'long', year: 'numeric' })}`}

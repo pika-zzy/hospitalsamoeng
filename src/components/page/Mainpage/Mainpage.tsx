@@ -60,12 +60,12 @@ export default function Main_page() {
                 
                 <div className="relative z-10 max-w-7xl mx-auto w-full px-6 md:px-12">
                 <div className="max-w-2xl pt-15 ">
-                    <h2 className="text-5xl md:text-5xl lg:text-7xl font-sarabun font-bold text-white leading-snug drop-shadow-lg mb-4">
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-sarabun font-bold text-white leading-tight drop-shadow-lg mb-4">
                         ยินดีต้อนรับสู่ <br />
-                        <span className="text-green-400 text-5xl md:text-6xl lg:text-7xl leading-none">โรงพยาบาลสะเมิง</span>
+                        <span className="text-green-400">โรงพยาบาลสะเมิง</span>
                     </h2>
                     <div className="h-1 w-16 bg-green-400 mb-6 rounded-full"></div>
-                    <p className="text-3xl md:text-lg lg:text-3xl font-sarabun text-gray-200 leading-none">
+                    <p className="text-lg md:text-xl lg:text-2xl font-sarabun text-gray-100 leading-relaxed">
                         เราให้บริการทางการแพทย์ที่หลากหลาย <br />
                         เข้าถึงง่าย ด้วยมาตรฐานสากล เพื่อสุขภาวะที่ดีของชุมชน
                     </p>

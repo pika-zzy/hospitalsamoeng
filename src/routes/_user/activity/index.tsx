@@ -3,7 +3,7 @@ import type ActivityInfo from '@/interface/activity_info';
 import { requestAPI } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Calendar } from 'lucide-react';
+import { ArrowRight, Calendar } from 'lucide-react';
 const API_URL = import.meta.env.VITE_API_URL;
 export const Route = createFileRoute('/_user/activity/')({
     component: RouteComponent,
@@ -29,7 +29,7 @@ function RouteComponent() {
     });
     return (
         <>
-            <div className="min-h-screen bg-slate-50 py-12">
+            <div className="min-h-screen bg-gray-50 py-12">
                 {/* Header Section */}
                 <div className="max-w-7xl mx-auto px-6 mb-12 text-center">
                     <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-semibold px-3 py-1 rounded-full mb-4">
@@ -60,10 +60,10 @@ function RouteComponent() {
                     {data !== undefined && data.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-24 text-center">
                             <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                                <Calendar className="w-8 h-8 text-gray-400" />
+                                <Calendar className="w-8 h-8 text-gray-500" />
                             </div>
                             <p className="text-gray-500 font-medium">ยังไม่มีกิจกรรมในขณะนี้</p>
-                            <p className="text-gray-400 text-sm mt-1">โปรดติดตามกิจกรรมใหม่ๆ ได้เร็วๆ นี้</p>
+                            <p className="text-gray-500 text-sm mt-1">โปรดติดตามกิจกรรมใหม่ๆ ได้เร็วๆ นี้</p>
                         </div>
                     )}
 
@@ -73,7 +73,7 @@ function RouteComponent() {
                                 <Card
                                     key={activity.id}
                                     onClick={() => navigate({ to: `/activity/${activity.id}` })}
-                                    className="group relative aspect-4/5 rounded-2xl overflow-hidden cursor-pointer border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out p-0"
+                                    className="group relative aspect-4/5 rounded-2xl overflow-hidden cursor-pointer border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out p-0"
                                 >
                                     {/* Main Image */}
                                     <img
@@ -99,10 +99,7 @@ function RouteComponent() {
                                             </p>
                                             <div className="flex items-center text-green-400 text-[11px] font-semibold">
                                                 อ่านรายละเอียด
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-1">
-                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                    <polyline points="12 5 19 12 12 19"></polyline>
-                                                </svg>
+                                                <ArrowRight className="w-3 h-3 ml-1" strokeWidth={2.5} />
                                             </div>
                                         </div>
                                     </div>

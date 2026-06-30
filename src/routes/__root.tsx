@@ -8,19 +8,17 @@ export const Route = createRootRoute({
 
 function RootLayout() {
   return (
-    <>
-      
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50">
-  
-      <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col">
-        {/* ส่วนเนื้อหา (Outlet) ให้ขยายเต็มที่ (flex-grow) เพื่อดัน Footer ลงล่าง */}
-        <main className="grow w-full ">
-          <Outlet />
-        </main>
-      </div>
+    // FIX: use natural document scrolling instead of a nested overflow-y-auto
+    // container. The inner scroller broke router scrollRestoration (it only
+    // resets window scroll), so navigating to a long page (e.g. คลังกิจกรรม)
+    // kept the old scroll position. min-h-screen + flex-col still pushes the
+    // Footer to the bottom on short pages.
+    <div className="flex flex-col min-h-screen overflow-x-hidden bg-slate-50">
+      <main className="grow w-full">
+        <Outlet />
+      </main>
 
       <TanStackRouterDevtoolsInProd />
     </div>
-    </>
   )
 }

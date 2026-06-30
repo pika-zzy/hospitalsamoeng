@@ -21,13 +21,13 @@ function InlineEdit({ value, onSave, onCancel, placeholder = '', multiline = fal
     <div className="flex items-start gap-2 flex-1">
       {multiline ? (
         <textarea autoFocus value={val} onChange={(e) => setVal(e.target.value)} placeholder={placeholder} rows={2}
-          className="flex-1 px-3 py-1.5 text-sm border border-emerald-400 rounded-lg focus:ring-2 focus:ring-emerald-500/20 outline-none resize-none" />
+          className="flex-1 px-3 py-1.5 text-sm border border-teal-400 rounded-lg focus:ring-2 focus:ring-teal-500/20 outline-none resize-none" />
       ) : (
         <input autoFocus type="text" value={val} onChange={(e) => setVal(e.target.value)} placeholder={placeholder}
-          className="flex-1 px-3 py-1.5 text-sm border border-emerald-400 rounded-lg focus:ring-2 focus:ring-emerald-500/20 outline-none" />
+          className="flex-1 px-3 py-1.5 text-sm border border-teal-400 rounded-lg focus:ring-2 focus:ring-teal-500/20 outline-none" />
       )}
       <button onClick={() => val.trim() && onSave(val.trim())}
-        className="w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 flex items-center justify-center shrink-0 transition-colors mt-0.5">
+        className="w-7 h-7 rounded-lg bg-teal-500 hover:bg-teal-600 flex items-center justify-center shrink-0 transition-colors mt-0.5">
         <Check className="w-3.5 h-3.5 text-white" />
       </button>
       <button onClick={onCancel}
@@ -155,22 +155,22 @@ function RouteComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="text-ink">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <div className="mb-8">
-          <p className="text-xs font-medium text-emerald-600 tracking-widest uppercase mb-1">Admin</p>
+          <p className="text-xs font-medium text-teal-600 tracking-widest uppercase mb-1">Admin</p>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <span className="w-1 h-7 bg-emerald-500 rounded-full inline-block" />
+            <span className="w-1 h-7 bg-teal-500 rounded-full inline-block" />
             จัดการโครงสร้าง MOIT
           </h1>
         </div>
 
         {/* Year selector */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 mb-4">
+        <div className="bg-white border border-line rounded-2xl p-5 mb-4">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-semibold text-gray-700">ปีงบประมาณ</p>
             <button onClick={() => setAddingYear(true)}
-              className="flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-700 font-medium transition-colors">
+              className="flex items-center gap-1.5 text-xs text-teal-600 hover:text-teal-700 font-medium transition-colors">
               <Plus className="w-3.5 h-3.5" /> เพิ่มปี
             </button>
           </div>
@@ -184,7 +184,7 @@ function RouteComponent() {
               {years.map((y) => (
                 <div key={y.ID} className="relative group/year">
                   <button onClick={() => { setSelectedYearID(y.ID); setOpenMoit(null); setOpenTopic(null) }}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${activeYearID === y.ID ? 'bg-emerald-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${activeYearID === y.ID ? 'bg-teal-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                     {y.Year}
                   </button>
                   <button onClick={() => confirmDelete(String(y.Year), () => deleteYear.mutate(y.ID))}
@@ -197,9 +197,9 @@ function RouteComponent() {
               {addingYear && (
                 <div className="flex items-center gap-2">
                   <input autoFocus type="number" value={newYear} onChange={(e) => setNewYear(e.target.value)} placeholder="เช่น 2570"
-                    className="w-24 px-3 py-1.5 text-sm border border-emerald-400 rounded-xl focus:ring-2 focus:ring-emerald-500/20 outline-none" />
+                    className="w-24 px-3 py-1.5 text-sm border border-teal-400 rounded-xl focus:ring-2 focus:ring-teal-500/20 outline-none" />
                   <button onClick={() => { const y = parseInt(newYear); if (y > 2500) createYear.mutate(y) }}
-                    className="w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 flex items-center justify-center transition-colors">
+                    className="w-7 h-7 rounded-lg bg-teal-500 hover:bg-teal-600 flex items-center justify-center transition-colors">
                     <Check className="w-3.5 h-3.5 text-white" />
                   </button>
                   <button onClick={() => { setAddingYear(false); setNewYear('') }}
@@ -222,7 +222,7 @@ function RouteComponent() {
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500">MOIT ปี {years.find((y) => y.ID === activeYearID)?.Year}</p>
               <button onClick={() => setAddingMoit(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm">
+                className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm">
                 <Plus className="w-4 h-4" /> เพิ่ม MOIT
               </button>
             </div>
@@ -230,7 +230,7 @@ function RouteComponent() {
             {isLoading && <p className="text-sm text-gray-400 text-center py-10">กำลังโหลด...</p>}
 
             {addingMoit && (
-              <div className="bg-white border border-emerald-200 rounded-2xl p-5 flex flex-col gap-3">
+              <div className="bg-white border border-teal-200 rounded-2xl p-5 flex flex-col gap-3">
                 <p className="text-sm font-semibold text-gray-700">เพิ่ม MOIT ใหม่</p>
                 <AddMoitForm onSave={(name, description) => createMoit.mutate({ name, description })} onCancel={() => setAddingMoit(false)} />
               </div>
@@ -240,12 +240,12 @@ function RouteComponent() {
               const isOpen = openMoit === moit.ID
               const isEditing = editingMoit === moit.ID
               return (
-                <div key={moit.ID} className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+                <div key={moit.ID} className="bg-white border border-line rounded-2xl overflow-hidden">
                   <div className="flex items-center gap-3 px-5 py-4 group">
                     <button onClick={() => { setOpenMoit(isOpen ? null : moit.ID); setOpenTopic(null) }}
                       className="flex items-center gap-3 flex-1 min-w-0 text-left">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                        <span className="text-xs font-bold text-emerald-600">{moit.ID}</span>
+                      <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-bold text-teal-600">{moit.ID}</span>
                       </div>
                       {!isEditing && (
                         <div className="flex-1 min-w-0">
@@ -279,7 +279,7 @@ function RouteComponent() {
                         const isTopicOpen = openTopic === topic.ID
                         const isEditingTopic = editingTopic === topic.ID
                         return (
-                          <div key={topic.ID} className="rounded-xl border border-gray-100 overflow-hidden">
+                          <div key={topic.ID} className="rounded-xl border border-line overflow-hidden">
                             <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 group">
                               <button onClick={() => setOpenTopic(isTopicOpen ? null : topic.ID)} className="flex-1 min-w-0 text-left">
                                 {!isEditingTopic && <p className="text-sm text-gray-700 font-medium line-clamp-2">{topic.Label}</p>}
@@ -304,7 +304,7 @@ function RouteComponent() {
                               <div className="px-4 py-2 space-y-1.5">
                                 {(topic.Items ?? []).map((item) => (
                                   <div key={item.ID} className="flex items-start gap-2 py-1.5 group/item">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 mt-1.5" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5" />
                                     {editingItem === item.ID ? (
                                       <InlineEdit value={item.Label} multiline placeholder="หัวข้อย่อย..."
                                         onSave={(label) => updateItem.mutate({ id: item.ID, label })} onCancel={() => setEditingItem(null)} />
@@ -326,13 +326,13 @@ function RouteComponent() {
 
                                 {addingItemFor === topic.ID ? (
                                   <div className="flex items-center gap-2 mt-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-300 shrink-0" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-teal-300 shrink-0" />
                                     <InlineEdit value="" multiline placeholder="เช่น 1.1 มีบันทึกข้อความ..."
                                       onSave={(label) => createItem.mutate({ topicId: topic.ID, label })} onCancel={() => setAddingItemFor(null)} />
                                   </div>
                                 ) : (
                                   <button onClick={() => setAddingItemFor(topic.ID)}
-                                    className="flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-700 font-medium mt-1 transition-colors">
+                                    className="flex items-center gap-1.5 text-xs text-teal-600 hover:text-teal-700 font-medium mt-1 transition-colors">
                                     <Plus className="w-3.5 h-3.5" /> เพิ่มหัวข้อย่อย
                                   </button>
                                 )}
@@ -343,13 +343,13 @@ function RouteComponent() {
                       })}
 
                       {addingTopicFor === moit.ID ? (
-                        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 px-4 py-3">
+                        <div className="rounded-xl border border-teal-200 bg-teal-50/50 px-4 py-3">
                           <InlineEdit value="" multiline placeholder="เช่น 1. คำสั่ง / ประกาศ ที่ระบุกรอบแนวทาง..."
                             onSave={(label) => createTopic.mutate({ moitId: moit.ID, label })} onCancel={() => setAddingTopicFor(null)} />
                         </div>
                       ) : (
                         <button onClick={() => setAddingTopicFor(moit.ID)}
-                          className="flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors pt-1">
+                          className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors pt-1">
                           <Plus className="w-4 h-4" /> เพิ่มหัวข้อหลัก
                         </button>
                       )}
@@ -374,13 +374,13 @@ function AddMoitForm({ defaultName = '', defaultDesc = '', onSave, onCancel }: {
     <div className="flex items-start gap-2 flex-1">
       <div className="flex flex-col gap-2 flex-1">
         <input autoFocus type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="ชื่อ เช่น MOIT1"
-          className="px-3 py-1.5 text-sm border border-emerald-400 rounded-lg focus:ring-2 focus:ring-emerald-500/20 outline-none" />
+          className="px-3 py-1.5 text-sm border border-teal-400 rounded-lg focus:ring-2 focus:ring-teal-500/20 outline-none" />
         <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="คำอธิบาย เช่น หน่วยงานมีการวางระบบ..." rows={2}
-          className="px-3 py-1.5 text-sm border border-emerald-400 rounded-lg focus:ring-2 focus:ring-emerald-500/20 outline-none resize-none" />
+          className="px-3 py-1.5 text-sm border border-teal-400 rounded-lg focus:ring-2 focus:ring-teal-500/20 outline-none resize-none" />
       </div>
       <div className="flex flex-col gap-1.5 shrink-0">
         <button onClick={() => name.trim() && desc.trim() && onSave(name.trim(), desc.trim())}
-          className="w-7 h-7 rounded-lg bg-emerald-500 hover:bg-emerald-600 flex items-center justify-center transition-colors">
+          className="w-7 h-7 rounded-lg bg-teal-500 hover:bg-teal-600 flex items-center justify-center transition-colors">
           <Check className="w-3.5 h-3.5 text-white" />
         </button>
         <button onClick={onCancel}

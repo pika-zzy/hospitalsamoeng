@@ -77,9 +77,9 @@ export default function News_page() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* ══ ประชาสัมพันธ์ ══ */}
-          <div className="flex flex-col rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-white">
+          <div className="flex flex-col rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white">
             {/* Card header strip */}
-            <div className="flex items-center gap-3 px-6 py-5 bg-linear-to-r from-blue-600 to-blue-500">
+            <div className="flex items-center gap-3 px-6 py-5 bg-linear-to-r from-teal-600 to-teal-500">
               <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm">
                 <Megaphone className="w-5 h-5 text-white" />
               </div>
@@ -87,7 +87,7 @@ export default function News_page() {
                 <h3 className="text-lg font-bold text-white leading-none">
                   ข่าวประชาสัมพันธ์
                 </h3>
-                <p className="text-xs text-blue-100 mt-0.5">General Announcement</p>
+                <p className="text-xs text-teal-100 mt-0.5">General Announcement</p>
               </div>
             </div>
 
@@ -97,28 +97,28 @@ export default function News_page() {
                 latestGeneral.map((info, idx) => (
                   <div
                     key={info.id}
-                    onClick={() => (window.location.href = `/news/${info.id}`)}
-                    className="group flex gap-4 px-6 py-4 hover:bg-blue-50/40 transition-colors duration-200 cursor-pointer"
+                    onClick={() => navigate({ to: "/news/$id", params: { id: String(info.id) } })}
+                    className="group flex gap-4 px-6 py-4 hover:bg-teal-50/40 transition-colors duration-200 cursor-pointer"
                   >
                     {/* Index number */}
-                    <span className="shrink-0 mt-0.5 text-2xl font-black text-blue-100 group-hover:text-blue-200 transition-colors w-7 leading-none select-none">
+                    <span className="shrink-0 mt-0.5 text-2xl font-black text-teal-100 group-hover:text-teal-200 transition-colors w-7 leading-none select-none">
                       {String(idx + 1).padStart(2, "0")}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-700 transition-colors line-clamp-2 leading-snug">
+                      <p className="text-sm font-semibold text-gray-800 group-hover:text-teal-700 transition-colors line-clamp-2 leading-snug">
                         {info.title}
                       </p>
-                      <p className="text-xs text-gray-400 mt-1 line-clamp-1">
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-1">
                         {info.description}
                       </p>
                       {info.date && (
-                        <div className="flex items-center gap-1 mt-1.5 text-[11px] text-gray-400">
+                        <div className="flex items-center gap-1 mt-1.5 text-[11px] text-gray-500">
                           <Clock className="w-3 h-3" />
                           {formatDate(info.date)}
                         </div>
                       )}
                     </div>
-                    <ChevronRight className="shrink-0 w-4 h-4 text-gray-300 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all mt-0.5" />
+                    <ChevronRight className="shrink-0 w-4 h-4 text-gray-300 group-hover:text-teal-400 group-hover:translate-x-0.5 transition-all mt-0.5" />
                   </div>
                 ))
               ) : (
@@ -133,7 +133,7 @@ export default function News_page() {
             <div className="px-6 py-3 border-t border-gray-50 bg-gray-50/50">
               <button
                 onClick={() => navigate({ to: "/news" })}
-                className="text-xs font-semibold text-blue-500 hover:text-blue-700 transition-colors"
+                className="text-xs font-semibold text-teal-500 hover:text-teal-700 transition-colors"
               >
                 ดูประกาศทั้งหมด →
               </button>
@@ -141,7 +141,7 @@ export default function News_page() {
           </div>
 
           {/* ══ รับสมัครงาน ══ */}
-          <div className="flex flex-col rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-white">
+          <div className="flex flex-col rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white">
             {/* Card header strip */}
             <div className="flex items-center gap-3 px-6 py-5 bg-linear-to-r from-green-600 to-green-500">
               <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm">
@@ -161,7 +161,7 @@ export default function News_page() {
                 latestJob.map((info) => (
                   <div
                     key={info.id}
-                    onClick={() => (window.location.href = `/news/${info.id}`)}
+                    onClick={() => navigate({ to: "/news/$id", params: { id: String(info.id) } })}
                     className="group flex gap-4 px-6 py-4 hover:bg-green-50/40 transition-colors duration-200 cursor-pointer"
                   >
                     <div className="flex-1 min-w-0">
@@ -173,9 +173,9 @@ export default function News_page() {
                           ใหม่
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400 line-clamp-1">{info.description}</p>
+                      <p className="text-xs text-gray-500 line-clamp-1">{info.description}</p>
                       {info.date && (
-                        <div className="flex items-center gap-1 mt-1.5 text-[11px] text-gray-400">
+                        <div className="flex items-center gap-1 mt-1.5 text-[11px] text-gray-500">
                           <Clock className="w-3 h-3" />
                           {formatDate(info.date)}
                         </div>

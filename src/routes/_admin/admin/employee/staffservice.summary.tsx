@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { requestAPI } from '@/lib/api'
-import type { System } from '@/interface/staff_info'
+import type { SystemUser } from '@/interface/user'
 import { DataTable, type DataTableColumn } from '@/components/data-table'
 import { SummaryPageShell } from '@/components/summary-page-shell'
 
@@ -11,45 +11,43 @@ export const Route = createFileRoute('/_admin/admin/employee/staffservice/summar
 })
 
 function StaffSummaryPage() {
-  const { data, isLoading } = useQuery<System[]>({
-    queryKey: ['staff'],
+  const { data, isLoading } = useQuery<SystemUser[]>({
+    queryKey: ['users'],
     queryFn: async () => {
-      const resp = await requestAPI<System[]>({ method: 'GET', url: '/staff' })
+      const resp = await requestAPI<SystemUser[]>({ method: 'GET', url: '/users' })
       return resp.success ? resp.data : []
     },
     staleTime: 5 * 60 * 1000,
   })
 
-  // Adjust field names below to match the real System (staff) shape if it differs.
-  const columns: DataTableColumn<System>[] = [
+  const columns: DataTableColumn<SystemUser>[] = [
+    {
+      key: 'id',
+      header: 'ไอดี',
+      render: (row) => row.id,
+    },
     {
       key: 'name',
-      header: 'ชื่อ-สกุล',
-      render: (row: any) => row.name ?? row.full_name ?? '-',
-      searchValue: (row: any) => row.name ?? row.full_name ?? '',
+      header: 'ชื่อ',
+      render: (row) => row.name,
+      searchValue: (row) => row.name,
     },
     {
-      key: 'position',
-      header: 'ตำแหน่ง',
-      render: (row: any) => row.position ?? row.role ?? '-',
-    },
-    {
-      key: 'department',
-      header: 'หน่วยงาน',
-      render: (row: any) => row.department ?? row.unit ?? '-',
+      key: 'role',
+      header: 'สิทธิ์การใช้งาน',
+      render: (row) => row.role,
+      searchValue: (row) => row.role,
     },
     {
       key: 'status',
       header: 'สถานะ',
-      render: (row: any) => (
+      render: (row) => (
         <span
-          className="text-xs px-2 py-0.5 rounded-sm border"
-          style={{
-            borderColor: '#E4DECF',
-            color: row.status === 'active' ? '#225C57' : '#8B93A1',
-          }}
+          className={`text-xs px-2 py-0.5 rounded-sm border border-line ${
+            row.is_active ? 'text-teal' : 'text-faint'
+          }`}
         >
-          {row.status ?? 'ปฏิบัติงาน'}
+          {row.is_active ? 'ใช้งานอยู่' : 'ปิดใช้งาน'}
         </span>
       ),
     },
@@ -59,18 +57,18 @@ function StaffSummaryPage() {
     <SummaryPageShell
       crumbs={[
         { label: 'ภาพรวมระบบ', to: '/admin/dashboard' },
-        { label: 'เจ้าหน้าที่' },
+        { label: 'ผู้ใช้งานในระบบ' },
       ]}
-      title="เจ้าหน้าที่ทั้งหมด"
-      subtitle="รายชื่อบุคลากรทั้งหมดในระบบ ค้นหาและจัดการได้จากตารางด้านล่าง"
+      title="ผู้ใช้งานในระบบทั้งหมด"
+      subtitle="รายชื่อผู้ใช้งานทั้งหมดในระบบ ค้นหาและจัดการได้จากตารางด้านล่าง"
     >
       <DataTable
         data={data ?? []}
         columns={columns}
         isLoading={isLoading}
-        searchPlaceholder="ค้นหาเจ้าหน้าที่..."
-        emptyLabel="ยังไม่มีเจ้าหน้าที่ในระบบ"
-        rowKey={(row: any) => row.id ?? row._id ?? JSON.stringify(row)}
+        searchPlaceholder="ค้นหาผู้ใช้งาน..."
+        emptyLabel="ยังไม่มีผู้ใช้งานในระบบ"
+        rowKey={(row) => row.id}
       />
     </SummaryPageShell>
   )

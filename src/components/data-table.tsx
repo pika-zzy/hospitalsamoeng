@@ -1,16 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 
-const tokens = {
-  ink: '#16233D',
-  paper: '#F6F3EC',
-  brass: '#B8863F',
-  teal: '#225C57',
-  line: '#E4DECF',
-  muted: '#5B6577',
-  faint: '#8B93A1',
-}
-
 export interface DataTableColumn<T> {
   key: string
   header: string
@@ -48,7 +38,7 @@ export function DataTable<T>({
     const q = query.trim().toLowerCase()
     return data.filter((row) =>
       columns.some((col) => {
-        const val = col.searchValue ? col.searchValue(row) : String((row as any)[col.key] ?? '')
+        const val = col.searchValue ? col.searchValue(row) : String((row as Record<string, unknown>)[col.key] ?? '')
         return val.toLowerCase().includes(q)
       }),
     )
@@ -62,11 +52,8 @@ export function DataTable<T>({
     <div>
       {/* Search */}
       <div className="flex items-center gap-2 mb-4">
-        <div
-          className="flex items-center gap-2 px-3 py-2 rounded-sm border w-full sm:w-80"
-          style={{ borderColor: tokens.line, backgroundColor: '#FFFFFF' }}
-        >
-          <Search className="w-4 h-4" style={{ color: tokens.faint }} />
+        <div className="flex items-center gap-2 px-3 py-2 rounded-sm border border-line bg-white w-full sm:w-80">
+          <Search className="w-4 h-4 text-faint" />
           <input
             value={query}
             onChange={(e) => {
@@ -74,26 +61,24 @@ export function DataTable<T>({
               setPage(1)
             }}
             placeholder={searchPlaceholder}
-            className="w-full text-sm bg-transparent outline-none"
-            style={{ color: tokens.ink }}
+            className="w-full text-sm bg-transparent outline-none text-ink"
           />
         </div>
-        <span className="text-xs ml-auto hidden sm:inline" style={{ color: tokens.faint }}>
+        <span className="text-xs ml-auto hidden sm:inline text-faint">
           {filtered.length} รายการ
         </span>
       </div>
 
       {/* Table */}
-      <div className="border rounded-sm overflow-hidden" style={{ borderColor: tokens.line }}>
+      <div className="border border-line rounded-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ backgroundColor: '#FFFFFF', borderBottom: `1px solid ${tokens.line}` }}>
+              <tr className="bg-white border-b border-line">
                 {columns.map((col) => (
                   <th
                     key={col.key}
-                    className={`text-left px-4 py-3 font-medium uppercase tracking-wider text-xs ${col.className ?? ''}`}
-                    style={{ color: tokens.faint }}
+                    className={`text-left px-4 py-3 font-medium uppercase tracking-wider text-xs text-faint ${col.className ?? ''}`}
                   >
                     {col.header}
                   </th>
@@ -103,13 +88,13 @@ export function DataTable<T>({
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={columns.length} className="px-4 py-10 text-center" style={{ color: tokens.faint }}>
+                  <td colSpan={columns.length} className="px-4 py-10 text-center text-faint">
                     กำลังโหลดข้อมูล...
                   </td>
                 </tr>
               ) : pageRows.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="px-4 py-10 text-center" style={{ color: tokens.faint }}>
+                  <td colSpan={columns.length} className="px-4 py-10 text-center text-faint">
                     {emptyLabel}
                   </td>
                 </tr>
@@ -117,14 +102,11 @@ export function DataTable<T>({
                 pageRows.map((row, i) => (
                   <tr
                     key={rowKey(row)}
-                    style={{
-                      borderBottom: i < pageRows.length - 1 ? `1px solid ${tokens.line}` : undefined,
-                      backgroundColor: tokens.paper,
-                    }}
+                    className={`bg-paper ${i < pageRows.length - 1 ? 'border-b border-line' : ''}`}
                   >
                     {columns.map((col) => (
-                      <td key={col.key} className={`px-4 py-3 ${col.className ?? ''}`} style={{ color: tokens.ink }}>
-                        {col.render ? col.render(row) : String((row as any)[col.key] ?? '-')}
+                      <td key={col.key} className={`px-4 py-3 text-ink ${col.className ?? ''}`}>
+                        {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '-')}
                       </td>
                     ))}
                   </tr>
@@ -138,15 +120,14 @@ export function DataTable<T>({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <span className="text-xs" style={{ color: tokens.faint }}>
+          <span className="text-xs text-faint">
             หน้า {currentPage} จาก {totalPages}
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-sm border disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ borderColor: tokens.line, color: tokens.ink }}
+              className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-sm border border-line text-ink disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-4 h-4" />
               ก่อนหน้า
@@ -154,8 +135,7 @@ export function DataTable<T>({
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-sm border disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ borderColor: tokens.line, color: tokens.ink }}
+              className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-sm border border-line text-ink disabled:opacity-40 disabled:cursor-not-allowed"
             >
               ถัดไป
               <ChevronRight className="w-4 h-4" />
@@ -166,5 +146,3 @@ export function DataTable<T>({
     </div>
   )
 }
-
-export { tokens as dataTableTokens }

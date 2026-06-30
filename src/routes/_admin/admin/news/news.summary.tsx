@@ -20,43 +20,31 @@ function NewsSummaryPage() {
     staleTime: 5 * 60 * 1000,
   })
 
-  // Adjust field names below to match the real NewsInfo shape if it differs.
   const columns: DataTableColumn<NewsInfo>[] = [
     {
       key: 'title',
       header: 'หัวข้อข่าว',
-      render: (row: any) => row.title ?? row.name ?? '-',
-      searchValue: (row: any) => row.title ?? row.name ?? '',
+      render: (row) => row.title,
+      searchValue: (row) => row.title,
     },
     {
-      key: 'category',
-      header: 'หมวดหมู่',
-      render: (row: any) => row.category ?? row.type ?? '-',
-    },
-    {
-      key: 'created_at',
-      header: 'วันที่เผยแพร่',
-      render: (row: any) => {
-        const d = row.created_at ?? row.createdAt ?? row.date
-        if (!d) return '-'
-        const date = new Date(d)
-        return isNaN(date.getTime()) ? String(d) : date.toLocaleDateString('th-TH')
-      },
-    },
-    {
-      key: 'status',
-      header: 'สถานะ',
-      render: (row: any) => (
-        <span
-          className="text-xs px-2 py-0.5 rounded-sm border"
-          style={{
-            borderColor: '#E4DECF',
-            color: row.status === 'published' || row.status === 'active' ? '#225C57' : '#8B93A1',
-          }}
-        >
-          {row.status ?? 'เผยแพร่แล้ว'}
+      key: 'type',
+      header: 'ประเภท',
+      render: (row) => (
+        <span className="text-xs px-2 py-0.5 rounded-sm border border-line text-teal">
+          {row.type}
         </span>
       ),
+      searchValue: (row) => row.type,
+    },
+    {
+      key: 'date',
+      header: 'วันที่เผยแพร่',
+      render: (row) => {
+        if (!row.date) return '-'
+        const date = new Date(row.date)
+        return isNaN(date.getTime()) ? row.date : date.toLocaleDateString('th-TH')
+      },
     },
   ]
 
@@ -75,7 +63,7 @@ function NewsSummaryPage() {
         isLoading={isLoading}
         searchPlaceholder="ค้นหาข่าว..."
         emptyLabel="ยังไม่มีข่าวในระบบ"
-        rowKey={(row: any) => row.id ?? row._id ?? JSON.stringify(row)}
+        rowKey={(row) => row.id}
       />
     </SummaryPageShell>
   )
