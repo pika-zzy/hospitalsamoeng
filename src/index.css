@@ -1,12 +1,34 @@
 @import "tailwindcss";
+
+/* Admin palette — civic/public-service identity: deep ink-navy + warm brass
+   accent on a warm paper background. Exposed as Tailwind color tokens so admin
+   pages use `bg-ink`, `text-muted`, `border-line`, etc. instead of inline hex. */
+@theme {
+  --color-ink: #16233d;
+  --color-paper: #f6f3ec;
+  --color-brass: #b8863f;
+  --color-teal: #225c57;
+  --color-line: #e4decf;
+  --color-muted: #5b6577;
+  --color-faint: #8b93a1;
+  --color-subtle: #7a8294;
+  --color-danger: #a3382f;
+  --color-violet: #6b5b95;
+}
+
 @font-face {
   font-family: "THSarabun";
   src: url("/font/THSarabunNew.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
+  /* THSarabun renders visually smaller than Latin fonts at the same font-size.
+     size-adjust scales every glyph up project-wide so existing Tailwind text
+     sizes look right — tune this one number instead of editing each component. */
+  size-adjust: 135%;
 }
 @layer utilities {
   .font-sarabun {
     font-family: "THSarabun";
   }
+  
 }

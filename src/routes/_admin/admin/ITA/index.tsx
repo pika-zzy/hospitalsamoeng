@@ -60,10 +60,10 @@ function SelectDropdown({ value, onChange, options, placeholder, disabled }: Sel
         className={`w-full appearance-none px-4 py-2.5 pr-10 rounded-xl border text-sm font-medium
                     bg-white outline-none transition-all duration-200 cursor-pointer
                     ${disabled
-                      ? 'border-gray-100 text-gray-300 cursor-not-allowed bg-gray-50'
+                      ? 'border-line text-gray-300 cursor-not-allowed bg-gray-50'
                       : value
-                        ? 'border-emerald-300 text-gray-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'
-                        : 'border-gray-200 text-gray-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20'
+                        ? 'border-teal-300 text-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20'
+                        : 'border-line text-gray-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-500/20'
                     }`}
       >
         <option value="">{placeholder}</option>
@@ -357,22 +357,22 @@ function RouteComponent() {
   
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="text-ink">
       <div className="max-w-3xl mx-auto px-6 py-12">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <div>
-            <p className="text-xs font-medium text-emerald-600 tracking-widest uppercase mb-1">Admin</p>
+            <p className="text-xs font-medium text-teal-600 tracking-widest uppercase mb-1">Admin</p>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-              <span className="w-1 h-7 bg-emerald-500 rounded-full inline-block" />
+              <span className="w-1 h-7 bg-teal-500 rounded-full inline-block" />
               เพิ่มงาน ITA
             </h1>
           </div>
           <button
             onClick={() => navigate({ to: '/admin/moit' })}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200
-                       hover:border-emerald-400 text-gray-600 hover:text-emerald-700
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-line
+                       hover:border-teal-400 text-gray-600 hover:text-teal-700
                        text-sm font-medium rounded-xl transition-all duration-200 shadow-sm"
           >
             <Settings className="w-4 h-4" />
@@ -382,8 +382,8 @@ function RouteComponent() {
 
         {/* Success */}
         {saveSuccess && (
-          <div className="mb-6 flex items-center gap-3 bg-emerald-50 border border-emerald-100
-                          text-emerald-700 text-sm px-4 py-3 rounded-xl">
+          <div className="mb-6 flex items-center gap-3 bg-teal-50 border border-teal-100
+                          text-teal-700 text-sm px-4 py-3 rounded-xl">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             บันทึกข้อมูลสำเร็จแล้วครับ
           </div>
@@ -392,17 +392,17 @@ function RouteComponent() {
         <div className="space-y-4">
 
           {/* Step 1 — เลือกปี */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-5">
+          <div className="bg-white border border-line rounded-2xl p-5">
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm font-semibold text-gray-700">
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full
-                                 bg-emerald-100 text-emerald-700 text-xs font-bold mr-2">1</span>
+                                 bg-teal-100 text-teal-700 text-xs font-bold mr-2">1</span>
                 เลือกปีงบประมาณ
               </p>
               <button
                 type="button"
                 onClick={() => setShowAddYear((v) => !v)}
-                className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700
+                className="flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700
                            font-medium transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -446,17 +446,17 @@ function RouteComponent() {
 
           {/* Step 2 — เลือก MOIT */}
           {selectedYearID && (
-            <div className="bg-white border border-gray-100 rounded-2xl p-5">
+            <div className="bg-white border border-line rounded-2xl p-5">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-semibold text-gray-700">
                   <span className="inline-flex items-center justify-center w-5 h-5 rounded-full
-                                   bg-emerald-100 text-emerald-700 text-xs font-bold mr-2">2</span>
+                                   bg-teal-100 text-teal-700 text-xs font-bold mr-2">2</span>
                   เลือกหมวด MOIT
                 </p>
                 <button
                   type="button"
                   onClick={() => setShowAddMoit((v) => !v)}
-                  className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700
+                  className="flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700
                              font-medium transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -508,15 +508,15 @@ function RouteComponent() {
 
           {/* Step 3 — Topics + Items */}
           {selectedMoit && (
-            <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+            <div className="bg-white border border-line rounded-2xl overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
                 <p className="text-sm font-semibold text-gray-700">
                   <span className="inline-flex items-center justify-center w-5 h-5 rounded-full
-                                   bg-emerald-100 text-emerald-700 text-xs font-bold mr-2">3</span>
+                                   bg-teal-100 text-teal-700 text-xs font-bold mr-2">3</span>
                   อัปโหลดเอกสาร — {selectedMoit.Name}
                 </p>
                 {filledRows.length > 0 && (
-                  <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2.5 py-1 rounded-full">
+                  <span className="text-xs text-teal-600 font-medium bg-teal-50 px-2.5 py-1 rounded-full">
                     {filledRows.length} / {totalItems} รายการ
                   </span>
                 )}
@@ -531,7 +531,7 @@ function RouteComponent() {
                   ยังไม่มีหัวข้อใน {selectedMoit.Name} —{' '}
                   <button
                     onClick={() => navigate({ to: '/admin/moit' })}
-                    className="text-emerald-600 hover:underline"
+                    className="text-teal-600 hover:underline"
                   >
                     ไปเพิ่มหัวข้อ
                   </button>
@@ -543,7 +543,7 @@ function RouteComponent() {
                     .map((topic) => (
                       <div key={topic.ID} className="px-6 py-5">
                         <div className="flex items-start gap-2 mb-4">
-                          <ChevronRight className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                          <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 shrink-0" />
                           <p className="text-sm font-semibold text-gray-700 leading-snug">
                             {topic.Label}
                           </p>
@@ -561,8 +561,8 @@ function RouteComponent() {
                                   key={item.ID}
                                   className={`rounded-xl border p-3.5 transition-all duration-200
                                     ${hasFile
-                                      ? 'border-emerald-200 bg-emerald-50/40'
-                                      : 'border-gray-100 bg-gray-50'
+                                      ? 'border-teal-200 bg-teal-50/40'
+                                      : 'border-line bg-gray-50'
                                     }`}
                                 >
                                   <div className="flex items-start gap-3">
@@ -576,9 +576,9 @@ function RouteComponent() {
                                           placeholder="ชื่อเอกสาร (ถ้าต้องการระบุเพิ่มเติม)"
                                           value={row.title}
                                           onChange={(e) => updateRow(item.ID, 'title', e.target.value)}
-                                          className="mt-2 w-full px-3 py-1.5 text-xs border border-gray-200
-                                                     rounded-lg bg-white focus:border-emerald-500
-                                                     focus:ring-2 focus:ring-emerald-500/20 outline-none
+                                          className="mt-2 w-full px-3 py-1.5 text-xs border border-line
+                                                     rounded-lg bg-white focus:border-teal-500
+                                                     focus:ring-2 focus:ring-teal-500/20 outline-none
                                                      transition-all placeholder:text-gray-300"
                                         />
                                       )}
@@ -587,7 +587,7 @@ function RouteComponent() {
                                     <div className="shrink-0 flex items-center gap-2">
                                       {hasFile ? (
                                         <>
-                                          <span className="text-[11px] text-emerald-600 font-medium
+                                          <span className="text-[11px] text-teal-600 font-medium
                                                            max-w-25 truncate hidden sm:block">
                                             {row.file!.name}
                                           </span>
@@ -602,8 +602,8 @@ function RouteComponent() {
                                         </>
                                       ) : (
                                         <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-                                                          bg-white border border-gray-200 hover:border-emerald-400
-                                                          text-xs text-gray-500 hover:text-emerald-600
+                                                          bg-white border border-line hover:border-teal-400
+                                                          text-xs text-gray-500 hover:text-teal-600
                                                           cursor-pointer transition-all duration-200 whitespace-nowrap">
                                           <Upload className="w-3.5 h-3.5" />
                                           อัปโหลด PDF
@@ -646,7 +646,7 @@ function RouteComponent() {
               className={`w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2
                          transition-all duration-200
                          ${filledRows.length > 0
-                           ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow-md'
+                           ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm hover:shadow-md'
                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                          }`}
             >

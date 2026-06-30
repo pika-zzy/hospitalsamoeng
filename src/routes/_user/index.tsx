@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import Main_page from '@/components/page/Mainpage/Mainpage'
 import News_page from '@/components/page/Newspage/Newspage'
 import Activity from '@/components/page/Activity/Activity'
+import StaffPortal from '@/components/page/Staffpage'
 
 
 export const Route = createFileRoute('/_user/')({
@@ -10,7 +11,7 @@ export const Route = createFileRoute('/_user/')({
 
 function Home() {
   return (
-  <div className="flex flex-col gap-0 overflow-x-hidden">
+  <div className="flex flex-col gap-0 overflow-x-hidden font-sarabun">
       {/* 1. ส่วนต้อนรับ (Hero) */}
       <section className="relative">
         <Main_page />
@@ -26,7 +27,11 @@ function Home() {
         <Activity />
       </section>
 
-    
+      {/* 4. ส่วนสำหรับเจ้าหน้าที่ */}
+      <section className=" bg-gray-50/50">
+        <StaffPortal />
+      </section>
+
     </div>
   )
 }

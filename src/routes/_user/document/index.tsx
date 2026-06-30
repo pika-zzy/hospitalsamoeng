@@ -16,7 +16,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] py-12 font-sans">
+    <div className="min-h-screen bg-[#f4f6f8] py-12 ">
       <div className="mx-auto px-4 max-w-3xl">
         
         {/* Page Header */}
@@ -25,10 +25,10 @@ function RouteComponent() {
             <FolderOpen className="w-7 h-7" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 tracking-tight">
+            <h1 className="text-3xl md:text-3xl font-bold text-gray-800 tracking-tight">
               เอกสารที่เกี่ยวข้อง
             </h1>
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-gray-500 text-xl mt-1">
               เลือกหัวข้อเพื่อดูและดาวน์โหลดเอกสาร
             </p>
           </div>
@@ -50,13 +50,13 @@ function RouteComponent() {
                 onClick={() => toggle(doc.id)}
                 className="w-full flex items-center justify-between px-6 py-5 text-left bg-white hover:bg-gray-50/50 transition-colors focus:outline-none"
               >
-                <span className={`text-lg font-semibold transition-colors ${
+                <span className={`text-xl font-semibold transition-colors ${
                   openId === doc.id ? "text-green-700" : "text-gray-800"
                 }`}>
                   {doc.title}
                 </span>
 
-                <div className={`p-1.5 rounded-full transition-colors ${
+                <div className={`p-1.5 rounded-full transition-colors  ${
                   openId === doc.id ? "bg-green-100 text-green-600" : "text-gray-400 bg-gray-50"
                 }`}>
                   <ChevronDown
@@ -90,7 +90,7 @@ function RouteComponent() {
                           <div className="text-gray-400 group-hover:text-green-500 transition-colors">
                             <FileText className="w-5 h-5" />
                           </div>
-                          <span className="text-gray-700 font-medium group-hover:text-green-700 transition-colors line-clamp-1">
+                          <span className="text-gray-700 text-lg font-medium group-hover:text-green-700 transition-colors line-clamp-1">
                             {item.title}
                           </span>
                         </div>

@@ -1,7 +1,6 @@
-import { Card } from '@/components/ui/card'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react';
-import { Megaphone, Briefcase, Calendar, ChevronRight, FileText } from 'lucide-react';
+import { Megaphone, Briefcase, Calendar, ArrowRight, FileText, Newspaper } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { requestAPI } from '@/lib/api';
 import type { NewsInfo } from '@/interface/newinfo';
@@ -11,7 +10,7 @@ export const Route = createFileRoute('/_user/news/')({
 })
 
 function RouteComponent() {
-  
+
   const { data } = useQuery<NewsInfo[]>({
     queryKey: ["news"],
     refetchOnWindowFocus: false,
@@ -21,9 +20,7 @@ function RouteComponent() {
         method: "GET",
         url: "/news",
       });
-      if (resp.success) {
-        return resp.data;
-      }
+      if (resp.success) return resp.data;
       throw new Error("Failed to fetch news");
     },
   });
@@ -32,119 +29,153 @@ function RouteComponent() {
   const [tap, setTap] = useState<'job' | 'general'>('general');
 
   const { latestJob, latestGeneral } = useMemo(() => {
-    const job = data?.filter(n => n.type === "ประกาศจัดซื้อจัดจ้าง") || [];
-    const genera = data?.filter(n => n.type === "ประชาสัมพันธ์") || [];
-
-    const sortByDate = (arr: NewsInfo[]) => {
-      return [...arr].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    }
+    const sortByDate = (arr: NewsInfo[]) =>
+      [...arr].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return {
-      latestJob: sortByDate(job),
-      latestGeneral: sortByDate(genera),
-    }
+      latestJob: sortByDate(data?.filter(n => n.type === "ประกาศจัดซื้อจัดจ้าง") || []),
+      latestGeneral: sortByDate(data?.filter(n => n.type === "ประชาสัมพันธ์") || []),
+    };
   }, [data]);
 
   const latestList = tap === 'job' ? latestJob : latestGeneral;
-
+  const isJob = tap === 'job';
 
   return (
-    console.log(data),
-    <div className="min-h-screen bg-slate-50/50 pb-20">
-      {/* Header Section */}
-      <div className="bg-white border-b border-gray-100 mb-8">
-        <div className="max-w-7xl mx-auto px-6 py-12 text-center">
-          <h1 className="text-4xl font-black text-gray-800 tracking-tight mb-4">
-            ศูนย์ข้อมูลข่าวสาร <span className="text-green-600">โรงพยาบาล</span>
+    <div className="min-h-screen bg-gray-50/60 pb-20">
+
+      {/* ─── Hero Header ─── */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-5xl mx-auto px-6 py-14 text-center">
+
+          <div className="inline-flex items-center gap-2 bg-green-50 border border-green-100 rounded-full px-4 py-1.5 mb-5">
+            <Newspaper className="w-3.5 h-3.5 text-green-600" />
+            <span className="text-[11px] font-semibold text-green-700 tracking-wider uppercase">ข่าวสารและประกาศ</span>
+          </div>
+
+          <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-3">
+            ศูนย์ข้อมูลข่าวสาร<span className="text-green-600">โรงพยาบาล</span>
           </h1>
-          <p className="text-gray-500 max-w-xl mx-auto text-sm md:text-base">
-            ติดตามประกาศรับสมัครงาน ข่าวประชาสัมพันธ์ และกิจกรรมต่างๆ เพื่อเข้าถึงบริการและโอกาสร่วมงานกับเรา
+          <p className="text-gray-500 max-w-lg mx-auto text-[15px] leading-relaxed">
+            ติดตามข่าวประชาสัมพันธ์ ประกาศจัดซื้อจัดจ้าง และกิจกรรมต่างๆ ของโรงพยาบาลสะเมิง
           </p>
 
-          {/* Modern Tabs Design */}
-          <div className="flex justify-center mt-10">
-            <div className="inline-flex p-1.5 bg-gray-100 rounded-2xl w-full max-w-md">
+          {/* ─── Tabs ─── */}
+          <div className="flex justify-center mt-8">
+            <div className="inline-flex p-1 bg-gray-100 rounded-2xl gap-1">
               <button
                 onClick={() => setTap('general')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
-                  tap === 'general' 
-                  ? 'bg-white text-blue-600 shadow-md' 
-                  : 'text-gray-500 hover:text-gray-700'
-                }`}
+                className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200
+                  ${!isJob
+                    ? 'bg-white text-green-700 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-600'
+                  }`}
               >
                 <Megaphone className="w-4 h-4" />
                 ประชาสัมพันธ์
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none
+                  ${!isJob ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                  {latestGeneral.length}
+                </span>
               </button>
               <button
                 onClick={() => setTap('job')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
-                  tap === 'job' 
-                  ? 'bg-white text-green-600 shadow-md' 
-                  : 'text-gray-500 hover:text-gray-700'
-                }`}
+                className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200
+                  ${isJob
+                    ? 'bg-white text-green-700 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-600'
+                  }`}
               >
                 <Briefcase className="w-4 h-4" />
-                รับสมัครงาน
+                ประกาศจัดซื้อจัดจ้าง
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none
+                  ${isJob ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                  {latestJob.length}
+                </span>
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Content Grid */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+      {/* ─── Content ─── */}
+      <div className="max-w-5xl mx-auto px-6 pt-10">
+
+        {/* count label */}
+        {latestList.length > 0 && (
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-5">
+            {isJob ? 'ประกาศจัดซื้อจัดจ้าง' : 'ข่าวประชาสัมพันธ์'} · {latestList.length} รายการ
+          </p>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {latestList.length > 0 ? (
             latestList.map((info) => (
-              <Card 
+              <div
                 key={info.id}
-                className='group relative flex flex-col bg-white rounded-[2rem] border-0 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer p-6' 
-                onClick={() =>
-                  navigate({
-                    to: "/news/$id",
-                    params: { id: String(info.id) },
-                  })
-                }
+                onClick={() => navigate({ to: "/news/$id", params: { id: String(info.id) } })}
+                className="group flex flex-col bg-white rounded-2xl border border-gray-100 overflow-hidden
+                           cursor-pointer hover:shadow-lg hover:shadow-gray-200/80 hover:-translate-y-1
+                           transition-all duration-300"
               >
-                {/* Badge */}
-                <div className="flex justify-between items-start mb-4">
-                  <div className={`p-2.5 rounded-2xl ${tap === 'job' ? 'bg-blue-50 text-green-600' : 'bg-green-50 text-blue-600'}`}>
-                    {tap === 'job' ? <FileText className="w-5 h-5" /> : <Megaphone className="w-5 h-5" />}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-gray-400">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span className="text-[11px] font-bold">
-                      {new Date(info.date).toLocaleDateString("th-TH", { day: 'numeric', month: 'short', year: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
+                {/* Colored top strip */}
+                <div className={`h-1.5 w-full ${isJob ? 'bg-linear-to-r from-green-500 to-green-600' : 'bg-linear-to-r from-teal-500 to-teal-600'}`} />
 
-                <div className="flex-1">
-                  <h2 className={`text-xl font-bold text-gray-800 mb-3 ${tap === 'job' ? 'group-hover:text-green-600' : 'group-hover:text-blue-600'} transition-colors leading-snug line-clamp-2`}>
+                <div className="p-5 flex flex-col flex-1">
+                  {/* Icon + Date row */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center
+                      ${isJob ? 'bg-green-50 text-green-600' : 'bg-teal-50 text-teal-600'}`}>
+                      {isJob
+                        ? <FileText className="w-4 h-4" />
+                        : <Megaphone className="w-4 h-4" />
+                      }
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(info.date).toLocaleDateString("th-TH", {
+                        day: 'numeric', month: 'short', year: '2-digit'
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <h2 className="text-[14.5px] font-bold text-gray-900 leading-snug line-clamp-2 mb-2
+                                 group-hover:text-green-700 transition-colors flex-1">
                     {info.title}
                   </h2>
-                  <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 mb-6 font-medium">
+
+                  {/* Description */}
+                  <p className="text-[12.5px] text-gray-500 leading-relaxed line-clamp-2 mb-4">
                     {info.description}
                   </p>
-                </div>
 
-                <div className="pt-4 border-t border-gray-50 flex items-center justify-between">
-                  <span className={`text-xs font-bold uppercase tracking-wider ${tap === 'job' ? 'text-green-600' : ' text-blue-600'}`}>อ่านรายละเอียด</span>
-                  <div className={`w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center ${tap === 'job' ? 'group-hover:bg-green-600' : ' group-hover:bg-blue-600'} group-hover:text-white transition-all`}>
-                    <ChevronRight className="w-4 h-4" />
+                  {/* Footer */}
+                  <div className="pt-3 border-t border-gray-50 flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-green-600 uppercase tracking-wider">
+                      อ่านรายละเอียด
+                    </span>
+                    <div className="w-7 h-7 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center
+                                    group-hover:bg-green-600 group-hover:border-green-600 group-hover:text-white transition-all">
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
                   </div>
                 </div>
-              </Card>
+              </div>
             ))
           ) : (
-            <div className="col-span-full py-20 text-center">
-              <div className="bg-white inline-flex p-6 rounded-full shadow-inner mb-4">
-                <FileText className="w-10 h-10 text-gray-200" />
+            /* Empty state */
+            <div className="col-span-full flex flex-col items-center justify-center py-24 gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center">
+                <FileText className="w-7 h-7 text-gray-300" />
               </div>
-              <p className="text-gray-400 font-medium">ขออภัย ยังไม่พบข้อมูลข่าวสารในหมวดนี้</p>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-gray-500">ยังไม่มีข้อมูลในหมวดนี้</p>
+                <p className="text-xs text-gray-300 mt-1">โปรดติดตามประกาศใหม่เร็วๆ นี้</p>
+              </div>
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
