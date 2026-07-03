@@ -22,3 +22,28 @@ export function isValidToken(token: string): boolean {
     return false
   }
 }
+
+// Current user's id from the JWT payload (backend Claims serializes as "UserID").
+// Returns null when there is no valid token — callers must handle that case.
+export function getUserId(): number | null {
+  const token = getToken()
+  if (!token || !isValidToken(token)) return null
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]))
+    return typeof payload.UserID === "number" ? payload.UserID : null
+  } catch {
+    return null
+  }
+}
+
+// Current user's role ("admin" | "employee") from the JWT payload ("Role" claim).
+export function getRole(): string | null {
+  const token = getToken()
+  if (!token || !isValidToken(token)) return null
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]))
+    return typeof payload.Role === "string" ? payload.Role : null
+  } catch {
+    return null
+  }
+}

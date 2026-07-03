@@ -1,12 +1,33 @@
 import { Link, useNavigate, useLocation } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import { LogOut, Bell } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { clearToken } from '@/lib/auth'
+import { clearToken, getRole } from '@/lib/auth'
+import { requestAPI } from '@/lib/api'
 import { NAV } from './nav'
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
+  const role = getRole()
+
+  // สิทธิ์เมนูของ role นี้ (menu key = NAV.to) — admin ไม่ต้องดึง เห็นทุกเมนูเสมอ
+  const { data: allowedMenus } = useQuery<string[]>({
+    queryKey: ['role-permissions', role],
+    enabled: role !== null && role !== 'admin',
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const resp = await requestAPI<string[]>({ method: 'GET', url: `/roles/${role}/permissions` })
+      return resp.success ? resp.data : []
+    },
+  })
+
+  // admin หรือยังโหลดไม่เสร็จ → เห็นทุกเมนู (กัน sidebar กะพริบ/ว่างระหว่างโหลด)
+  // ยังไม่เคยตั้งค่า (list ว่าง) → เห็นทุกเมนู ให้ตรงกับหน้าจัดการสิทธิ์
+  const visibleNav =
+    role === 'admin' || !allowedMenus || allowedMenus.length === 0
+      ? NAV
+      : NAV.filter((item) => allowedMenus.includes(item.to))
 
   const handleLogout = () => {
     clearToken()
@@ -37,7 +58,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           <ul className="space-y-1">
-            {NAV.map((item) => {
+            {visibleNav.map((item) => {
               const isActive = location.pathname.startsWith(item.match)
 
               return (
