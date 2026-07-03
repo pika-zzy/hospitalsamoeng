@@ -5,6 +5,7 @@ import {
   ShieldCheck,
   Users,
   Settings,
+  AppWindow,
 } from 'lucide-react'
 
 // Sidebar navigation model — shared between AdminShell (renders the sidebar)
@@ -48,21 +49,27 @@ export const NAV: NavItem[] = [
     label: 'ITA',
     icon: ShieldCheck,
     to: '/admin/ITA',
-    match: '/',
+    match: '/admin/ITA',
     children: [
       { label: 'รายการเอกสาร', to: '/admin/ITA' },
-      { label: 'ปีงบประมาณ', to: '' },
+
     ],
   },
   {
-    label: 'บุคลากร',
+    label: 'จัดการบุคลากร',
     icon: Users,
-    to: '/admin/dashboard',
-    match: '/',
+    to: '/admin/personnel',
+    match: '/admin/personnel',
     children: [
-      { label: 'รายชื่อบุคลากร', to: '' },
-      { label: 'เพิ่มบุคลากร', to: '' },
+      { label: 'รายการบุคลากร', to: '/admin/personnel' },
+      { label: 'เพิ่มบุคลากร', to: '/admin/personnel/create' },
     ],
+  },
+  {
+    label: 'จัดการ Popup',
+    icon: AppWindow,
+    to: '/admin/popup',
+    match: '/admin/popup',
   },
   {
     label: 'ตั้งค่าระบบ',
