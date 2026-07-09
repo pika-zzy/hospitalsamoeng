@@ -1,241 +1,72 @@
-import { Button } from '@/components/ui/button'
+import { InlineEdit } from '@/components/ui/inline-edit'
 import { requestAPI } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Upload, X, Save, CheckCircle2, ChevronRight, Settings, Plus, ChevronDown } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { ChevronRight, Trash2, FileText, Plus, ExternalLink, Pencil } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/_admin/admin/ITA/')({
   component: RouteComponent,
 })
 
-// --------- Types ---------
+const API_URL = import.meta.env.VITE_API_URL
+
+// --------- Types (mirror ของ GetAllITA — preload Item.Topic.Moit + Year) ---------
 interface ITAYear {
   ID: number
   Year: number
 }
 
-interface Moit {
+interface ITAMoit {
   ID: number
   Name: string
-  Description: string
+  Description: string | null
   YearID: number
 }
 
-interface MoitItem {
+interface ITATopic {
   ID: number
-  TopicID: number
   Label: string
+  Moit: ITAMoit
 }
 
-interface MoitTopic {
+interface ITAItem {
   ID: number
-  MoitID: number
   Label: string
-  Items: MoitItem[]
+  Topic: ITATopic
 }
 
-interface RowFile {
-  item_id: number
-  title: string
-  file: File | null
+interface ITAFile {
+  ID: number
+  Title: string
+  FileURL: string
+  YearID: number
+  Year: ITAYear
+  ItemID: number
+  Item: ITAItem
 }
 
-// --------- Dropdown Component ---------
-interface SelectDropdownProps {
-  value: string
-  onChange: (val: string) => void
-  options: { value: string; label: string }[]
-  placeholder: string
-  disabled?: boolean
+// --------- Grouped shape (Moit → Topic → files) ---------
+interface TopicGroup {
+  topic: { ID: number; Label: string }
+  files: ITAFile[]
+}
+interface MoitGroup {
+  moit: ITAMoit
+  topics: TopicGroup[]
+  fileCount: number
 }
 
-function SelectDropdown({ value, onChange, options, placeholder, disabled }: SelectDropdownProps) {
-  return (
-    <div className="relative">
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        className={`w-full appearance-none px-4 py-2.5 pr-10 rounded-xl border text-sm font-medium
-                    bg-white outline-none transition-all duration-200 cursor-pointer
-                    ${disabled
-                      ? 'border-line text-gray-300 cursor-not-allowed bg-gray-50'
-                      : value
-                        ? 'border-teal-300 text-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20'
-                        : 'border-line text-gray-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-500/20'
-                    }`}
-      >
-        <option value="">{placeholder}</option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-    </div>
-  )
-}
-
-// --------- Inline Add Year ---------
-interface AddYearInlineProps {
-  onSuccess: (year: ITAYear) => void
-}
-
-function AddYearInline({ onSuccess }: AddYearInlineProps) {
-  const [yearInput, setYearInput] = useState('')
-  const [error, setError] = useState('')
-
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const resp = await requestAPI<ITAYear>({
-        method: 'POST',
-        url: '/ita/years',
-        body: { year: Number(yearInput), Year: Number(yearInput) },
-      })
-      if (resp.success && resp.data) return resp.data
-      throw new Error('Failed to add year')
-    },
-    onSuccess: (data) => {
-      onSuccess(data)
-      setYearInput('')
-      setError('')
-    },
-    onError: () => setError('ไม่สามารถเพิ่มปีได้ กรุณาลองใหม่'),
-  })
-
-  const handleAdd = () => {
-    const y = Number(yearInput)
-    if (!yearInput || isNaN(y) || y < 2000 || y > 2100) {
-      setError('กรุณาระบุปี ค.ศ. ที่ถูกต้อง (เช่น 2025)')
-      return
-    }
-    setError('')
-    mutation.mutate()
-  }
-
-  return (
-    <div className="mt-3 p-4 rounded-xl bg-amber-50 border border-amber-100">
-      <p className="text-xs font-semibold text-amber-700 mb-2 flex items-center gap-1.5">
-        <Plus className="w-3.5 h-3.5" /> เพิ่มปีงบประมาณใหม่
-      </p>
-      <div className="flex gap-2">
-        <input
-          type="number"
-          placeholder="ปี ค.ศ. เช่น 2025"
-          value={yearInput}
-          onChange={(e) => setYearInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-          className="flex-1 px-3 py-2 text-sm border border-amber-200 rounded-lg bg-white
-                     focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 outline-none"
-        />
-        <button
-          type="button"
-          onClick={handleAdd}
-          disabled={mutation.isPending}
-          className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium
-                     rounded-lg transition-colors disabled:opacity-60"
-        >
-          {mutation.isPending ? 'กำลังเพิ่ม...' : 'เพิ่ม'}
-        </button>
-      </div>
-      {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
-    </div>
-  )
-}
-
-// --------- Inline Add MOIT ---------
-interface AddMoitInlineProps {
-  yearID: number
-  onSuccess: (moit: Moit) => void
-}
-
-function AddMoitInline({ yearID, onSuccess }: AddMoitInlineProps) {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [error, setError] = useState('')
-
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const resp = await requestAPI<Moit>({
-        method: 'POST',
-        url: `/ita/years/${yearID}/moit`,
-        body: { name, description, Name: name, Description: description },
-      })
-      if (resp.success && resp.data) return resp.data
-      throw new Error('Failed to add MOIT')
-    },
-    onSuccess: (data) => {
-      onSuccess(data)
-      setName('')
-      setDescription('')
-      setError('')
-    },
-    onError: () => setError('ไม่สามารถเพิ่ม MOIT ได้ กรุณาลองใหม่'),
-  })
-
-  const handleAdd = () => {
-    if (!name.trim()) {
-      setError('กรุณาระบุชื่อหมวด MOIT')
-      return
-    }
-    setError('')
-    mutation.mutate()
-  }
-
-  return (
-    <div className="mt-3 p-4 rounded-xl bg-blue-50 border border-blue-100">
-      <p className="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1.5">
-        <Plus className="w-3.5 h-3.5" /> เพิ่มหมวด MOIT ใหม่
-      </p>
-      <div className="space-y-2">
-        <input
-          type="text"
-          placeholder="ชื่อหมวด เช่น MOIT 1"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-blue-200 rounded-lg bg-white
-                     focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 outline-none"
-        />
-        <input
-          type="text"
-          placeholder="คำอธิบาย (ไม่บังคับ)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-          className="w-full px-3 py-2 text-sm border border-blue-200 rounded-lg bg-white
-                     focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 outline-none"
-        />
-        <button
-          type="button"
-          onClick={handleAdd}
-          disabled={mutation.isPending}
-          className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium
-                     rounded-lg transition-colors disabled:opacity-60"
-        >
-          {mutation.isPending ? 'กำลังเพิ่ม...' : 'เพิ่ม MOIT'}
-        </button>
-      </div>
-      {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
-    </div>
-  )
-}
-
-// --------- Main ---------
 function RouteComponent() {
-  const navigate = useNavigate()
   const qc = useQueryClient()
-
   const [selectedYearID, setSelectedYearID] = useState<number | null>(null)
-  const [selectedMoitID, setSelectedMoitID] = useState<number | null>(null)
-  const [rows, setRows] = useState<Record<number, RowFile>>({})
-  const [saveSuccess, setSaveSuccess] = useState(false)
-  const [showAddYear, setShowAddYear] = useState(false)
-  const [showAddMoit, setShowAddMoit] = useState(false)
-  const fileRefs = useRef<Record<number, HTMLInputElement | null>>({})
+  const [openMoit, setOpenMoit] = useState<number | null>(null)
+  const [editingMoit, setEditingMoit] = useState<number | null>(null)
+  const [editingTopic, setEditingTopic] = useState<number | null>(null)
+  const [editingFile, setEditingFile] = useState<number | null>(null)
 
-  // ดึงปีทั้งหมด
+  // ปีทั้งหมด (ใช้เป็นตัวเลือก) — key เดียวกับหน้าอื่นเพื่อ share cache
   const { data: years = [], isLoading: loadingYears } = useQuery<ITAYear[]>({
     queryKey: ['ita-years'],
     refetchOnWindowFocus: false,
@@ -246,429 +77,445 @@ function RouteComponent() {
     },
   })
 
-  // ดึง MOIT ตามปีที่เลือก
-  const { data: moitList = [], isLoading: loadingMoit } = useQuery<Moit[]>({
-    queryKey: ['moit', selectedYearID],
-    enabled: !!selectedYearID,
+  const activeYearID = selectedYearID ?? years[0]?.ID ?? null
+
+  // ไฟล์ ITA ของปีที่เลือก — ยิงทีละหน้าจนครบ
+  // (requestAPI ไม่ส่ง meta.total ออกมา จึงหยุดเมื่อ batch สั้นกว่า limit)
+  const { data: files = [], isLoading: loadingFiles } = useQuery<ITAFile[]>({
+    queryKey: ['ita', activeYearID],
+    enabled: !!activeYearID,
     refetchOnWindowFocus: false,
     queryFn: async () => {
-      const resp = await requestAPI<Moit[]>({
-        
-        method: 'GET',
-        url: `/ita/years/${selectedYearID}/moit`,
-      })
-      console.log('moit resp:', resp) // ดูตรงนี้
-      if (resp.success) return resp.data ?? []
-      return []
-    },
-  })
-  
-
-  const selectedMoit = moitList.find((m) => m.ID === selectedMoitID) ?? null
-
-  // ดึง topics + items
-  const { data: topics = [], isLoading: loadingTopics } = useQuery<MoitTopic[]>({
-    queryKey: ['moit-topics', selectedMoitID],
-    enabled: !!selectedMoitID,
-    refetchOnWindowFocus: false,
-    queryFn: async () => {
-      const resp = await requestAPI<MoitTopic[]>({
-        method: 'GET',
-        url: `/moit/${selectedMoitID}/topics`,
-      })
-      if (resp.success) return resp.data ?? []
-      return []
+      const all: ITAFile[] = []
+      const limit = 100
+      let page = 1
+      while (true) {
+        const resp = await requestAPI<ITAFile[]>({
+          method: 'GET',
+          url: '/ita',
+          query: { year_id: activeYearID, page, limit },
+        })
+        if (!resp.success) break
+        const batch = resp.data ?? []
+        all.push(...batch)
+        if (batch.length < limit) break
+        page++
+      }
+      return all
     },
   })
 
-  // reset rows เมื่อ topics เปลี่ยน
-  useEffect(() => {
-    if (!topics.length) return
-    const initial: Record<number, RowFile> = {}
-    topics.forEach((topic) => {
-      topic.Items.forEach((item) => {
-        initial[item.ID] = { item_id: item.ID, title: '', file: null }
+  // group เป็น tree ฝั่ง client ตาม pattern ITA (ห้ามย้ายไป backend)
+  const groups = useMemo<MoitGroup[]>(() => {
+    const moitMap = new Map<
+      number,
+      { moit: ITAMoit; topics: Map<number, TopicGroup> }
+    >()
+    for (const f of files) {
+      const topic = f.Item?.Topic
+      const moit = topic?.Moit
+      if (!topic || !moit) continue
+      if (!moitMap.has(moit.ID)) moitMap.set(moit.ID, { moit, topics: new Map() })
+      const m = moitMap.get(moit.ID)!
+      if (!m.topics.has(topic.ID)) m.topics.set(topic.ID, { topic, files: [] })
+      m.topics.get(topic.ID)!.files.push(f)
+    }
+    return Array.from(moitMap.values())
+      .map((m) => {
+        const topics = Array.from(m.topics.values()).sort((a, b) =>
+          a.topic.Label.localeCompare(b.topic.Label),
+        )
+        return {
+          moit: m.moit,
+          topics,
+          fileCount: topics.reduce((s, t) => s + t.files.length, 0),
+        }
       })
-    })
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setRows(initial)
-    setSaveSuccess(false)
-  }, [topics])
+      .sort((a, b) => a.moit.Name.localeCompare(b.moit.Name))
+  }, [files])
 
-  const handleYearChange = (val: string) => {
-    setSelectedYearID(val ? Number(val) : null)
-    setSelectedMoitID(null)
-    setRows({})
-    setSaveSuccess(false)
-    setShowAddMoit(false)
+  const totalFiles = files.length
+
+  const deleteITA = useMutation({
+    mutationFn: (id: number) => requestAPI({ method: 'DELETE', url: `/ita/${id}` }),
+    onSuccess: (resp) => {
+      if (!resp.success) {
+        toast.error('ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง')
+        return
+      }
+      toast.success('ลบเอกสารเรียบร้อยแล้ว')
+      qc.invalidateQueries({ queryKey: ['ita', activeYearID] })
+    },
+    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
+  })
+
+  // แก้โครงสร้าง MOIT/Topic/Item เป็น entity ที่ใช้ร่วมกับหน้าจัดการ MOIT
+  // → invalidate ทั้ง cache ของหน้ารายการ ITA และของหน้า moit ให้ตรงกัน
+  const invalidateAll = () => {
+    qc.invalidateQueries({ queryKey: ['ita', activeYearID] })
+    qc.invalidateQueries({ queryKey: ['moit'] })
+    qc.invalidateQueries({ queryKey: ['moit-topics'] })
   }
 
-  const handleMoitChange = (val: string) => {
-    setSelectedMoitID(val ? Number(val) : null)
-    setRows({})
-    setSaveSuccess(false)
-  }
+  const updateMoit = useMutation({
+    mutationFn: ({ id, name }: { id: number; name: string }) =>
+      requestAPI({ method: 'PUT', url: `/moit/${id}`, body: { name } }),
+    onSuccess: (resp) => {
+      if (!resp.success) {
+        toast.error('แก้ไขไม่สำเร็จ กรุณาลองใหม่อีกครั้ง')
+        return
+      }
+      toast.success('แก้ไขชื่อ MOIT เรียบร้อยแล้ว')
+      setEditingMoit(null)
+      invalidateAll()
+    },
+    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
+  })
 
-  const updateRow = (item_id: number, field: 'title' | 'file', value: string | File | null) => {
-    setRows((prev) => ({
-      ...prev,
-      [item_id]: { ...prev[item_id], [field]: value },
-    }))
-  }
+  const updateTopic = useMutation({
+    mutationFn: ({ id, label }: { id: number; label: string }) =>
+      requestAPI({ method: 'PUT', url: `/topics/${id}`, body: { label } }),
+    onSuccess: (resp) => {
+      if (!resp.success) {
+        toast.error('แก้ไขไม่สำเร็จ กรุณาลองใหม่อีกครั้ง')
+        return
+      }
+      toast.success('แก้ไขข้อใหญ่เรียบร้อยแล้ว')
+      setEditingTopic(null)
+      invalidateAll()
+    },
+    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
+  })
 
-  const clearFile = (item_id: number) => {
-    updateRow(item_id, 'file', null)
-    if (fileRefs.current[item_id]) fileRefs.current[item_id]!.value = ''
-  }
-
-  const filledRows = Object.values(rows).filter((r) => r.file)
-  const totalItems = Object.values(rows).length
-
-  const saveMutation = useMutation({
-    mutationFn: async () => {
-      const promises = filledRows.map((r) => {
-        const fd = new FormData()
-        fd.append('item_id', String(r.item_id))
-        fd.append('title', r.title)
-        fd.append('year_id', String(selectedYearID))
-        fd.append('file', r.file!)
-        return requestAPI({ method: 'POST', url: '/ita/upload', body: fd })
-      })
-      return Promise.all(promises)
+  // แก้ทั้งการ์ดไฟล์ในครั้งเดียว: ข้อเล็ก (item) + ชื่อเอกสาร + เปลี่ยน PDF (ถ้าแนบ)
+  // item เป็นโครงสร้างที่ใช้ร่วม → แก้ที่นี่จะไปเปลี่ยนทุกไฟล์ใต้ item เดียวกัน
+  const updateFile = useMutation({
+    mutationFn: async ({ ita, itemLabel, title, file }: {
+      ita: ITAFile; itemLabel: string; title: string; file: File | null
+    }) => {
+      if (itemLabel !== ita.Item.Label) {
+        const r = await requestAPI({ method: 'PUT', url: `/items/${ita.Item.ID}`, body: { label: itemLabel } })
+        if (!r.success) throw new Error('update item failed')
+      }
+      const fd = new FormData()
+      fd.append('title', title)
+      if (file) fd.append('file', file)
+      const r2 = await requestAPI({ method: 'PUT', url: `/ita/${ita.ID}`, body: fd })
+      if (!r2.success) throw new Error('update ita failed')
+      return true
     },
     onSuccess: () => {
-      setSaveSuccess(true)
-      setRows((prev) => {
-        const reset = { ...prev }
-        Object.keys(reset).forEach((k) => {
-          reset[Number(k)] = { ...reset[Number(k)], title: '', file: null }
-        })
-        return reset
-      })
-      Object.values(fileRefs.current).forEach((ref) => {
-        if (ref) ref.value = ''
-      })
+      toast.success('บันทึกการแก้ไขเรียบร้อยแล้ว')
+      setEditingFile(null)
+      invalidateAll()
     },
+    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
   })
-  
 
-  const yearOptions = years.map((y) => ({ value: String(y.ID), label: String(y.Year) }))
-  const moitOptions = moitList.map((m) => ({ value: String(m.ID), label: m.Name }))
-  
+  const confirmDelete = (label: string, onConfirm: () => void) => {
+    if (window.confirm(`ลบเอกสาร "${label}" ใช่ไหมครับ?`)) onConfirm()
+  }
 
   return (
     <div className="text-ink">
       <div className="max-w-3xl mx-auto px-6 py-12">
-
         {/* Header */}
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex items-start justify-between mb-8 gap-4">
           <div>
             <p className="text-xs font-medium text-teal-600 tracking-widest uppercase mb-1">Admin</p>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
               <span className="w-1 h-7 bg-teal-500 rounded-full inline-block" />
-              เพิ่มงาน ITA
+              รายการเอกสาร ITA
             </h1>
           </div>
-          <button
-            onClick={() => navigate({ to: '/admin/moit' })}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-line
-                       hover:border-teal-400 text-gray-600 hover:text-teal-700
-                       text-sm font-medium rounded-xl transition-all duration-200 shadow-sm"
+          <Link
+            to="/admin/ITA/create"
+            className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700
+                       text-white text-sm font-medium rounded-xl transition-colors shadow-sm shrink-0"
           >
-            <Settings className="w-4 h-4" />
-            จัดการโครงสร้าง MOIT
-          </button>
+            <Plus className="w-4 h-4" />
+            เพิ่มงาน ITA
+          </Link>
         </div>
 
-        {/* Success */}
-        {saveSuccess && (
-          <div className="mb-6 flex items-center gap-3 bg-teal-50 border border-teal-100
-                          text-teal-700 text-sm px-4 py-3 rounded-xl">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
-            บันทึกข้อมูลสำเร็จแล้วครับ
+        {/* Year selector */}
+        <div className="bg-white border border-line rounded-2xl p-5 mb-4">
+          <p className="text-sm font-semibold text-gray-700 mb-3">ปีงบประมาณ</p>
+          {loadingYears ? (
+            <div className="flex gap-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="w-16 h-9 bg-gray-100 rounded-xl animate-pulse" />
+              ))}
+            </div>
+          ) : years.length === 0 ? (
+            <p className="text-sm text-gray-400">
+              ยังไม่มีปีงบประมาณ —{' '}
+              <Link to="/admin/moit" className="text-teal-600 hover:underline font-medium">
+                ไปตั้งค่าโครงสร้าง MOIT
+              </Link>
+            </p>
+          ) : (
+            <div className="flex gap-2 flex-wrap">
+              {years.map((y) => (
+                <button
+                  key={y.ID}
+                  onClick={() => {
+                    setSelectedYearID(y.ID)
+                    setOpenMoit(null)
+                  }}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    activeYearID === y.ID
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {y.Year}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* File list grouped by MOIT */}
+        {activeYearID && (
+          <div className="flex flex-col gap-3">
+            {!loadingFiles && (
+              <p className="text-sm text-gray-500">
+                {totalFiles > 0
+                  ? `ทั้งหมด ${totalFiles} เอกสาร ใน ${groups.length} หมวด MOIT`
+                  : 'ยังไม่มีเอกสารในปีนี้'}
+              </p>
+            )}
+
+            {loadingFiles && (
+              <p className="text-sm text-gray-400 text-center py-10">กำลังโหลด...</p>
+            )}
+
+            {!loadingFiles && totalFiles === 0 && (
+              <div className="bg-white border border-line rounded-2xl px-6 py-10 text-center">
+                <p className="text-sm text-gray-400 mb-3">ยังไม่มีเอกสาร ITA สำหรับปีนี้</p>
+                <Link
+                  to="/admin/ITA/create"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700
+                             text-white text-sm font-medium rounded-xl transition-colors"
+                >
+                  <Plus className="w-4 h-4" /> เพิ่มงาน ITA
+                </Link>
+              </div>
+            )}
+
+            {!loadingFiles &&
+              groups.map((g) => {
+                const isOpen = openMoit === g.moit.ID
+                return (
+                  <div key={g.moit.ID} className="bg-white border border-line rounded-2xl overflow-hidden">
+                    <div className="w-full flex items-center gap-3 px-5 py-4">
+                      <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-bold text-teal-600">{g.moit.ID}</span>
+                      </div>
+                      {editingMoit === g.moit.ID ? (
+                        <InlineEdit
+                          value={g.moit.Name}
+                          placeholder="ชื่อ MOIT..."
+                          onSave={(name) => updateMoit.mutate({ id: g.moit.ID, name })}
+                          onCancel={() => setEditingMoit(null)}
+                        />
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => setOpenMoit(isOpen ? null : g.moit.ID)}
+                            className="flex-1 min-w-0 text-left"
+                          >
+                            <p className="text-sm font-semibold text-gray-800 line-clamp-1">{g.moit.Name}</p>
+                            {g.moit.Description && (
+                              <p className="text-xs text-gray-400 line-clamp-1">{g.moit.Description}</p>
+                            )}
+                          </button>
+                          <button
+                            onClick={() => setEditingMoit(g.moit.ID)}
+                            title="แก้ชื่อ MOIT"
+                            className="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center shrink-0 transition-colors"
+                          >
+                            <Pencil className="w-3.5 h-3.5 text-gray-400" />
+                          </button>
+                          <span className="text-xs text-teal-600 font-medium bg-teal-50 px-2.5 py-1 rounded-full shrink-0">
+                            {g.fileCount} ไฟล์
+                          </span>
+                          <button
+                            onClick={() => setOpenMoit(isOpen ? null : g.moit.ID)}
+                            title={isOpen ? 'ย่อ' : 'ขยาย'}
+                            className="shrink-0"
+                          >
+                            <ChevronRight
+                              className={`w-4 h-4 text-gray-300 ml-1 transition-transform duration-200 ${
+                                isOpen ? 'rotate-90' : ''
+                              }`}
+                            />
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    {isOpen && (
+                      <div className="border-t border-gray-50 px-5 py-3 space-y-3">
+                        {g.topics.map((t) => (
+                          <div key={t.topic.ID}>
+                            <div className="flex items-start gap-2 mb-2 group/topic">
+                              <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 shrink-0" />
+                              {editingTopic === t.topic.ID ? (
+                                <InlineEdit
+                                  value={t.topic.Label}
+                                  multiline
+                                  placeholder="ข้อใหญ่ (หัวข้อหลัก)..."
+                                  onSave={(label) => updateTopic.mutate({ id: t.topic.ID, label })}
+                                  onCancel={() => setEditingTopic(null)}
+                                />
+                              ) : (
+                                <>
+                                  <p className="flex-1 text-sm font-semibold text-gray-700 leading-snug">
+                                    {t.topic.Label}
+                                  </p>
+                                  <button
+                                    onClick={() => setEditingTopic(t.topic.ID)}
+                                    title="แก้ข้อใหญ่"
+                                    className="w-6 h-6 rounded-lg hover:bg-gray-100 flex items-center justify-center shrink-0 opacity-0 group-hover/topic:opacity-100 transition-opacity"
+                                  >
+                                    <Pencil className="w-3 h-3 text-gray-400" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+
+                            <div className="space-y-2 ml-6">
+                              {t.files.map((f) => (
+                                <div
+                                  key={f.ID}
+                                  className="flex items-start gap-3 rounded-xl border border-line bg-gray-50 p-3 group/file"
+                                >
+                                  <FileText className="w-4 h-4 text-teal-500 mt-0.5 shrink-0" />
+                                  {editingFile === f.ID ? (
+                                    <FileEditForm
+                                      initialItemLabel={f.Item.Label}
+                                      initialTitle={f.Title}
+                                      pending={updateFile.isPending}
+                                      onSave={({ itemLabel, title, file }) =>
+                                        updateFile.mutate({ ita: f, itemLabel, title, file })
+                                      }
+                                      onCancel={() => setEditingFile(null)}
+                                    />
+                                  ) : (
+                                    <>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm text-gray-800 font-medium line-clamp-2">
+                                          {f.Item.Label}
+                                        </p>
+                                        <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">
+                                          {f.Title}
+                                        </p>
+                                      </div>
+                                      <div className="flex items-center gap-1 shrink-0">
+                                        <a
+                                          href={`${API_URL}${f.FileURL}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          title="เปิดไฟล์"
+                                          className="w-7 h-7 rounded-lg hover:bg-teal-50 flex items-center justify-center transition-colors"
+                                        >
+                                          <ExternalLink className="w-3.5 h-3.5 text-teal-500" />
+                                        </a>
+                                        <button
+                                          onClick={() => setEditingFile(f.ID)}
+                                          title="แก้ไข"
+                                          className="w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors"
+                                        >
+                                          <Pencil className="w-3.5 h-3.5 text-gray-400" />
+                                        </button>
+                                        <button
+                                          onClick={() => confirmDelete(f.Title, () => deleteITA.mutate(f.ID))}
+                                          disabled={deleteITA.isPending}
+                                          title="ลบ"
+                                          className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors disabled:opacity-50"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                                        </button>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
 
-        <div className="space-y-4">
+// ฟอร์มแก้ไขการ์ดไฟล์: ข้อเล็ก (item) + ชื่อเอกสาร + เปลี่ยนไฟล์ PDF (optional)
+function FileEditForm({ initialItemLabel, initialTitle, onSave, onCancel, pending }: {
+  initialItemLabel: string
+  initialTitle: string
+  onSave: (v: { itemLabel: string; title: string; file: File | null }) => void
+  onCancel: () => void
+  pending: boolean
+}) {
+  const [itemLabel, setItemLabel] = useState(initialItemLabel)
+  const [title, setTitle] = useState(initialTitle)
+  const [file, setFile] = useState<File | null>(null)
+  const canSave = !!itemLabel.trim() && !!title.trim() && !pending
 
-          {/* Step 1 — เลือกปี */}
-          <div className="bg-white border border-line rounded-2xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-semibold text-gray-700">
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full
-                                 bg-teal-100 text-teal-700 text-xs font-bold mr-2">1</span>
-                เลือกปีงบประมาณ
-              </p>
-              <button
-                type="button"
-                onClick={() => setShowAddYear((v) => !v)}
-                className="flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700
-                           font-medium transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                เพิ่มปีใหม่
-              </button>
-            </div>
-
-            {loadingYears ? (
-              <div className="h-10 bg-gray-100 rounded-xl animate-pulse" />
-            ) : years.length === 0 && !showAddYear ? (
-              <div className="px-4 py-3 rounded-xl bg-amber-50 border border-amber-100 text-sm text-amber-700">
-                ยังไม่มีปีงบประมาณ กรุณาเพิ่มปีก่อน
-                <button
-                  type="button"
-                  onClick={() => setShowAddYear(true)}
-                  className="ml-2 font-semibold underline"
-                >
-                  เพิ่มเลย
-                </button>
-              </div>
-            ) : (
-              <SelectDropdown
-                value={selectedYearID ? String(selectedYearID) : ''}
-                onChange={handleYearChange}
-                options={yearOptions}
-                placeholder="— เลือกปีงบประมาณ —"
-                disabled={years.length === 0}
-              />
-            )}
-
-            {showAddYear && (
-              <AddYearInline
-                onSuccess={(newYear) => {
-                  qc.setQueryData<ITAYear[]>(['ita-years'], (old = []) => [...old, newYear])
-                  setSelectedYearID(newYear.ID)
-                  setShowAddYear(false)
-                }}
-              />
-            )}
-          </div>
-
-          {/* Step 2 — เลือก MOIT */}
-          {selectedYearID && (
-            <div className="bg-white border border-line rounded-2xl p-5">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-semibold text-gray-700">
-                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full
-                                   bg-teal-100 text-teal-700 text-xs font-bold mr-2">2</span>
-                  เลือกหมวด MOIT
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowAddMoit((v) => !v)}
-                  className="flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700
-                             font-medium transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  เพิ่ม MOIT ใหม่
-                </button>
-              </div>
-
-              {loadingMoit ? (
-                <div className="h-10 bg-gray-100 rounded-xl animate-pulse" />
-              ) : moitList.length === 0 && !showAddMoit ? (
-                <div className="px-4 py-3 rounded-xl bg-blue-50 border border-blue-100 text-sm text-blue-700">
-                  ยังไม่มี MOIT สำหรับปีนี้ กรุณาเพิ่มก่อน
-                  <button
-                    type="button"
-                    onClick={() => setShowAddMoit(true)}
-                    className="ml-2 font-semibold underline"
-                  >
-                    เพิ่มเลย
-                  </button>
-                </div>
-              ) : (
-                <SelectDropdown
-                  value={selectedMoitID ? String(selectedMoitID) : ''}
-                  onChange={handleMoitChange}
-                  options={moitOptions}
-                  placeholder="— เลือกหมวด MOIT —"
-                  disabled={moitList.length === 0}
-                />
-              )}
-
-              {selectedMoit && (
-                <p className="mt-2 text-xs text-gray-400 leading-relaxed">
-                  {selectedMoit.Description}
-                </p>
-              )}
-
-              {showAddMoit && (
-                <AddMoitInline
-                  yearID={selectedYearID}
-                  onSuccess={(newMoit) => {
-                    qc.setQueryData<Moit[]>(['moit', selectedYearID], (old = []) => [...old, newMoit])
-                    setSelectedMoitID(newMoit.ID)
-                    setShowAddMoit(false)
-                  }}
-                />
-              )}
-            </div>
-          )}
-
-          {/* Step 3 — Topics + Items */}
-          {selectedMoit && (
-            <div className="bg-white border border-line rounded-2xl overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
-                <p className="text-sm font-semibold text-gray-700">
-                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full
-                                   bg-teal-100 text-teal-700 text-xs font-bold mr-2">3</span>
-                  อัปโหลดเอกสาร — {selectedMoit.Name}
-                </p>
-                {filledRows.length > 0 && (
-                  <span className="text-xs text-teal-600 font-medium bg-teal-50 px-2.5 py-1 rounded-full">
-                    {filledRows.length} / {totalItems} รายการ
-                  </span>
-                )}
-              </div>
-
-              {loadingTopics ? (
-                <div className="px-6 py-10 text-center text-sm text-gray-400">
-                  กำลังโหลดหัวข้อ...
-                </div>
-              ) : topics.length === 0 ? (
-                <div className="px-6 py-10 text-center text-sm text-gray-400">
-                  ยังไม่มีหัวข้อใน {selectedMoit.Name} —{' '}
-                  <button
-                    onClick={() => navigate({ to: '/admin/moit' })}
-                    className="text-teal-600 hover:underline"
-                  >
-                    ไปเพิ่มหัวข้อ
-                  </button>
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-50">
-                  {topics
-                    .sort((a, b) => a.Label.localeCompare(b.Label))
-                    .map((topic) => (
-                      <div key={topic.ID} className="px-6 py-5">
-                        <div className="flex items-start gap-2 mb-4">
-                          <ChevronRight className="w-4 h-4 text-teal-500 mt-0.5 shrink-0" />
-                          <p className="text-sm font-semibold text-gray-700 leading-snug">
-                            {topic.Label}
-                          </p>
-                        </div>
-
-                        <div className="space-y-2.5 ml-6">
-                          {(topic.Items ?? [])
-                            .sort((a, b) => a.Label.localeCompare(b.Label))
-                            .map((item) => {
-                              const row = rows[item.ID]
-                              const hasFile = !!row?.file
-
-                              return (
-                                <div
-                                  key={item.ID}
-                                  className={`rounded-xl border p-3.5 transition-all duration-200
-                                    ${hasFile
-                                      ? 'border-teal-200 bg-teal-50/40'
-                                      : 'border-line bg-gray-50'
-                                    }`}
-                                >
-                                  <div className="flex items-start gap-3">
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-xs text-gray-600 leading-relaxed">
-                                        {item.Label}
-                                      </p>
-                                      {hasFile && (
-                                        <input
-                                          type="text"
-                                          placeholder="ชื่อเอกสาร (ถ้าต้องการระบุเพิ่มเติม)"
-                                          value={row.title}
-                                          onChange={(e) => updateRow(item.ID, 'title', e.target.value)}
-                                          className="mt-2 w-full px-3 py-1.5 text-xs border border-line
-                                                     rounded-lg bg-white focus:border-teal-500
-                                                     focus:ring-2 focus:ring-teal-500/20 outline-none
-                                                     transition-all placeholder:text-gray-300"
-                                        />
-                                      )}
-                                    </div>
-
-                                    <div className="shrink-0 flex items-center gap-2">
-                                      {hasFile ? (
-                                        <>
-                                          <span className="text-[11px] text-teal-600 font-medium
-                                                           max-w-25 truncate hidden sm:block">
-                                            {row.file!.name}
-                                          </span>
-                                          <button
-                                            type="button"
-                                            onClick={() => clearFile(item.ID)}
-                                            className="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200
-                                                       flex items-center justify-center transition-colors"
-                                          >
-                                            <X className="w-3 h-3 text-red-500" />
-                                          </button>
-                                        </>
-                                      ) : (
-                                        <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-                                                          bg-white border border-line hover:border-teal-400
-                                                          text-xs text-gray-500 hover:text-teal-600
-                                                          cursor-pointer transition-all duration-200 whitespace-nowrap">
-                                          <Upload className="w-3.5 h-3.5" />
-                                          อัปโหลด PDF
-                                          <input
-                                            type="file"
-                                            accept=".pdf"
-                                            className="hidden"
-                                            ref={(el) => { fileRefs.current[item.ID] = el }}
-                                            onChange={(e) => {
-                                              const file = e.target.files?.[0]
-                                              if (!file) return
-                                              if (file.type !== 'application/pdf') {
-                                                alert('อัปโหลดได้เฉพาะไฟล์ PDF เท่านั้น')
-                                                return
-                                              }
-                                              updateRow(item.ID, 'file', file)
-                                            }}
-                                          />
-                                        </label>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              )
-                            })}
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Save */}
-          {selectedMoit && totalItems > 0 && (
-            <Button
-              type="button"
-              disabled={saveMutation.isPending || filledRows.length === 0}
-              onClick={() => saveMutation.mutate()}
-              className={`w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2
-                         transition-all duration-200
-                         ${filledRows.length > 0
-                           ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm hover:shadow-md'
-                           : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                         }`}
-            >
-              {saveMutation.isPending ? (
-                <>
-                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  กำลังบันทึก...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4" />
-                  บันทึก {filledRows.length > 0 ? `${filledRows.length} รายการ` : 'ข้อมูล'}
-                </>
-              )}
-            </Button>
-          )}
-
-        </div>
+  return (
+    <div className="flex-1 min-w-0 flex flex-col gap-2.5">
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-gray-500">ข้อเล็ก (หัวข้อย่อย)</label>
+        <textarea
+          autoFocus
+          value={itemLabel}
+          onChange={(e) => setItemLabel(e.target.value)}
+          rows={2}
+          className="px-3 py-1.5 text-sm border border-teal-400 rounded-lg focus:ring-2 focus:ring-teal-500/20 outline-none resize-none"
+        />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-gray-500">ชื่อเอกสาร</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="px-3 py-1.5 text-sm border border-teal-400 rounded-lg focus:ring-2 focus:ring-teal-500/20 outline-none"
+        />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium text-gray-500">เปลี่ยนไฟล์ PDF (ไม่เลือก = ใช้ไฟล์เดิม)</label>
+        <input
+          type="file"
+          accept="application/pdf,.pdf"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          className="text-xs text-gray-600 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-teal-50 file:text-teal-600 file:text-xs file:font-medium hover:file:bg-teal-100"
+        />
+      </div>
+      <div className="flex items-center gap-2 pt-0.5">
+        <button
+          onClick={() => onSave({ itemLabel: itemLabel.trim(), title: title.trim(), file })}
+          disabled={!canSave}
+          className="px-4 py-1.5 text-sm font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white transition-colors disabled:opacity-50"
+        >
+          {pending ? 'กำลังบันทึก...' : 'บันทึก'}
+        </button>
+        <button
+          onClick={onCancel}
+          disabled={pending}
+          className="px-4 py-1.5 text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors disabled:opacity-50"
+        >
+          ยกเลิก
+        </button>
       </div>
     </div>
   )

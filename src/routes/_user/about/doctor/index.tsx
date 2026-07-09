@@ -17,10 +17,14 @@ interface Personnel {
   lastname: string
   uid: number
   role: string
+  position: string
   img_url: string
 }
 
 const API_URL = import.meta.env.VITE_API_URL
+
+// ป้ายย่อสำหรับ pill filter — ตัดคำนำหน้า "กลุ่มงาน" ออกให้กระชับ (ชื่อเต็มยังโชว์ที่ divider/empty state)
+const shortDeptName = (name: string) => name.replace(/^กลุ่มงาน/, '').trim() || name
 
 const DEPT_COLORS: Record<string, string> = {
   0: 'from-green-50 to-emerald-100/60',
@@ -102,7 +106,7 @@ function RouteComponent() {
                   }
                 `}
               >
-                {dept.name}
+                {shortDeptName(dept.name)}
                 {count > 0 && (
                   <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none
                     ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'}
@@ -159,7 +163,7 @@ function RouteComponent() {
                     {person.prefix} {person.name} {person.lastname}
                   </p>
                   <p className="text-[11px] text-green-600 font-medium mt-1 leading-snug">
-                    {person.role}
+                    {person.position || person.role}
                   </p>
                   <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-center gap-1 text-[11px] text-gray-400">
                     <Hospital className="w-3 h-3" />
@@ -191,7 +195,7 @@ function RouteComponent() {
             </div>
             <div className="text-center">
               <p className="text-[14px] font-semibold text-gray-400">ยังไม่มีข้อมูลบุคลากร</p>
-              <p className="text-[12px] text-gray-300 mt-1">ในแผนก{activeDept?.name}</p>
+              <p className="text-[12px] text-gray-300 mt-1">ใน{activeDept?.name}</p>
             </div>
           </div>
         )}

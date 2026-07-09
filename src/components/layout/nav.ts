@@ -52,6 +52,7 @@ export const NAV: NavItem[] = [
     match: '/admin/ITA',
     children: [
       { label: 'รายการเอกสาร', to: '/admin/ITA' },
+      { label: 'เพิ่มเอกสาร', to: '/admin/ITA/create' },
 
     ],
   },

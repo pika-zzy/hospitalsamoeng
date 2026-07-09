@@ -2,7 +2,7 @@ import { DataTable, type DataTableColumn } from '@/components/data-table'
 import { SummaryPageShell } from '@/components/summary-page-shell'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { departments } from '@/interface/employee'
+import { departments, positions } from '@/interface/employee'
 import { requestAPI } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
@@ -21,6 +21,7 @@ interface Personnel {
   lastname: string
   uid: number
   role: string
+  position: string
   img_url: string
 }
 
@@ -87,11 +88,17 @@ function RouteComponent() {
     },
     {
       key: 'role',
-      header: 'ตำแหน่ง',
+      header: 'ฝ่ายงาน',
       render: (row) => (
         <span className="text-xs px-2 py-0.5 rounded-sm border border-line text-teal">{row.role || '-'}</span>
       ),
       searchValue: (row) => row.role,
+    },
+    {
+      key: 'position',
+      header: 'ตำแหน่ง',
+      render: (row) => <span className="text-muted">{row.position || '-'}</span>,
+      searchValue: (row) => row.position,
     },
     {
       key: 'uid',
@@ -161,12 +168,23 @@ function EditPersonnelModal({ personnel, onClose }: { personnel: Personnel; onCl
     lastname: personnel.lastname,
     uid: String(personnel.uid),
     role: personnel.role,
+    position: personnel.position,
     image: null as File | null,
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    // เปลี่ยนฝ่ายงาน → ล้างตำแหน่งเดิม (ตำแหน่งเป็นลูกของฝ่ายงาน อาจไม่อยู่ใต้ฝ่ายงานใหม่)
+    if (name === 'role') {
+      setForm({ ...form, role: value, position: '' })
+      return
+    }
+    setForm({ ...form, [name]: value })
   }
+
+  // ตำแหน่งที่เลือกได้ = ตำแหน่งที่อยู่ใต้ฝ่ายงานที่เลือก (role เก็บเป็นชื่อ dept)
+  const selectedDept = departments.find((d) => d.name === form.role)
+  const availablePositions = selectedDept ? positions.filter((p) => p.deptId === selectedDept.id) : []
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -186,6 +204,7 @@ function EditPersonnelModal({ personnel, onClose }: { personnel: Personnel; onCl
       body.append('lastname', data.lastname)
       body.append('uid', data.uid)
       body.append('role', data.role)
+      body.append('position', data.position)
       if (data.image) body.append('image', data.image)
       return requestAPI({ method: 'PUT', url: `/personnel/${personnel.id}`, body })
     },
@@ -203,8 +222,8 @@ function EditPersonnelModal({ personnel, onClose }: { personnel: Personnel; onCl
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.name.trim() || !form.lastname.trim() || !form.role.trim()) {
-      toast.error('กรุณากรอกชื่อ นามสกุล และเลือกตำแหน่งให้ครบ')
+    if (!form.name.trim() || !form.lastname.trim() || !form.role.trim() || !form.position.trim()) {
+      toast.error('กรุณากรอกชื่อ นามสกุล ฝ่ายงาน และเลือกตำแหน่งให้ครบ')
       return
     }
     if (!/^\d+$/.test(form.uid.trim())) {
@@ -285,29 +304,59 @@ function EditPersonnelModal({ personnel, onClose }: { personnel: Personnel; onCl
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-muted">ตำแหน่ง / แผนก</Label>
-            <div className="relative">
-              <select
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-                required
-                className="w-full appearance-none px-3 py-2 rounded-sm border border-line bg-white text-ink outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 cursor-pointer"
-              >
-                <option value="">-- เลือกตำแหน่ง --</option>
-                {departments.map((d) => (
-                  <option key={d.id} value={d.name}>
-                    {d.name}
-                  </option>
-                ))}
-                {/* กันเคส role เดิมไม่อยู่ใน list (เช่นข้อมูลเก่าที่กรอกอิสระ) ให้ยังเลือกค้างไว้ได้ */}
-                {form.role && !departments.some((d) => d.name === form.role) && (
-                  <option value={form.role}>{form.role} (เดิม)</option>
-                )}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-faint">
-                <ChevronDown className="h-4 w-4" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted">ฝ่ายงาน</Label>
+              <div className="relative">
+                <select
+                  name="role"
+                  value={form.role}
+                  onChange={handleChange}
+                  required
+                  className="w-full appearance-none px-3 py-2 rounded-sm border border-line bg-white text-ink outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 cursor-pointer"
+                >
+                  <option value="">-- เลือกฝ่ายงาน --</option>
+                  {departments.map((d) => (
+                    <option key={d.id} value={d.name}>
+                      {d.name}
+                    </option>
+                  ))}
+                  {/* กันเคส role เดิมไม่อยู่ใน list (เช่นข้อมูลเก่าที่กรอกอิสระ) ให้ยังเลือกค้างไว้ได้ */}
+                  {form.role && !departments.some((d) => d.name === form.role) && (
+                    <option value={form.role}>{form.role} (เดิม)</option>
+                  )}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-faint">
+                  <ChevronDown className="h-4 w-4" />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted">ตำแหน่ง</Label>
+              <div className="relative">
+                <select
+                  name="position"
+                  value={form.position}
+                  onChange={handleChange}
+                  required
+                  disabled={!form.role}
+                  className="w-full appearance-none px-3 py-2 rounded-sm border border-line bg-white text-ink outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 cursor-pointer disabled:cursor-not-allowed disabled:bg-paper/50 disabled:text-faint"
+                >
+                  <option value="">{form.role ? '-- เลือกตำแหน่ง --' : '-- เลือกฝ่ายงานก่อน --'}</option>
+                  {availablePositions.map((p) => (
+                    <option key={p.id} value={p.name}>
+                      {p.name}
+                    </option>
+                  ))}
+                  {/* กันเคส position เดิมไม่อยู่ใน list ใต้ฝ่ายงานนี้ (ข้อมูลเก่า) ให้ยังเลือกค้างไว้ได้ */}
+                  {form.position && !availablePositions.some((p) => p.name === form.position) && (
+                    <option value={form.position}>{form.position} (เดิม)</option>
+                  )}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-faint">
+                  <ChevronDown className="h-4 w-4" />
+                </div>
               </div>
             </div>
           </div>
