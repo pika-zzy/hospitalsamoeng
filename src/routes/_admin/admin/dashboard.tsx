@@ -4,8 +4,6 @@ import {
   FileText,
   Calendar,
   ChevronRight,
- 
-  ArrowUp,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { requestAPI } from '@/lib/api'
@@ -17,8 +15,15 @@ export const Route = createFileRoute('/_admin/admin/dashboard')({
   component: RouteComponent,
 })
 
+// format วันที่เป็นภาษาไทย (มี guard กรณี date ว่าง/ไม่ valid) — เหมือนหน้า summary
+function formatThaiDate(value: string): string {
+  if (!value) return '-'
+  const d = new Date(value)
+  return isNaN(d.getTime()) ? value : d.toLocaleDateString('th-TH')
+}
+
 function RouteComponent() {
-  const { data: newsData } = useQuery<NewsInfo[]>({
+  const { data: newsData, isLoading: loadingNews } = useQuery<NewsInfo[]>({
     queryKey: ['news'],
     queryFn: async () => {
       const resp = await requestAPI<NewsInfo[]>({ method: 'GET', url: '/news' })
@@ -27,7 +32,7 @@ function RouteComponent() {
     staleTime: 5 * 60 * 1000,
   })
 
-  const { data: activityData } = useQuery<ActivityInfo[]>({
+  const { data: activityData, isLoading: loadingActivity } = useQuery<ActivityInfo[]>({
     queryKey: ['activity'],
     queryFn: async () => {
       const resp = await requestAPI<ActivityInfo[]>({ method: 'GET', url: '/activities' })
@@ -49,17 +54,21 @@ function RouteComponent() {
   const totalActivities = activityData?.length || 0
   const totalUsers = usersData?.length || 0
 
-  // NOTE: growth (% จากเดือนที่แล้ว) is not yet provided by the backend.
-  // These are placeholder values only, clearly marked, until a real
-  // "previous period" figure is available from the API.
-  // accent carries Tailwind class names (not raw hex) so the cards stay on the
-  // theme tokens defined in index.css.
+  // 5 รายการล่าสุด — sort ตามวันที่ (ข่าว: date, กิจกรรม: start_date) จากใหม่ไปเก่า
+  const recentNews = [...(newsData ?? [])]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5)
+  const recentActivities = [...(activityData ?? [])]
+    .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
+    .slice(0, 5)
+
+  // NOTE: accent carries Tailwind class names (not raw hex) so the cards stay
+  // on the theme tokens defined in index.css.
   const stats = [
     {
       label: 'ข่าวทั้งหมด',
       sub: 'ข่าวเผยแพร่แล้ว',
       value: totalNews,
-      growth: 12, // placeholder
       icon: FileText,
       accentText: 'text-teal',
       accentBg: 'bg-teal/10',
@@ -69,7 +78,6 @@ function RouteComponent() {
       label: 'กิจกรรมทั้งหมด',
       sub: 'กิจกรรมที่เผยแพร่แล้ว',
       value: totalActivities,
-      growth: 8, // placeholder
       icon: Calendar,
       accentText: 'text-brass',
       accentBg: 'bg-brass/10',
@@ -79,7 +87,6 @@ function RouteComponent() {
       label: 'ผู้ใช้งานในระบบ',
       sub: 'บัญชีผู้ใช้ในระบบ',
       value: totalUsers,
-      growth: 3, // placeholder
       icon: Users,
       accentText: 'text-violet',
       accentBg: 'bg-violet/10',
@@ -122,15 +129,9 @@ function RouteComponent() {
               {isNaN(s.value) ? '0' : s.value}
             </p>
 
-            <div className="flex items-center justify-between mt-2">
-              <p className="text-xs text-faint">
-                {s.sub}
-              </p>
-              <span className="flex items-center gap-0.5 text-xs font-medium text-teal">
-                <ArrowUp className="w-3 h-3" />
-                {s.growth}%
-              </span>
-            </div>
+            <p className="text-xs text-faint mt-2">
+              {s.sub}
+            </p>
 
             <div className={`mt-3 flex items-center text-xs font-medium gap-1 opacity-0 group-hover:opacity-100 transition-opacity ${s.accentText}`}>
               ดูทั้งหมด
@@ -138,6 +139,85 @@ function RouteComponent() {
             </div>
           </Link>
         ))}
+      </div>
+
+      {/* Recent lists — ข่าว/กิจกรรมล่าสุด 5 รายการ */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* ข่าวล่าสุด */}
+        <section className="rounded-md border border-line bg-white p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold flex items-center gap-2">
+              <FileText className="w-4 h-4 text-teal" />
+              ข่าวล่าสุด
+            </h2>
+            <Link
+              to="/admin/news/news/summary"
+              className="text-xs font-medium text-teal flex items-center gap-0.5 hover:underline"
+            >
+              ดูทั้งหมด
+              <ChevronRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          {loadingNews ? (
+            <ul className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <li key={i} className="h-9 rounded-sm bg-line/60 animate-pulse" />
+              ))}
+            </ul>
+          ) : recentNews.length === 0 ? (
+            <p className="text-xs text-faint py-6 text-center">ยังไม่มีข่าวในระบบ</p>
+          ) : (
+            <ul className="divide-y divide-line">
+              {recentNews.map((n) => (
+                <li key={n.id} className="flex items-center justify-between gap-3 py-2.5">
+                  <span className="text-sm truncate">{n.title}</span>
+                  <span className="text-xs text-faint tabular-nums shrink-0">
+                    {formatThaiDate(n.date)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        {/* กิจกรรมล่าสุด */}
+        <section className="rounded-md border border-line bg-white p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-brass" />
+              กิจกรรมล่าสุด
+            </h2>
+            <Link
+              to="/admin/activity/activity/summary"
+              className="text-xs font-medium text-brass flex items-center gap-0.5 hover:underline"
+            >
+              ดูทั้งหมด
+              <ChevronRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          {loadingActivity ? (
+            <ul className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <li key={i} className="h-9 rounded-sm bg-line/60 animate-pulse" />
+              ))}
+            </ul>
+          ) : recentActivities.length === 0 ? (
+            <p className="text-xs text-faint py-6 text-center">ยังไม่มีกิจกรรมในระบบ</p>
+          ) : (
+            <ul className="divide-y divide-line">
+              {recentActivities.map((a) => (
+                <li key={a.id} className="flex items-center justify-between gap-3 py-2.5">
+                  <span className="text-sm truncate">{a.title}</span>
+                  <span className="text-xs text-faint tabular-nums shrink-0">
+                    {formatThaiDate(a.start_date)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </div>
   )

@@ -2,7 +2,7 @@ import { InlineEdit } from '@/components/ui/inline-edit'
 import { requestAPI } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ChevronRight, Trash2, FileText, Plus, ExternalLink, Pencil } from 'lucide-react'
+import { ChevronRight, Trash2, FileText, Plus, ExternalLink, Pencil, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -61,6 +61,7 @@ interface MoitGroup {
 function RouteComponent() {
   const qc = useQueryClient()
   const [selectedYearID, setSelectedYearID] = useState<number | null>(null)
+  const [search, setSearch] = useState('')
   const [openMoit, setOpenMoit] = useState<number | null>(null)
   const [editingMoit, setEditingMoit] = useState<number | null>(null)
   const [editingTopic, setEditingTopic] = useState<number | null>(null)
@@ -106,12 +107,26 @@ function RouteComponent() {
   })
 
   // group เป็น tree ฝั่ง client ตาม pattern ITA (ห้ามย้ายไป backend)
+  // IMPROVEMENT: filter ตามคำค้น (ข้อเล็ก/ชื่อเอกสาร/ชื่อ MOIT/ข้อใหญ่) ก่อน group
   const groups = useMemo<MoitGroup[]>(() => {
+    const q = search.trim().toLowerCase()
+    const source = q
+      ? files.filter((f) => {
+          const hay = [
+            f.Item?.Label,
+            f.Title,
+            f.Item?.Topic?.Label,
+            f.Item?.Topic?.Moit?.Name,
+          ]
+          return hay.some((s) => s?.toLowerCase().includes(q))
+        })
+      : files
+
     const moitMap = new Map<
       number,
       { moit: ITAMoit; topics: Map<number, TopicGroup> }
     >()
-    for (const f of files) {
+    for (const f of source) {
       const topic = f.Item?.Topic
       const moit = topic?.Moit
       if (!topic || !moit) continue
@@ -132,9 +147,11 @@ function RouteComponent() {
         }
       })
       .sort((a, b) => a.moit.Name.localeCompare(b.moit.Name))
-  }, [files])
+  }, [files, search])
 
   const totalFiles = files.length
+  const isSearching = search.trim() !== ''
+  const matchedFiles = groups.reduce((s, g) => s + g.fileCount, 0)
 
   const deleteITA = useMutation({
     mutationFn: (id: number) => requestAPI({ method: 'DELETE', url: `/ita/${id}` }),
@@ -262,6 +279,7 @@ function RouteComponent() {
                   onClick={() => {
                     setSelectedYearID(y.ID)
                     setOpenMoit(null)
+                    setSearch('')
                   }}
                   className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                     activeYearID === y.ID
@@ -279,11 +297,37 @@ function RouteComponent() {
         {/* File list grouped by MOIT */}
         {activeYearID && (
           <div className="flex flex-col gap-3">
+            {/* Search box — filter client-side over already-loaded files */}
+            {!loadingFiles && totalFiles > 0 && (
+              <div className="relative">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="ค้นหาเอกสาร / ข้อ / MOIT..."
+                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-white border border-line rounded-2xl
+                             focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none transition-colors"
+                />
+                {isSearching && (
+                  <button
+                    onClick={() => setSearch('')}
+                    title="ล้างคำค้น"
+                    className="w-6 h-6 rounded-lg hover:bg-gray-100 flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5 text-gray-400" />
+                  </button>
+                )}
+              </div>
+            )}
+
             {!loadingFiles && (
               <p className="text-sm text-gray-500">
-                {totalFiles > 0
-                  ? `ทั้งหมด ${totalFiles} เอกสาร ใน ${groups.length} หมวด MOIT`
-                  : 'ยังไม่มีเอกสารในปีนี้'}
+                {totalFiles === 0
+                  ? 'ยังไม่มีเอกสารในปีนี้'
+                  : isSearching
+                    ? `พบ ${matchedFiles} เอกสาร ใน ${groups.length} หมวด MOIT`
+                    : `ทั้งหมด ${totalFiles} เอกสาร ใน ${groups.length} หมวด MOIT`}
               </p>
             )}
 
@@ -304,9 +348,18 @@ function RouteComponent() {
               </div>
             )}
 
+            {!loadingFiles && totalFiles > 0 && isSearching && matchedFiles === 0 && (
+              <div className="bg-white border border-line rounded-2xl px-6 py-10 text-center">
+                <p className="text-sm text-gray-400">
+                  ไม่พบเอกสารที่ตรงกับ "{search.trim()}"
+                </p>
+              </div>
+            )}
+
             {!loadingFiles &&
               groups.map((g) => {
-                const isOpen = openMoit === g.moit.ID
+                // ค้นหาอยู่ = กางทุกหมวดที่มีผลลัพธ์ให้เห็นทันที
+                const isOpen = isSearching || openMoit === g.moit.ID
                 return (
                   <div key={g.moit.ID} className="bg-white border border-line rounded-2xl overflow-hidden">
                     <div className="w-full flex items-center gap-3 px-5 py-4">

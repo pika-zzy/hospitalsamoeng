@@ -11,12 +11,14 @@ interface SummaryPageShellProps {
   title: string
   subtitle: string
   children: React.ReactNode
+  /** Optional action rendered on the same line as the title (e.g. a create button) */
+  action?: React.ReactNode
 }
 
 // Renders inside <AdminShell> (sidebar + topbar), so it only owns the page
 // content — breadcrumbs, title, and children. It must NOT render its own
 // header/logout, which would duplicate the AdminShell chrome.
-export function SummaryPageShell({ crumbs, title, subtitle, children }: SummaryPageShellProps) {
+export function SummaryPageShell({ crumbs, title, subtitle, children, action }: SummaryPageShellProps) {
   return (
     <div className="px-6 py-10 max-w-6xl mx-auto w-full text-ink">
       {/* Breadcrumbs */}
@@ -36,11 +38,14 @@ export function SummaryPageShell({ crumbs, title, subtitle, children }: SummaryP
       </nav>
 
       {/* Title */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-        <p className="text-sm mt-1 text-muted">
-          {subtitle}
-        </p>
+      <div className="flex items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+          <p className="text-sm mt-1 text-muted">
+            {subtitle}
+          </p>
+        </div>
+        {action && <div className="shrink-0">{action}</div>}
       </div>
 
       {children}

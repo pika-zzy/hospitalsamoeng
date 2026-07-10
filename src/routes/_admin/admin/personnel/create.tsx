@@ -23,7 +23,6 @@ function RouteComponent() {
     prefix: '',
     name: '',
     lastname: '',
-    uid: '',
     role: '',
     position: '',
     image: null as File | null,
@@ -59,7 +58,6 @@ function RouteComponent() {
       body.append('prefix', data.prefix)
       body.append('name', data.name)
       body.append('lastname', data.lastname)
-      body.append('uid', data.uid)
       body.append('role', data.role)
       body.append('position', data.position)
       if (data.image) body.append('image', data.image)
@@ -81,10 +79,6 @@ function RouteComponent() {
     e.preventDefault()
     if (!form.name.trim() || !form.lastname.trim() || !form.role.trim() || !form.position.trim()) {
       toast.error('กรุณากรอกชื่อ นามสกุล ฝ่ายงาน และตำแหน่งให้ครบ')
-      return
-    }
-    if (!/^\d+$/.test(form.uid.trim())) {
-      toast.error('เลขประจำตัวต้องเป็นตัวเลข')
       return
     }
     addPersonnel.mutate(form)
@@ -110,22 +104,6 @@ function RouteComponent() {
               className="w-full px-4 py-2.5 rounded-sm border border-line bg-white text-ink outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-teal/20"
             />
           </div>
-          <div className="space-y-2 md:col-span-2">
-            <Label className="text-sm font-medium text-muted">เลขประจำตัว</Label>
-            <input
-              type="text"
-              inputMode="numeric"
-              name="uid"
-              value={form.uid}
-              onChange={handleChange}
-              required
-              placeholder="เช่น 12345"
-              className="w-full px-4 py-2.5 rounded-sm border border-line bg-white text-ink outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-teal/20"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label className="text-sm font-medium text-muted">ชื่อ</Label>
             <input

@@ -15,7 +15,6 @@ interface Personnel {
   prefix: string
   name: string
   lastname: string
-  uid: number
   role: string
   position: string
   img_url: string

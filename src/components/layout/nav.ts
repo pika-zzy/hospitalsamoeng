@@ -26,7 +26,7 @@ export const NAV: NavItem[] = [
     match: '/admin/dashboard',
   },
   {
-    label: 'ข่าวประชาสัมพันธ์',
+    label: 'รายการข่าวสาร',
     icon: Megaphone,
     to: '/admin/news/news/summary',
     match: '/admin/news',

@@ -19,7 +19,6 @@ interface Personnel {
   prefix: string
   name: string
   lastname: string
-  uid: number
   role: string
   position: string
   img_url: string
@@ -32,6 +31,7 @@ const CREATE_PATH: string = '/admin/personnel/create'
 function RouteComponent() {
   const qc = useQueryClient()
   const [editing, setEditing] = useState<Personnel | null>(null)
+  const [deptFilter, setDeptFilter] = useState('')
 
   const { data: personnel = [], isLoading } = useQuery<Personnel[]>({
     queryKey: ['personnel'],
@@ -41,6 +41,11 @@ function RouteComponent() {
       return resp.success ? resp.data ?? [] : []
     },
   })
+
+  // กรองตามฝ่ายงาน (role) ก่อนส่งเข้า DataTable — ช่องค้นหาข้อความของ DataTable ทำงานซ้อนต่อได้
+  const filteredPersonnel = deptFilter
+    ? personnel.filter((p) => p.role === deptFilter)
+    : personnel
 
   const deletePersonnel = useMutation({
     mutationFn: (id: number) => requestAPI({ method: 'DELETE', url: `/personnel/${id}` }),
@@ -101,12 +106,6 @@ function RouteComponent() {
       searchValue: (row) => row.position,
     },
     {
-      key: 'uid',
-      header: 'รหัส',
-      render: (row) => String(row.uid),
-      searchValue: (row) => String(row.uid),
-    },
-    {
       key: 'actions',
       header: '',
       className: 'text-right',
@@ -136,23 +135,42 @@ function RouteComponent() {
       crumbs={[{ label: 'ภาพรวมระบบ', to: '/admin/dashboard' }, { label: 'จัดการบุคลากร' }]}
       title="รายการบุคลากร"
       subtitle="บุคลากรทั้งหมดของโรงพยาบาลสะเมิง ค้นหาและจัดการได้จากตารางด้านล่าง"
-    >
-      <div className="flex justify-end mb-4">
+      action={
         <Link
           to={CREATE_PATH}
           className="flex items-center gap-2 px-4 py-2 bg-teal hover:bg-teal/90 text-white text-sm font-semibold rounded-sm transition-colors"
         >
           <Plus className="w-4 h-4" /> เพิ่มบุคลากร
         </Link>
-      </div>
-
+      }
+    >
       <DataTable
-        data={personnel}
+        data={filteredPersonnel}
         columns={columns}
         isLoading={isLoading}
         searchPlaceholder="ค้นหาชื่อ / ตำแหน่ง / รหัส..."
-        emptyLabel="ยังไม่มีข้อมูลบุคลากร"
+        emptyLabel={deptFilter ? `ไม่มีบุคลากรในฝ่าย "${deptFilter}"` : 'ยังไม่มีข้อมูลบุคลากร'}
         rowKey={(row) => row.id}
+        toolbar={
+          // Filter ฝ่ายงาน — ค่า = ชื่อ dept ให้ตรงกับ field role
+          <div className="relative w-44 shrink-0">
+            <select
+              value={deptFilter}
+              onChange={(e) => setDeptFilter(e.target.value)}
+              className="w-full appearance-none pl-3 pr-8 py-2 rounded-sm border border-line bg-white text-sm text-ink outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 cursor-pointer"
+            >
+              <option value="">ทุกฝ่ายงาน</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.name}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-faint">
+              <ChevronDown className="h-4 w-4" />
+            </div>
+          </div>
+        }
       />
 
       {editing && <EditPersonnelModal personnel={editing} onClose={() => setEditing(null)} />}
@@ -166,7 +184,6 @@ function EditPersonnelModal({ personnel, onClose }: { personnel: Personnel; onCl
     prefix: personnel.prefix,
     name: personnel.name,
     lastname: personnel.lastname,
-    uid: String(personnel.uid),
     role: personnel.role,
     position: personnel.position,
     image: null as File | null,
@@ -202,7 +219,6 @@ function EditPersonnelModal({ personnel, onClose }: { personnel: Personnel; onCl
       body.append('prefix', data.prefix)
       body.append('name', data.name)
       body.append('lastname', data.lastname)
-      body.append('uid', data.uid)
       body.append('role', data.role)
       body.append('position', data.position)
       if (data.image) body.append('image', data.image)
@@ -224,10 +240,6 @@ function EditPersonnelModal({ personnel, onClose }: { personnel: Personnel; onCl
     e.preventDefault()
     if (!form.name.trim() || !form.lastname.trim() || !form.role.trim() || !form.position.trim()) {
       toast.error('กรุณากรอกชื่อ นามสกุล ฝ่ายงาน และเลือกตำแหน่งให้ครบ')
-      return
-    }
-    if (!/^\d+$/.test(form.uid.trim())) {
-      toast.error('เลขประจำตัวต้องเป็นตัวเลข')
       return
     }
     updatePersonnel.mutate(form)
@@ -265,21 +277,6 @@ function EditPersonnelModal({ personnel, onClose }: { personnel: Personnel; onCl
                 className="w-full px-3 py-2 rounded-sm border border-line bg-white text-ink outline-none focus:border-teal focus:ring-2 focus:ring-teal/20"
               />
             </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label className="text-sm font-medium text-muted">เลขประจำตัว</Label>
-              <input
-                type="text"
-                inputMode="numeric"
-                name="uid"
-                value={form.uid}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 rounded-sm border border-line bg-white text-ink outline-none focus:border-teal focus:ring-2 focus:ring-teal/20"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-sm font-medium text-muted">ชื่อ</Label>
               <input
