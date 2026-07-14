@@ -3,8 +3,20 @@ export interface Menu {
 
 }
 
+export interface SubMenuItem {
+    name: string;
+    link: string;
+    search?: Record<string, string>; // query params เช่น { tab: "procurement" } ไว้ deep-link เข้าแท็บ
+}
 
-export const Navbarlist = [
+export interface MenuItem {
+    id: number;
+    name: string;
+    link?: string;          // มีเมื่อไม่มี submenu
+    submenu?: SubMenuItem[]; // มีเมื่อเป็นเมนู dropdown
+}
+
+export const Navbarlist: MenuItem[] = [
     {
         id: 1,
         name: "หน้าหลัก",
@@ -27,7 +39,11 @@ export const Navbarlist = [
     {
         id: 5,
         name: "ข่าวสาร",
-        link: "/news/",
+        submenu: [
+            { name: "ประชาสัมพันธ์", link: "/news", search: { tab: "general" } },
+            { name: "รับสมัครงาน", link: "/news", search: { tab: "job" } },
+            { name: "จัดซื้อพัสดุ", link: "/news", search: { tab: "procurement" } },
+        ],
     },
     {
         id: 6,

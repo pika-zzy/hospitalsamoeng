@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { requestAPI } from '@/lib/api'
-import type { NewsInfo } from '@/interface/newinfo'
+import { NEWS_TYPES, type NewsInfo } from '@/interface/newinfo'
 import { DataTable, type DataTableColumn } from '@/components/data-table'
 import { SummaryPageShell } from '@/components/summary-page-shell'
 import { Button } from '@/components/ui/button'
@@ -19,8 +19,6 @@ export const Route = createFileRoute('/_admin/admin/news/news/summary')({
 // typed as string เพื่อให้ผ่าน typed-route ของ TanStack (pattern เดียวกับหน้าบุคลากร)
 const CREATE_PATH: string = '/admin/news'
 const API_URL = import.meta.env.VITE_API_URL
-// ประเภทข่าวมาตรฐาน (ตรงกับตัวเลือกในหน้าเพิ่มข่าว) — ใช้ใน dropdown ของ modal แก้ไข
-const NEWS_TYPES = ['ประชาสัมพันธ์', 'ประกาศจัดซื้อจัดจ้าง']
 
 function NewsSummaryPage() {
   const qc = useQueryClient()
@@ -303,7 +301,7 @@ function NewsEditModal({ news, onClose }: { news: NewsInfo; onClose: () => void 
                     </option>
                   ))}
                   {/* กันเคส type เดิมไม่อยู่ใน list (ข้อมูลเก่า) ให้ยังเลือกค้างไว้ได้ */}
-                  {form.type && !NEWS_TYPES.includes(form.type) && (
+                  {form.type && !(NEWS_TYPES as readonly string[]).includes(form.type) && (
                     <option value={form.type}>{form.type} (เดิม)</option>
                   )}
                 </select>

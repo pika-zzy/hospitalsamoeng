@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button'
+import { Dialog } from '@/components/ui/dialog'
 import { requestAPI } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Upload, X, Save, CheckCircle2, ChevronRight, Plus, ChevronDown, FileText } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -369,35 +370,10 @@ function AddItemInline({ topicID, onSuccess }: AddItemInlineProps) {
 }
 
 // --------- Upload Done Modal ---------
-function UploadDoneModal({ count, onClose }: { count: number; onClose: () => void }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center">
-        <div className="w-14 h-14 rounded-full bg-teal-100 flex items-center justify-center mx-auto mb-4">
-          <CheckCircle2 className="w-7 h-7 text-teal-600" />
-        </div>
-        <h2 className="text-lg font-bold text-gray-900 mb-1">อัปโหลดสำเร็จ</h2>
-        <p className="text-sm text-gray-500 mb-5">
-          บันทึกเอกสารเรียบร้อยแล้ว {count} รายการ
-        </p>
-        <button
-          type="button"
-          autoFocus
-          onClick={onClose}
-          className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold
-                     rounded-xl transition-colors"
-        >
-          ตกลง
-        </button>
-      </div>
-    </div>
-  )
-}
-
 // --------- Main ---------
 function RouteComponent() {
   const qc = useQueryClient()
+  const navigate = useNavigate()
 
   const [selectedYearID, setSelectedYearID] = useState<number | null>(null)
   const [selectedMoitID, setSelectedMoitID] = useState<number | null>(null)
@@ -608,10 +584,17 @@ function RouteComponent() {
           </h1>
         </div>
 
-        {/* Success modal — เด้งตอนอัปโหลดเสร็จ ต้องกดตกลงเพื่อรับทราบ */}
-        {doneCount !== null && (
-          <UploadDoneModal count={doneCount} onClose={() => setDoneCount(null)} />
-        )}
+        {/* Success dialog — เด้งตอนอัปโหลดเสร็จ ให้เลือกว่าจะอัปต่อ หรือไปดูหน้ารายการเอกสาร */}
+        <Dialog
+          open={doneCount !== null}
+          title="อัปโหลดสำเร็จ"
+          description={`บันทึกเอกสารเรียบร้อยแล้ว ${doneCount ?? 0} รายการ`}
+          onClose={() => setDoneCount(null)}
+          actions={[
+            { label: 'อัปโหลดต่อ', variant: 'outline', onClick: () => setDoneCount(null) },
+            { label: 'ไปหน้ารายการเอกสาร', onClick: () => navigate({ to: '/admin/ITA' }) },
+          ]}
+        />
 
         <div className="space-y-4">
 
@@ -865,7 +848,7 @@ function RouteComponent() {
                                               const file = e.target.files?.[0]
                                               if (!file) return
                                               if (file.type !== 'application/pdf') {
-                                                alert('อัปโหลดได้เฉพาะไฟล์ PDF เท่านั้น')
+                                                toast.error('อัปโหลดได้เฉพาะไฟล์ PDF เท่านั้น')
                                                 return
                                               }
                                               updateRow(item.ID, 'file', file)

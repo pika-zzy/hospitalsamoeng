@@ -1,9 +1,11 @@
 import { Button } from '@/components/ui/button'
+import { Dialog } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useMutation } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
+import { toast } from 'sonner'
 
 import { requestAPI } from '@/lib/api'
 import { CloudUpload, Loader2, X } from 'lucide-react'
@@ -14,6 +16,9 @@ export const Route = createFileRoute('/_admin/admin/activity/')({
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+  const qc = useQueryClient()
+
   const [formData, setFormData] = useState<CreateActivityDTO>({
     title: '',
     description: '',
@@ -21,6 +26,18 @@ function RouteComponent() {
     endDate: '',
     image: null,
   })
+
+  // เปิด dialog หลังบันทึกสำเร็จ — ให้เลือกว่าจะเพิ่มกิจกรรมต่อ หรือไปดูหน้ารายการ
+  const [savedOpen, setSavedOpen] = useState(false)
+
+  const resetForm = () =>
+    setFormData({
+      title: '',
+      description: '',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: '',
+      image: null,
+    })
 
   // สร้าง Preview URL สำหรับรูปภาพ
   const imagePreview = useMemo(() => {
@@ -61,15 +78,19 @@ function RouteComponent() {
         body: submitData,
       })
     },
-    onSuccess: () => {
-      setFormData({
-        title: '',
-        description: '',
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: '',
-        image: null,
-      })
+    // FIX: เดิม onSuccess แค่ล้างฟอร์มเฉย ๆ — ไม่มี toast/dialog, ไม่ invalidate cache และ
+    // ไม่มี error handling เลย กดบันทึกแล้วเงียบสนิท ไม่รู้ว่าสำเร็จหรือพัง และหน้ารายการ
+    // กิจกรรมยังเห็นข้อมูลเก่า. ตอนนี้แจ้งผลครบและเปิด Dialog ให้เลือกทำต่อ
+    onSuccess: (resp) => {
+      if (!resp.success) {
+        toast.error(resp.message || 'บันทึกไม่สำเร็จ')
+        return
+      }
+      qc.invalidateQueries({ queryKey: ['activity'] })
+      resetForm()
+      setSavedOpen(true)
     },
+    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
   })
 
   return (
@@ -212,6 +233,17 @@ function RouteComponent() {
         </div>
 
       </form>
+
+      <Dialog
+        open={savedOpen}
+        title="บันทึกกิจกรรมสำเร็จ"
+        description="กิจกรรมถูกเผยแพร่ขึ้นหน้าเว็บแล้ว ต้องการทำอะไรต่อ?"
+        onClose={() => setSavedOpen(false)}
+        actions={[
+          { label: 'เพิ่มกิจกรรมอีก', variant: 'outline', onClick: () => setSavedOpen(false) },
+          { label: 'ไปหน้ารายการกิจกรรม', onClick: () => navigate({ to: '/admin/activity/activity/summary' }) },
+        ]}
+      />
     </div>
   )
 }

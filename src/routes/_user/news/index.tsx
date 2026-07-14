@@ -1,16 +1,32 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Megaphone, Briefcase, Calendar, ArrowRight, FileText, Newspaper } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { requestAPI } from '@/lib/api';
-import type { NewsInfo } from '@/interface/newinfo';
+import { NEWS_TABS, type NewsInfo, type NewsTabKey } from '@/interface/newinfo';
+
+// สี/ไอคอนต่อหมวด — เป็นเรื่องเฉพาะหน้านี้ (layout คนละแบบกับหน้าแรก) ส่วนตัว key/type/label
+// มาจาก NEWS_TABS ที่เดียว. Record<NewsTabKey, …> บังคับว่าเพิ่มประเภทข่าวใหม่ต้องมาใส่สไตล์ที่นี่
+// ไม่งั้น TypeScript error (กันแท็บโผล่มาแบบไม่มีสไตล์)
+// ใช้ class เต็มสตริงเสมอ — ห้าม interpolate ชื่อสี ไม่งั้น Tailwind purge ทิ้ง
+const TAB_STYLE: Record<NewsTabKey, { Icon: LucideIcon; strip: string; iconBox: string }> = {
+  general: { Icon: Megaphone, strip: 'bg-linear-to-r from-teal-500 to-teal-600', iconBox: 'bg-teal-50 text-teal-600' },
+  job: { Icon: Briefcase, strip: 'bg-linear-to-r from-green-500 to-green-600', iconBox: 'bg-green-50 text-green-600' },
+  procurement: { Icon: FileText, strip: 'bg-linear-to-r from-slate-500 to-slate-600', iconBox: 'bg-slate-100 text-slate-600' },
+}
 
 export const Route = createFileRoute('/_user/news/')({
+  // รับ ?tab= จาก URL เพื่อ deep-link เข้าหมวดที่ต้องการ (เมนู navbar ชี้ตรงมาแท็บ)
+  // ค่าที่ไม่รู้จักถูกโยนทิ้ง → ตกกลับไปแท็บ default ไม่พัง
+  validateSearch: (search: Record<string, unknown>): { tab?: NewsTabKey } => {
+    const tab = NEWS_TABS.find((t) => t.key === search.tab)?.key
+    return tab ? { tab } : {}
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-
   const { data } = useQuery<NewsInfo[]>({
     queryKey: ["news"],
     refetchOnWindowFocus: false,
@@ -26,19 +42,23 @@ function RouteComponent() {
   });
 
   const navigate = useNavigate();
-  const [tap, setTap] = useState<'job' | 'general'>('general');
+  const { tab } = Route.useSearch();
+  const activeKey: NewsTabKey = tab ?? 'general';
+  const activeTab = NEWS_TABS.find((t) => t.key === activeKey) ?? NEWS_TABS[0];
+  const activeStyle = TAB_STYLE[activeKey];
 
-  const { latestJob, latestGeneral } = useMemo(() => {
-    const sortByDate = (arr: NewsInfo[]) =>
-      [...arr].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    return {
-      latestJob: sortByDate(data?.filter(n => n.type === "ประกาศจัดซื้อจัดจ้าง") || []),
-      latestGeneral: sortByDate(data?.filter(n => n.type === "ประชาสัมพันธ์") || []),
-    };
+  // นับจำนวนต่อหมวด (โชว์ badge) + list ของหมวดที่เลือก เรียงใหม่→เก่า
+  const countByType = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const n of data ?? []) map[n.type] = (map[n.type] ?? 0) + 1;
+    return map;
   }, [data]);
 
-  const latestList = tap === 'job' ? latestJob : latestGeneral;
-  const isJob = tap === 'job';
+  const activeList = useMemo(() => {
+    return [...(data?.filter((n) => n.type === activeTab.type) ?? [])].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+  }, [data, activeTab.type]);
 
   return (
     <div className="min-h-screen bg-gray-50/60 pb-20">
@@ -56,42 +76,34 @@ function RouteComponent() {
             ศูนย์ข้อมูลข่าวสาร<span className="text-green-600">โรงพยาบาล</span>
           </h1>
           <p className="text-gray-500 max-w-lg mx-auto text-[15px] leading-relaxed">
-            ติดตามข่าวประชาสัมพันธ์ ประกาศจัดซื้อจัดจ้าง และกิจกรรมต่างๆ ของโรงพยาบาลสะเมิง
+            ติดตามข่าวประชาสัมพันธ์ ประกาศรับสมัครงาน และจัดซื้อพัสดุต่างๆ ของโรงพยาบาลสะเมิง
           </p>
 
           {/* ─── Tabs ─── */}
           <div className="flex justify-center mt-8">
-            <div className="inline-flex p-1 bg-gray-100 rounded-2xl gap-1">
-              <button
-                onClick={() => setTap('general')}
-                className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200
-                  ${!isJob
-                    ? 'bg-white text-green-700 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-600'
-                  }`}
-              >
-                <Megaphone className="w-4 h-4" />
-                ประชาสัมพันธ์
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none
-                  ${!isJob ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
-                  {latestGeneral.length}
-                </span>
-              </button>
-              <button
-                onClick={() => setTap('job')}
-                className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200
-                  ${isJob
-                    ? 'bg-white text-green-700 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-600'
-                  }`}
-              >
-                <Briefcase className="w-4 h-4" />
-                ประกาศจัดซื้อจัดจ้าง
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none
-                  ${isJob ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
-                  {latestJob.length}
-                </span>
-              </button>
+            <div className="inline-flex flex-wrap justify-center p-1 bg-gray-100 rounded-2xl gap-1">
+              {NEWS_TABS.map(({ key, label, type }) => {
+                const { Icon } = TAB_STYLE[key]
+                const selected = key === activeKey
+                return (
+                  <button
+                    key={key}
+                    onClick={() => navigate({ to: '/news', search: { tab: key } })}
+                    className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200
+                      ${selected
+                        ? 'bg-white text-green-700 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-600'
+                      }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {label}
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none
+                      ${selected ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                      {countByType[type] ?? 0}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
           </div>
         </div>
@@ -101,15 +113,15 @@ function RouteComponent() {
       <div className="max-w-5xl mx-auto px-6 pt-10">
 
         {/* count label */}
-        {latestList.length > 0 && (
+        {activeList.length > 0 && (
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-5">
-            {isJob ? 'ประกาศจัดซื้อจัดจ้าง' : 'ข่าวประชาสัมพันธ์'} · {latestList.length} รายการ
+            {activeTab.label} · {activeList.length} รายการ
           </p>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {latestList.length > 0 ? (
-            latestList.map((info) => (
+          {activeList.length > 0 ? (
+            activeList.map((info) => (
               <div
                 key={info.id}
                 onClick={() => navigate({ to: "/news/$id", params: { id: String(info.id) } })}
@@ -118,17 +130,13 @@ function RouteComponent() {
                            transition-all duration-300"
               >
                 {/* Colored top strip */}
-                <div className={`h-1.5 w-full ${isJob ? 'bg-linear-to-r from-green-500 to-green-600' : 'bg-linear-to-r from-teal-500 to-teal-600'}`} />
+                <div className={`h-1.5 w-full ${activeStyle.strip}`} />
 
                 <div className="p-5 flex flex-col flex-1">
                   {/* Icon + Date row */}
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center
-                      ${isJob ? 'bg-green-50 text-green-600' : 'bg-teal-50 text-teal-600'}`}>
-                      {isJob
-                        ? <FileText className="w-4 h-4" />
-                        : <Megaphone className="w-4 h-4" />
-                      }
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${activeStyle.iconBox}`}>
+                      <activeStyle.Icon className="w-4 h-4" />
                     </div>
                     <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
                       <Calendar className="w-3 h-3" />

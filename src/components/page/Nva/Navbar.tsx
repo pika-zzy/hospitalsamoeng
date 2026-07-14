@@ -56,8 +56,8 @@ const Navbar = () => {
               >
                 {!menu.submenu ? (
                   <Link
-                    to={menu.link}
-                    className={`px-5 py-2.5 text-[14px] rounded-full transition-all duration-300 hover:bg-green-50/80 ${isActive(menu.link)}`}
+                    to={menu.link!}
+                    className={`px-5 py-2.5 text-[14px] rounded-full transition-all duration-300 hover:bg-green-50/80 ${isActive(menu.link!)}`}
                   >
                     {menu.name}
                   </Link>
@@ -92,6 +92,7 @@ const Navbar = () => {
                           <Link
                             key={i}
                             to={sub.link}
+                            search={sub.search}
                             className="flex items-center px-4 py-3 text-[14px] font-medium text-gray-500 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all duration-200"
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500 mr-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
@@ -124,8 +125,8 @@ const Navbar = () => {
             <div key={menu.id} className="mb-4">
               {!menu.submenu ? (
                 <Link
-                  to={menu.link}
-                  className={`block px-5 py-2.5 text-[16px] rounded-full transition-all duration-300 hover:bg-green-50/80 ${isActive(menu.link)}`}
+                  to={menu.link!}
+                  className={`block px-5 py-2.5 text-[16px] rounded-full transition-all duration-300 hover:bg-green-50/80 ${isActive(menu.link!)}`}
                   onClick={() => setIsMobileMenuOpen(false)} // ปิดเมนูเมื่อคลิก
                 >
                   {menu.name}
@@ -151,6 +152,7 @@ const Navbar = () => {
                         <Link
                           key={i}
                           to={sub.link}
+                          search={sub.search}
                           className="block px-4 py-3 text-[14px] font-medium text-gray-500 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all duration-200"
                           onClick={() => setIsMobileMenuOpen(false)} // ปิดเมนูเมื่อคลิก
                         >

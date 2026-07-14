@@ -1,16 +1,22 @@
 import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { NEWS_TYPES } from '@/interface/newinfo';
 import { requestAPI } from '@/lib/api';
-import { useMutation } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { CheckCircle2, ChevronDown, CloudUpload, X } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_admin/admin/news/')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
   // 1. State สำหรับเก็บข้อมูล
   // เปลี่ยน fileUrl เป็น file object เพื่อรองรับการอัพโหลดจริง
   const [formData, setFormData] = useState({
@@ -22,6 +28,21 @@ function RouteComponent() {
     img : null as File | null,
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // เปิด dialog หลังบันทึกสำเร็จ — ให้ผู้ใช้เลือกว่าจะเพิ่มข่าวต่อ หรือไปดูหน้ารายการ
+  const [savedOpen, setSavedOpen] = useState(false);
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      description: '',
+      date: new Date().toISOString().split('T')[0],
+      type: '',
+      file: null,
+      img: null,
+    });
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -39,7 +60,7 @@ function RouteComponent() {
   if (!file) return;
 
   if (file.type !== "application/pdf") {
-    alert("อัปโหลดได้เฉพาะ PDF");
+    toast.error("อัปโหลดได้เฉพาะไฟล์ PDF");
     return;
   }
 
@@ -79,10 +100,19 @@ function RouteComponent() {
       body: submitData,
     });
   },
-  onSuccess: () => {
-    alert('✅ บันทึกข่าวสำเร็จ!');
+  // FIX: เดิมใช้ alert() แล้วค้างอยู่หน้าเดิม ไม่ได้ล้าง cache — หน้ารายการข่าวเลยยัง
+  // เห็นข้อมูลเก่า. ตอนนี้บันทึกเสร็จ → invalidate แล้วเปิด Dialog ให้เลือกว่าจะเพิ่มข่าว
+  // ต่อ หรือไปหน้ารายการ (error ยังใช้ toast ตาม pattern เดิมของโปรเจกต์)
+  onSuccess: (resp) => {
+    if (!resp.success) {
+      toast.error(resp.message || 'บันทึกไม่สำเร็จ');
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ['news'] });
+    resetForm();
+    setSavedOpen(true);
   },
-  
+  onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
   });
 
   return (
@@ -127,8 +157,11 @@ function RouteComponent() {
                 className="w-full appearance-none px-4 py-2.5 rounded-sm border border-line bg-white text-ink outline-none transition-colors focus:border-teal focus:ring-2 focus:ring-teal/20 cursor-pointer"
               >
                 <option value="">-- เลือกประเภท --</option>
-                <option value="ประชาสัมพันธ์">📢 ประชาสัมพันธ์</option>
-                <option value="ประกาศจัดซื้อจัดจ้าง">📑 ประกาศจัดซื้อจัดจ้าง</option>
+                {NEWS_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
               </select>
               {/* Custom Arrow Icon */}
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-faint">
@@ -269,6 +302,17 @@ function RouteComponent() {
           </Button>
         </div>
       </form>
+
+      <Dialog
+        open={savedOpen}
+        title="บันทึกข่าวสำเร็จ"
+        description="ข่าวถูกเผยแพร่ขึ้นหน้าเว็บแล้ว ต้องการทำอะไรต่อ?"
+        onClose={() => setSavedOpen(false)}
+        actions={[
+          { label: 'เพิ่มข่าวอีก', variant: 'outline', onClick: () => setSavedOpen(false) },
+          { label: 'ไปหน้ารายการข่าว', onClick: () => navigate({ to: '/admin/news/news/summary' }) },
+        ]}
+      />
     </div>
   )
 }

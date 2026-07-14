@@ -1,0 +1,236 @@
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import type { HeroSlide } from '@/interface/hero'
+import { requestAPI } from '@/lib/api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute } from '@tanstack/react-router'
+import { CloudUpload, ImageOff, Info, Trash2, X } from 'lucide-react'
+import { useState } from 'react'
+import { toast } from 'sonner'
+
+export const Route = createFileRoute('/_admin/admin/hero/')({
+  component: RouteComponent,
+})
+
+const API_URL = import.meta.env.VITE_API_URL
+
+function RouteComponent() {
+  const qc = useQueryClient()
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [orderInput, setOrderInput] = useState('')
+
+  const { data: slides = [], isLoading } = useQuery<HeroSlide[]>({
+    queryKey: ['hero'],
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      const resp = await requestAPI<HeroSlide[]>({ method: 'GET', url: '/hero' })
+      return resp.success ? resp.data : []
+    },
+  })
+
+  const addSlide = useMutation({
+    mutationFn: (data: { file: File; order: string }) => {
+      const form = new FormData()
+      form.append('image', data.file)
+      // ไม่กรอกลำดับ = ปล่อยให้ backend ต่อท้ายให้เอง (max + 1)
+      if (data.order.trim()) form.append('order', data.order.trim())
+      return requestAPI({ method: 'POST', url: '/hero', body: form })
+    },
+    onSuccess: (resp) => {
+      if (!resp.success) {
+        toast.error(resp.message || 'เพิ่มรูปไม่สำเร็จ')
+        return
+      }
+      toast.success('เพิ่มรูปสไลด์สำเร็จ')
+      setSelectedFile(null)
+      setOrderInput('')
+      qc.invalidateQueries({ queryKey: ['hero'] })
+    },
+    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
+  })
+
+  const updateOrder = useMutation({
+    mutationFn: (data: { id: number; order: number }) =>
+      requestAPI({ method: 'PUT', url: `/hero/${data.id}`, body: { order: data.order } }),
+    onSuccess: (resp) => {
+      if (!resp.success) {
+        toast.error(resp.message || 'แก้ลำดับไม่สำเร็จ')
+        return
+      }
+      toast.success('แก้ลำดับสำเร็จ')
+      qc.invalidateQueries({ queryKey: ['hero'] })
+    },
+    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
+  })
+
+  const deleteSlide = useMutation({
+    mutationFn: (id: number) => requestAPI({ method: 'DELETE', url: `/hero/${id}` }),
+    onSuccess: (resp) => {
+      if (!resp.success) {
+        // เคสหลักคือ backend กันลบรูปสุดท้าย (400) — โชว์ข้อความจาก backend ตรง ๆ
+        toast.error(resp.message || 'ลบรูปไม่สำเร็จ')
+        return
+      }
+      toast.success('ลบรูปสไลด์สำเร็จ')
+      qc.invalidateQueries({ queryKey: ['hero'] })
+    },
+    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
+  })
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      toast.error('อัปโหลดได้เฉพาะไฟล์รูปภาพ (.jpg/.jpeg/.png)')
+      return
+    }
+    setSelectedFile(file)
+  }
+
+  // ต้องเหลืออย่างน้อย 1 รูปเสมอ (backend บังคับด้วย — ตรงนี้แค่ปิดปุ่มให้ UX ชัด)
+  const isLastSlide = slides.length <= 1
+
+  const previewSrc = selectedFile ? URL.createObjectURL(selectedFile) : ''
+
+  return (
+    <div className="px-6 py-10 max-w-3xl mx-auto w-full text-ink">
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold tracking-tight">จัดการรูปสไลด์หน้าแรก</h1>
+        <p className="text-sm mt-1 text-muted">
+          รูปพื้นหลังส่วนหัวของหน้าแรก ถ้ามีมากกว่า 1 รูป หน้าเว็บจะเลื่อนสไลด์อัตโนมัติ
+        </p>
+      </div>
+
+      {/* กติกาการลบ — บอกล่วงหน้าดีกว่าให้ไปเจอ error ตอนกดลบ */}
+      <div className="mb-6 flex gap-2.5 rounded-md border border-line bg-paper/50 p-4">
+        <Info className="w-4 h-4 text-teal shrink-0 mt-0.5" />
+        <p className="text-xs text-muted leading-relaxed">
+          เมื่อมีรูปในระบบแล้ว <span className="font-semibold text-ink">ต้องเหลืออย่างน้อย 1 รูปเสมอ</span> —
+          ลบรูปสุดท้ายไม่ได้ (ถ้ายังไม่มีรูปเลย หน้าแรกจะแสดงเป็นพื้นหลังสีทึบ)
+          <br />
+          ลำดับยิ่งน้อยยิ่งแสดงก่อน
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-muted text-center py-16">กำลังโหลด...</p>
+      ) : (
+        <div className="space-y-6">
+          {/* รายการรูปปัจจุบัน */}
+          <div className="rounded-md border border-line bg-white p-6 space-y-4">
+            <Label className="text-sm font-semibold text-ink">
+              รูปสไลด์ปัจจุบัน ({slides.length} รูป)
+            </Label>
+
+            {slides.length === 0 ? (
+              <div className="flex flex-col items-center justify-center w-full h-40 rounded-sm border border-dashed border-line bg-paper/50 text-faint">
+                <ImageOff className="w-7 h-7 mb-2" strokeWidth={1.5} />
+                <p className="text-sm">ยังไม่มีรูปสไลด์ — หน้าแรกแสดงพื้นหลังสีทึบ</p>
+              </div>
+            ) : (
+              <ul className="space-y-3">
+                {slides.map((slide) => (
+                  <li
+                    key={slide.ID}
+                    className="flex items-center gap-4 rounded-sm border border-line bg-paper/40 p-3"
+                  >
+                    <img
+                      src={`${API_URL}${slide.image_url}`}
+                      alt={`สไลด์ลำดับ ${slide.order}`}
+                      className="w-32 h-20 object-cover rounded-sm border border-line shrink-0"
+                    />
+
+                    <div className="flex-1 min-w-0">
+                      <Label className="text-xs text-muted">ลำดับ</Label>
+                      <input
+                        type="number"
+                        defaultValue={slide.order}
+                        disabled={updateOrder.isPending}
+                        // บันทึกตอน blur — ไม่ต้องมีปุ่ม save ต่อแถว
+                        onBlur={(e) => {
+                          const next = Number(e.target.value)
+                          if (Number.isNaN(next) || next === slide.order) return
+                          updateOrder.mutate({ id: slide.ID, order: next })
+                        }}
+                        className="mt-1 w-24 px-3 py-1.5 rounded-sm border border-line bg-white text-sm text-ink
+                                   outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 disabled:opacity-50"
+                      />
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      title={isLastSlide ? 'ลบรูปสุดท้ายไม่ได้ ต้องเหลืออย่างน้อย 1 รูป' : 'ลบรูปนี้'}
+                      disabled={isLastSlide || deleteSlide.isPending}
+                      onClick={() => {
+                        if (window.confirm('ลบรูปสไลด์นี้ใช่ไหมครับ?')) deleteSlide.mutate(slide.ID)
+                      }}
+                      className="rounded-sm h-9 w-9 shrink-0 disabled:opacity-40"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* เพิ่มรูปใหม่ */}
+          <div className="rounded-md border border-line bg-white p-6 space-y-4">
+            <div>
+              <Label className="text-sm font-semibold text-ink">เพิ่มรูปสไลด์ใหม่</Label>
+              <p className="text-xs text-muted mt-1">รองรับไฟล์ .jpg .jpeg .png</p>
+            </div>
+
+            {previewSrc && (
+              <div className="relative w-full rounded-sm overflow-hidden border border-line bg-paper">
+                <img src={previewSrc} alt="ตัวอย่างรูปที่เลือก" className="w-full max-h-80 object-contain mx-auto" />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-3 right-3 rounded-full h-8 w-8 shadow-md"
+                  onClick={() => setSelectedFile(null)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted">ลำดับ (ไม่กรอก = ต่อท้ายรูปสุดท้าย)</Label>
+              <input
+                type="number"
+                value={orderInput}
+                onChange={(e) => setOrderInput(e.target.value)}
+                placeholder="เช่น 1"
+                className="w-32 px-3 py-2 rounded-sm border border-line bg-white text-ink outline-none
+                           focus:border-teal focus:ring-2 focus:ring-teal/20"
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <label className="flex-1 flex items-center justify-center gap-2 h-11 rounded-sm border-2 border-dashed border-line cursor-pointer bg-paper/50 hover:bg-paper hover:border-teal transition-colors text-sm text-muted">
+                <CloudUpload className="w-5 h-5 text-faint" strokeWidth={1.5} />
+                <span>
+                  <span className="font-semibold text-teal">เลือกรูปภาพ</span> เพื่อเพิ่มสไลด์
+                </span>
+                <input type="file" accept="image/jpeg, image/png" className="hidden" onChange={handleFileChange} />
+              </label>
+
+              <Button
+                type="button"
+                disabled={!selectedFile || addSlide.isPending}
+                className="h-11 px-6 bg-teal hover:bg-teal/90 text-white font-semibold rounded-sm transition-colors disabled:opacity-50"
+                onClick={() => selectedFile && addSlide.mutate({ file: selectedFile, order: orderInput })}
+              >
+                {addSlide.isPending ? 'กำลังบันทึก...' : 'เพิ่มรูปสไลด์'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
