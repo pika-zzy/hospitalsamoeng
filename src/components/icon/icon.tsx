@@ -1,6 +1,7 @@
 import { icons } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { useState } from "react"
+import { ICON_COLORS } from "./colors"
 
 const ALL_ICONS: {
     name: string
@@ -9,25 +10,6 @@ const ALL_ICONS: {
     name,
     icon,
 }))
-
-type ColorOption = {
-  label: string
-  bgClass: string
-  borderClass: string
-  bgHex: string
-  borderHex: string
-}
-
-const ICON_COLORS: ColorOption[] = [
-  { label: 'green',  bgClass: 'bg-green-100',  borderClass: 'border-green-300',  bgHex: '#dcfce7', borderHex: '#86efac' },
-  { label: 'blue',   bgClass: 'bg-blue-100',   borderClass: 'border-blue-300',   bgHex: '#dbeafe', borderHex: '#93c5fd' },
-  { label: 'purple', bgClass: 'bg-purple-100', borderClass: 'border-purple-300', bgHex: '#f3e8ff', borderHex: '#c084fc' },
-  { label: 'orange', bgClass: 'bg-orange-100', borderClass: 'border-orange-300', bgHex: '#ffedd5', borderHex: '#fdba74' },
-  { label: 'red',    bgClass: 'bg-red-100',    borderClass: 'border-red-300',    bgHex: '#fee2e2', borderHex: '#fca5a5' },
-  { label: 'pink',   bgClass: 'bg-pink-100',   borderClass: 'border-pink-300',   bgHex: '#fce7f3', borderHex: '#f9a8d4' },
-  { label: 'cream',  bgClass: 'bg-amber-50',   borderClass: 'border-amber-200',  bgHex: '#fffbeb', borderHex: '#fde68a' },
-  { label: 'teal',   bgClass: 'bg-teal-100',   borderClass: 'border-teal-300',   bgHex: '#ccfbf1', borderHex: '#5eead4' },
-]
 
 
 

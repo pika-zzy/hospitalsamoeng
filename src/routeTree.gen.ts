@@ -26,7 +26,7 @@ import { Route as AdminAdminDashboardRouteImport } from './routes/_admin/admin/d
 import { Route as UserAboutHistoryIndexRouteImport } from './routes/_user/about/history/index'
 import { Route as UserAboutDoctorIndexRouteImport } from './routes/_user/about/doctor/index'
 import { Route as UserAboutContactIndexRouteImport } from './routes/_user/about/contact/index'
-import { Route as AdminAdminStaffserviceIndexRouteImport } from './routes/_admin/admin/staffservice/index'
+import { Route as AdminAdminStaftmenuIndexRouteImport } from './routes/_admin/admin/staftmenu/index'
 import { Route as AdminAdminPopupIndexRouteImport } from './routes/_admin/admin/popup/index'
 import { Route as AdminAdminPersonnelIndexRouteImport } from './routes/_admin/admin/personnel/index'
 import { Route as AdminAdminNewsIndexRouteImport } from './routes/_admin/admin/news/index'
@@ -35,6 +35,7 @@ import { Route as AdminAdminLoginIndexRouteImport } from './routes/_admin/admin/
 import { Route as AdminAdminHeroIndexRouteImport } from './routes/_admin/admin/hero/index'
 import { Route as AdminAdminActivityIndexRouteImport } from './routes/_admin/admin/activity/index'
 import { Route as AdminAdminITAIndexRouteImport } from './routes/_admin/admin/ITA/index'
+import { Route as AdminAdminStaftmenuCreateRouteImport } from './routes/_admin/admin/staftmenu/create'
 import { Route as AdminAdminPersonnelCreateRouteImport } from './routes/_admin/admin/personnel/create'
 import { Route as AdminAdminEmployeeUsermanetmintRouteImport } from './routes/_admin/admin/employee/usermanetmint'
 import { Route as AdminAdminITACreateRouteImport } from './routes/_admin/admin/ITA/create'
@@ -125,10 +126,10 @@ const UserAboutContactIndexRoute = UserAboutContactIndexRouteImport.update({
   path: '/about/contact/',
   getParentRoute: () => UserRouteRoute,
 } as any)
-const AdminAdminStaffserviceIndexRoute =
-  AdminAdminStaffserviceIndexRouteImport.update({
-    id: '/admin/staffservice/',
-    path: '/admin/staffservice/',
+const AdminAdminStaftmenuIndexRoute =
+  AdminAdminStaftmenuIndexRouteImport.update({
+    id: '/admin/staftmenu/',
+    path: '/admin/staftmenu/',
     getParentRoute: () => AdminRouteRoute,
   } as any)
 const AdminAdminPopupIndexRoute = AdminAdminPopupIndexRouteImport.update({
@@ -172,6 +173,12 @@ const AdminAdminITAIndexRoute = AdminAdminITAIndexRouteImport.update({
   path: '/admin/ITA/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAdminStaftmenuCreateRoute =
+  AdminAdminStaftmenuCreateRouteImport.update({
+    id: '/admin/staftmenu/create',
+    path: '/admin/staftmenu/create',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminAdminPersonnelCreateRoute =
   AdminAdminPersonnelCreateRouteImport.update({
     id: '/admin/personnel/create',
@@ -224,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/admin/ITA/create': typeof AdminAdminITACreateRoute
   '/admin/employee/usermanetmint': typeof AdminAdminEmployeeUsermanetmintRoute
   '/admin/personnel/create': typeof AdminAdminPersonnelCreateRoute
+  '/admin/staftmenu/create': typeof AdminAdminStaftmenuCreateRoute
   '/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/admin/hero/': typeof AdminAdminHeroIndexRoute
@@ -232,7 +240,7 @@ export interface FileRoutesByFullPath {
   '/admin/news/': typeof AdminAdminNewsIndexRoute
   '/admin/personnel/': typeof AdminAdminPersonnelIndexRoute
   '/admin/popup/': typeof AdminAdminPopupIndexRoute
-  '/admin/staffservice/': typeof AdminAdminStaffserviceIndexRoute
+  '/admin/staftmenu/': typeof AdminAdminStaftmenuIndexRoute
   '/about/contact/': typeof UserAboutContactIndexRoute
   '/about/doctor/': typeof UserAboutDoctorIndexRoute
   '/about/history/': typeof UserAboutHistoryIndexRoute
@@ -256,6 +264,7 @@ export interface FileRoutesByTo {
   '/admin/ITA/create': typeof AdminAdminITACreateRoute
   '/admin/employee/usermanetmint': typeof AdminAdminEmployeeUsermanetmintRoute
   '/admin/personnel/create': typeof AdminAdminPersonnelCreateRoute
+  '/admin/staftmenu/create': typeof AdminAdminStaftmenuCreateRoute
   '/admin/ITA': typeof AdminAdminITAIndexRoute
   '/admin/activity': typeof AdminAdminActivityIndexRoute
   '/admin/hero': typeof AdminAdminHeroIndexRoute
@@ -264,7 +273,7 @@ export interface FileRoutesByTo {
   '/admin/news': typeof AdminAdminNewsIndexRoute
   '/admin/personnel': typeof AdminAdminPersonnelIndexRoute
   '/admin/popup': typeof AdminAdminPopupIndexRoute
-  '/admin/staffservice': typeof AdminAdminStaffserviceIndexRoute
+  '/admin/staftmenu': typeof AdminAdminStaftmenuIndexRoute
   '/about/contact': typeof UserAboutContactIndexRoute
   '/about/doctor': typeof UserAboutDoctorIndexRoute
   '/about/history': typeof UserAboutHistoryIndexRoute
@@ -291,6 +300,7 @@ export interface FileRoutesById {
   '/_admin/admin/ITA/create': typeof AdminAdminITACreateRoute
   '/_admin/admin/employee/usermanetmint': typeof AdminAdminEmployeeUsermanetmintRoute
   '/_admin/admin/personnel/create': typeof AdminAdminPersonnelCreateRoute
+  '/_admin/admin/staftmenu/create': typeof AdminAdminStaftmenuCreateRoute
   '/_admin/admin/ITA/': typeof AdminAdminITAIndexRoute
   '/_admin/admin/activity/': typeof AdminAdminActivityIndexRoute
   '/_admin/admin/hero/': typeof AdminAdminHeroIndexRoute
@@ -299,7 +309,7 @@ export interface FileRoutesById {
   '/_admin/admin/news/': typeof AdminAdminNewsIndexRoute
   '/_admin/admin/personnel/': typeof AdminAdminPersonnelIndexRoute
   '/_admin/admin/popup/': typeof AdminAdminPopupIndexRoute
-  '/_admin/admin/staffservice/': typeof AdminAdminStaffserviceIndexRoute
+  '/_admin/admin/staftmenu/': typeof AdminAdminStaftmenuIndexRoute
   '/_user/about/contact/': typeof UserAboutContactIndexRoute
   '/_user/about/doctor/': typeof UserAboutDoctorIndexRoute
   '/_user/about/history/': typeof UserAboutHistoryIndexRoute
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
     | '/admin/ITA/create'
     | '/admin/employee/usermanetmint'
     | '/admin/personnel/create'
+    | '/admin/staftmenu/create'
     | '/admin/ITA/'
     | '/admin/activity/'
     | '/admin/hero/'
@@ -333,7 +344,7 @@ export interface FileRouteTypes {
     | '/admin/news/'
     | '/admin/personnel/'
     | '/admin/popup/'
-    | '/admin/staffservice/'
+    | '/admin/staftmenu/'
     | '/about/contact/'
     | '/about/doctor/'
     | '/about/history/'
@@ -357,6 +368,7 @@ export interface FileRouteTypes {
     | '/admin/ITA/create'
     | '/admin/employee/usermanetmint'
     | '/admin/personnel/create'
+    | '/admin/staftmenu/create'
     | '/admin/ITA'
     | '/admin/activity'
     | '/admin/hero'
@@ -365,7 +377,7 @@ export interface FileRouteTypes {
     | '/admin/news'
     | '/admin/personnel'
     | '/admin/popup'
-    | '/admin/staffservice'
+    | '/admin/staftmenu'
     | '/about/contact'
     | '/about/doctor'
     | '/about/history'
@@ -391,6 +403,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/ITA/create'
     | '/_admin/admin/employee/usermanetmint'
     | '/_admin/admin/personnel/create'
+    | '/_admin/admin/staftmenu/create'
     | '/_admin/admin/ITA/'
     | '/_admin/admin/activity/'
     | '/_admin/admin/hero/'
@@ -399,7 +412,7 @@ export interface FileRouteTypes {
     | '/_admin/admin/news/'
     | '/_admin/admin/personnel/'
     | '/_admin/admin/popup/'
-    | '/_admin/admin/staffservice/'
+    | '/_admin/admin/staftmenu/'
     | '/_user/about/contact/'
     | '/_user/about/doctor/'
     | '/_user/about/history/'
@@ -534,11 +547,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAboutContactIndexRouteImport
       parentRoute: typeof UserRouteRoute
     }
-    '/_admin/admin/staffservice/': {
-      id: '/_admin/admin/staffservice/'
-      path: '/admin/staffservice'
-      fullPath: '/admin/staffservice/'
-      preLoaderRoute: typeof AdminAdminStaffserviceIndexRouteImport
+    '/_admin/admin/staftmenu/': {
+      id: '/_admin/admin/staftmenu/'
+      path: '/admin/staftmenu'
+      fullPath: '/admin/staftmenu/'
+      preLoaderRoute: typeof AdminAdminStaftmenuIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/admin/popup/': {
@@ -597,6 +610,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminITAIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/admin/staftmenu/create': {
+      id: '/_admin/admin/staftmenu/create'
+      path: '/admin/staftmenu/create'
+      fullPath: '/admin/staftmenu/create'
+      preLoaderRoute: typeof AdminAdminStaftmenuCreateRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/admin/personnel/create': {
       id: '/_admin/admin/personnel/create'
       path: '/admin/personnel/create'
@@ -648,6 +668,7 @@ interface AdminRouteRouteChildren {
   AdminAdminITACreateRoute: typeof AdminAdminITACreateRoute
   AdminAdminEmployeeUsermanetmintRoute: typeof AdminAdminEmployeeUsermanetmintRoute
   AdminAdminPersonnelCreateRoute: typeof AdminAdminPersonnelCreateRoute
+  AdminAdminStaftmenuCreateRoute: typeof AdminAdminStaftmenuCreateRoute
   AdminAdminITAIndexRoute: typeof AdminAdminITAIndexRoute
   AdminAdminActivityIndexRoute: typeof AdminAdminActivityIndexRoute
   AdminAdminHeroIndexRoute: typeof AdminAdminHeroIndexRoute
@@ -656,7 +677,7 @@ interface AdminRouteRouteChildren {
   AdminAdminNewsIndexRoute: typeof AdminAdminNewsIndexRoute
   AdminAdminPersonnelIndexRoute: typeof AdminAdminPersonnelIndexRoute
   AdminAdminPopupIndexRoute: typeof AdminAdminPopupIndexRoute
-  AdminAdminStaffserviceIndexRoute: typeof AdminAdminStaffserviceIndexRoute
+  AdminAdminStaftmenuIndexRoute: typeof AdminAdminStaftmenuIndexRoute
   AdminAdminActivityActivitySummaryRoute: typeof AdminAdminActivityActivitySummaryRoute
   AdminAdminEmployeeStaffserviceSummaryRoute: typeof AdminAdminEmployeeStaffserviceSummaryRoute
   AdminAdminNewsNewsSummaryRoute: typeof AdminAdminNewsNewsSummaryRoute
@@ -668,6 +689,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAdminITACreateRoute: AdminAdminITACreateRoute,
   AdminAdminEmployeeUsermanetmintRoute: AdminAdminEmployeeUsermanetmintRoute,
   AdminAdminPersonnelCreateRoute: AdminAdminPersonnelCreateRoute,
+  AdminAdminStaftmenuCreateRoute: AdminAdminStaftmenuCreateRoute,
   AdminAdminITAIndexRoute: AdminAdminITAIndexRoute,
   AdminAdminActivityIndexRoute: AdminAdminActivityIndexRoute,
   AdminAdminHeroIndexRoute: AdminAdminHeroIndexRoute,
@@ -676,7 +698,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAdminNewsIndexRoute: AdminAdminNewsIndexRoute,
   AdminAdminPersonnelIndexRoute: AdminAdminPersonnelIndexRoute,
   AdminAdminPopupIndexRoute: AdminAdminPopupIndexRoute,
-  AdminAdminStaffserviceIndexRoute: AdminAdminStaffserviceIndexRoute,
+  AdminAdminStaftmenuIndexRoute: AdminAdminStaftmenuIndexRoute,
   AdminAdminActivityActivitySummaryRoute:
     AdminAdminActivityActivitySummaryRoute,
   AdminAdminEmployeeStaffserviceSummaryRoute:

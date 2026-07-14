@@ -1,15 +1,20 @@
 
+import { getIconColor } from "@/components/icon/colors";
 import IconPicker from "@/components/icon/icon";
+import type { StaffMenuPayload } from "@/interface/staffmenu";
 import { requestAPI } from "@/lib/api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { icons } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_admin/admin/staffservice/")({
+export const Route = createFileRoute("/_admin/admin/staftmenu/create")({
     component: RouteComponent,
 });
+
+// typed as string เพื่อให้ผ่าน typed-route ของ TanStack (pattern เดียวกับหน้าบุคลากร)
+const LIST_PATH: string = "/admin/staftmenu";
 
 function RouteComponent() {
     const [title, setTitle] = useState("");
@@ -18,51 +23,64 @@ function RouteComponent() {
     const [selectedIcon, setSelectedIcon] = useState("");
     const [selectedColor, setSelectedColor] = useState("green");
     const navigate = useNavigate ();
+    const qc = useQueryClient();
 
     const PreviewIcon =
         selectedIcon && selectedIcon in icons
         ? icons[selectedIcon as keyof typeof icons]
         : null;
-    
+
+    // FIX: พรีวิวเดิมส่ง selectedColor ("green") เป็นสี CSS ดิบให้ SVG → ได้เขียวสดคนละเฉดกับหน้า public
+    // ใช้ config เดียวกับที่ StaffPortal เรนเดอร์จริง พรีวิวจะได้ตรงกับของจริง
+    const previewColor = getIconColor(selectedColor);
+
 
     const mutation = useMutation({
-        mutationFn: (data: {
-            title: string;
-            description: string;
-            link: string;
-            icon: string;
-            color: string;
-        }) => {
+        mutationFn: (data: StaffMenuPayload) => {
         return requestAPI({
-            url: "/",
+            url: "/menu",
             method: "POST",
             body: data,
             });
-            
+
         },
-        onSuccess:()=>{
+        // FIX: requestAPI ไม่ throw เวลา backend ตอบ error (คืน success:false แทน)
+        // ของเดิม onSuccess เด้ง toast เขียวทุกครั้งแม้บันทึกไม่ผ่าน และ onError ไม่เคยทำงาน
+        // ต้องเช็ค resp.success เองเหมือนหน้า /admin/hero
+        onSuccess:(resp)=>{
+          if (!resp.success) {
+            toast.error(resp.message || "บันทึกข้อมูลไม่สำเร็จ");
+            return;
+          }
           toast.success("บันทึกข้อมูลสำเร็จ");
+          qc.invalidateQueries({ queryKey: ["menu"] });
           setTimeout(() => {
-            navigate({ to: "/admin/dashboard" }); 
+            navigate({ to: LIST_PATH });
           }, 800);
         },
         onError: (error) => {
           toast.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
           console.error("Error saving staff service menu:", error);
         },
-        
+
     });
 
 const handleSubmit = () => {
-    const payload = {
-        title,
-        description,
-        link,
+    // ชื่อเมนูเป็น NOT NULL ฝั่ง DB — กันส่งค่าว่างไปให้ backend สร้างเมนูไร้ชื่อ
+    if (!title.trim()) {
+        toast.error("กรุณากรอกชื่อเมนู");
+        return;
+    }
+
+    // FIX: backend (model.Menu) รับ key ชื่อ menu_name ไม่ใช่ title — ของเดิมส่ง title ไปเมนูจึงชื่อว่าง
+    const payload: StaffMenuPayload = {
+        menu_name: title.trim(),
+        description: description.trim(),
+        link: link.trim(),
         icon: selectedIcon,
         color: selectedColor,
     };
     mutation.mutate(payload);
-    console.log("Submitting data:", payload);
 };
 
     return (
@@ -156,12 +174,9 @@ const handleSubmit = () => {
                     <div className="rounded-3xl border bg-linear-to-br from-teal-50 to-white p-5  border-teal-200">
                         <div className="rounded-2xl bg-white p-5 shadow-md transition hover:shadow-xl">
                         <div className="flex items-center gap-5">
-                            <div className="flex h-20 w-20 items-center justify-center rounded-3xl border bg-gray-50 shadow-sm border-amber-50">
+                            <div className={`flex h-20 w-20 items-center justify-center rounded-3xl border border-transparent shadow-sm ${previewColor.bgClass} ${previewColor.textClass}`}>
                             {PreviewIcon ? (
-                                <PreviewIcon
-                                size={34}
-                                color={selectedColor}
-                                />
+                                <PreviewIcon size={34} />
                             ) : (
                                 <div className="h-8 w-8 rounded bg-gray-300" />
                             )}
@@ -184,14 +199,18 @@ const handleSubmit = () => {
                         </div>
                     </div>
                     <div className="mt-8 flex justify-end gap-4">
-                        <button className="rounded-xl border border-line px-6 py-3 font-medium transition hover:bg-gray-100">
+                        <button
+                            className="rounded-xl border border-line px-6 py-3 font-medium transition hover:bg-gray-100"
+                            onClick={() => navigate({ to: LIST_PATH })}
+                        >
                         ยกเลิก
                         </button>
-                        <button 
-                            className="rounded-xl bg-teal-600 px-8 py-3 font-medium text-white shadow transition hover:bg-teal-700"
+                        <button
+                            className="rounded-xl bg-teal-600 px-8 py-3 font-medium text-white shadow transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
                             onClick={handleSubmit}
+                            disabled={mutation.isPending}
                         >
-                            บันทึกเมนู
+                            {mutation.isPending ? "กำลังบันทึก..." : "บันทึกเมนู"}
                         </button>
                     </div>
                     </div>
@@ -201,4 +220,3 @@ const handleSubmit = () => {
         </div>
     );
 }
-

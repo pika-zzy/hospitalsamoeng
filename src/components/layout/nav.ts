@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  LayoutGrid,
   Megaphone,
   Calendar,
   ShieldCheck,
@@ -78,6 +79,16 @@ export const NAV: NavItem[] = [
     icon: AppWindow,
     to: '/admin/popup',
     match: '/admin/popup',
+  },
+  {
+    label: 'เมนูบริการเจ้าหน้าที่',
+    icon: LayoutGrid,
+    to: '/admin/staftmenu',
+    match: '/admin/staftmenu',
+    children: [
+      { label: 'รายการเมนู', to: '/admin/staftmenu' },
+      { label: 'เพิ่มเมนู', to: '/admin/staftmenu/create' },
+    ],
   },
   {
     label: 'ตั้งค่าระบบ',
