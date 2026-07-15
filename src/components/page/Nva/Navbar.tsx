@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link, useMatchRoute } from "@tanstack/react-router"
-import { ChevronDown, MenuIcon, X } from "lucide-react"
+import { ChevronDown, MenuIcon, Phone, X } from "lucide-react"
 import logo from "/src/assets/logo2.png"
 import { Navbarlist } from "@/interface/menu"
 import { Button } from "@/components/ui/button"
@@ -9,15 +9,17 @@ const Navbar = () => {
   const matchRoute = useMatchRoute()
   const [openMenuId, setOpenMenuId] = useState<number | null>(null)
 
+  // REFACTOR: navbar แบบเม็ดยา (pill) ตาม mockup "แบบ G" ที่ user เลือก (2026-07-15)
+  // ใช้ทั้งเว็บ — active = เม็ดขาวลอยบนรางเขียวอ่อน, logic ทั้งหมดคงเดิม
   const isActive = (to: string) =>
     matchRoute({ to })
-      ? "text-green-600 font-bold"
-      : "text-gray-600 font-medium"
+      ? "bg-white text-green-700 font-bold shadow-sm"
+      : "text-gray-600 font-medium hover:bg-white/70 hover:text-green-700"
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100/50 shadow-sm">
+    <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-xl border-b border-green-100/50 shadow-sm">
       <div className="container mx-auto">
         <div className="flex justify-between items-center h-20 px-6">
 
@@ -46,28 +48,28 @@ const Navbar = () => {
           >
             {isMobileMenuOpen ? <X size={28} /> : <MenuIcon size={28} />}
           </Button>
-          <ul className="hidden lg:flex items-center gap-1">
+          <ul className="hidden lg:flex items-center gap-0.5 bg-green-50/80 border border-green-100/60 rounded-full p-1.5">
             {Navbarlist.map((menu) => (
               <li
                 key={menu.id}
-                className="relative py-2" // เพิ่ม padding-y เพื่อสร้างพื้นที่เชื่อมเมาส์
+                className="relative" // dropdown ยึดตำแหน่งจาก li นี้
                 onMouseEnter={() => menu.submenu && setOpenMenuId(menu.id)}
                 onMouseLeave={() => setOpenMenuId(null)}
               >
                 {!menu.submenu ? (
                   <Link
                     to={menu.link!}
-                    className={`px-5 py-2.5 text-[14px] rounded-full transition-all duration-300 hover:bg-green-50/80 ${isActive(menu.link!)}`}
+                    className={`inline-block px-4 py-2 text-[13.5px] rounded-full transition-all duration-300 ${isActive(menu.link!)}`}
                   >
                     {menu.name}
                   </Link>
                 ) : (
                   <>
                     <button
-                      className={`flex items-center gap-1.5 px-5 py-2.5 text-[14px] font-medium rounded-full transition-all duration-300
+                      className={`flex items-center gap-1.5 px-4 py-2 text-[13.5px] font-medium rounded-full transition-all duration-300
                       ${openMenuId === menu.id
-                        ? "text-green-600 bg-green-50"
-                        : "text-gray-600 hover:bg-green-50/80"
+                        ? "bg-white text-green-700 font-bold shadow-sm"
+                        : "text-gray-600 hover:bg-white/70 hover:text-green-700"
                       }`}
                     >
                       {menu.name}
@@ -106,16 +108,16 @@ const Navbar = () => {
               </li>
             ))}
 
-            {/* CTA Button */}
-            <li className="ml-6 pl-6 border-l border-gray-100/80">
-              <Link
-                to="/about/contact"
-                className="relative inline-flex items-center justify-center px-7 py-2.5 overflow-hidden font-bold text-white transition-all duration-300 bg-green-600 rounded-full group hover:bg-green-700 shadow-lg shadow-green-200 active:scale-95"
-              >
-                <span className="relative text-sm">ติดต่อเรา</span>
-              </Link>
-            </li>
           </ul>
+
+          {/* CTA: ปุ่มโทรแบบ mockup (ลิงก์ไปหน้าติดต่อเหมือนเดิม) */}
+          <Link
+            to="/about/contact"
+            className="hidden lg:inline-flex items-center gap-2 px-5 py-2.5 bg-white border-[1.5px] border-green-200 text-green-700 text-sm font-bold rounded-full shadow-sm hover:bg-green-600 hover:border-green-600 hover:text-white transition-all duration-300 active:scale-95"
+          >
+            <Phone className="w-4 h-4" aria-hidden="true" />
+            053-487-114
+          </Link>
         </div>
       </div>
       {isMobileMenuOpen && (

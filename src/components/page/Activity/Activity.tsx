@@ -31,30 +31,30 @@ export default function Activity() {
   const API_URL = import.meta.env.VITE_API_URL;
 
   return (
-    <div className="bg-linear-to-b from-green-50/60 to-white py-16 px-4 ">
+    // REFACTOR: ตาม mockup "แบบ G" (2026-07-15) — section โปร่งใสบนพื้น mint ของหน้าแรก
+    // หัว section เปลี่ยนเป็น kicker แบบเดียวกับ Newspage (ถอดแท่งเขียวซ้ายออก)
+    <div className="py-16 px-4">
       <div className="max-w-7xl mx-auto">
 
         {/* ─── Header ─── */}
-        <div className="flex items-end justify-between mb-10">
-          <div className="flex items-center gap-4">
-            <div className="w-1.5 h-12 rounded-full bg-linear-to-b from-green-400 to-green-600 shrink-0" />
-            <div>
-              <p className="text-[11px] font-semibold tracking-widest text-green-500 uppercase mb-0.5">
-                Activities &amp; Events
-              </p>
-              <h2 className="text-3xl font-black text-gray-900 leading-none">
-                กิจกรรม<span className="text-green-500">ล่าสุด</span>
-              </h2>
-            </div>
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <p className="text-xs tracking-widest text-green-500 uppercase font-semibold mb-0.5">
+              Activities &amp; Events
+            </p>
+            <h2 className="text-3xl font-black text-gray-900 leading-none">
+              กิจกรรม<span className="text-green-500">ล่าสุด</span>
+            </h2>
           </div>
           <button
             onClick={() => navigate({ to: "/activity" })}
-            className="hidden md:inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-green-600 transition-colors group"
+            className="group hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-green-100
+                       text-xs font-bold text-green-700 shadow-sm
+                       hover:bg-green-600 hover:border-green-600 hover:text-white
+                       transition-all duration-200"
           >
             ดูทั้งหมด
-            <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 group-hover:bg-green-50 group-hover:text-green-600 transition-all">
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
           </button>
         </div>
 
@@ -89,7 +89,7 @@ export default function Activity() {
                   key={activity.id}
                   onClick={() => navigate({ to: `/activity/${activity.id}` })}
                   className={`group flex flex-col bg-white rounded-2xl overflow-hidden
-                    border border-gray-100 cursor-pointer
+                    border border-green-100/60 cursor-pointer
                     hover:shadow-lg hover:-translate-y-1
                     transition-all duration-300
                     ${isFeatured ? "sm:col-span-2 lg:col-span-2" : ""}

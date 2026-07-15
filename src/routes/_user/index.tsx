@@ -9,29 +9,16 @@ export const Route = createFileRoute('/_user/')({
   component: Home,
 })
 
+// REFACTOR: โครงหน้าแรกตาม mockup "แบบ G" (2026-07-15) — พื้นทั้งหน้าเป็น mint (green-50)
+// hero เฟดขอบล่างเข้าพื้นนี้ ทุก section โปร่งใสวางการ์ดขาวลอยบนพื้นเดียวกันทั้งผืน
+// (สี green-50 ต้องตรงกับปลาย gradient ใน Mainpage.tsx — แก้ฝั่งหนึ่งต้องแก้อีกฝั่ง)
 function Home() {
   return (
-  <div className="flex flex-col gap-0 overflow-x-hidden font-sarabun">
-      {/* 1. ส่วนต้อนรับ (Hero) */}
-      <section className="relative">
-        <Main_page />
-      </section>
-
-      {/* 2. ส่วนข่าวสาร (ใช้พื้นหลังสีขาวเพื่อความชัดเจน) */}
-      <section className=" bg-white">
-        <News_page />
-      </section>
-
-      {/* 3. ส่วนกิจกรรม (เน้นภาพลักษณ์ชุมชน) */}
-      <section className=" bg-green-50/50">
-        <Activity />
-      </section>
-
-      {/* 4. ส่วนสำหรับเจ้าหน้าที่ */}
-      <section className=" bg-gray-50/50">
-        <StaffPortal />
-      </section>
-
+    <div className="flex flex-col overflow-x-hidden font-sarabun bg-green-50">
+      <Main_page />
+      <News_page />
+      <Activity />
+      <StaffPortal />
     </div>
   )
 }

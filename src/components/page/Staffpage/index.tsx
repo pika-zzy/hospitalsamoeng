@@ -17,22 +17,19 @@ export default function StaffPortal() {
   const isEmpty = !isLoading && menus.length === 0;
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+    // REFACTOR: ตาม mockup "แบบ G" (2026-07-15) — section โปร่งใสบนพื้น mint ของหน้าแรก
+    // หัว section เป็น kicker แบบเดียวกับ Newspage/Activity (ถอดแท่งเขียวซ้ายออก)
+    <section className="py-16 px-4 sm:px-6 lg:px-8 pb-20">
       <div className="max-w-7xl mx-auto">
 
         {/* ─── Header ─── */}
-        <div className="flex items-end justify-between mb-10">
-          <div className="flex items-center gap-4">
-            <div className="w-1.5 h-12 rounded-full bg-linear-to-b from-green-400 to-green-600 shrink-0" />
-            <div>
-              <p className="text-[11px] font-semibold tracking-widest text-green-500 uppercase mb-0.5">
-                Staff &amp; Portal
-              </p>
-              <h2 className="text-3xl font-black text-gray-900 leading-none">
-                สำหรับเจ้าหน้าที่<span className="text-green-500"></span>
-              </h2>
-            </div>
-          </div>
+        <div className="mb-6">
+          <p className="text-xs tracking-widest text-green-500 uppercase font-semibold mb-0.5">
+            Staff &amp; Portal
+          </p>
+          <h2 className="text-3xl font-black text-gray-900 leading-none">
+            สำหรับ<span className="text-green-500">เจ้าหน้าที่</span>
+          </h2>
         </div>
 
         {/* ─── Empty ─── */}
@@ -66,7 +63,7 @@ export default function StaffPortal() {
                     href={menu.link || "#"}
                     target={isExternal ? "_blank" : undefined}
                     rel={isExternal ? "noopener noreferrer" : undefined}
-                    className="group flex flex-col bg-white border border-gray-100 rounded-2xl p-5 hover:border-green-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-900/5 transition-all duration-300"
+                    className="group flex flex-col bg-white border border-green-100/60 rounded-2xl p-5 shadow-sm shadow-green-900/5 hover:border-green-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-900/5 transition-all duration-300"
                   >
                     {/* Icon + Text (ไอคอนซ้าย ข้อความชิดซ้าย — อ่านง่ายกว่าจัดกึ่งกลางสำหรับข้อความไทย) */}
                     <div className="flex items-start gap-3.5">
