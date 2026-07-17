@@ -19,6 +19,8 @@ interface DataTableProps<T> {
   isLoading?: boolean
   emptyLabel?: string
   rowKey: (row: T) => string | number
+  /** Optional controls (e.g. filter dropdown) rendered next to the search box */
+  toolbar?: React.ReactNode
 }
 
 export function DataTable<T>({
@@ -29,6 +31,7 @@ export function DataTable<T>({
   isLoading,
   emptyLabel = 'ไม่พบข้อมูล',
   rowKey,
+  toolbar,
 }: DataTableProps<T>) {
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
@@ -64,6 +67,7 @@ export function DataTable<T>({
             className="w-full text-sm bg-transparent outline-none text-ink"
           />
         </div>
+        {toolbar}
         <span className="text-xs ml-auto hidden sm:inline text-faint">
           {filtered.length} รายการ
         </span>

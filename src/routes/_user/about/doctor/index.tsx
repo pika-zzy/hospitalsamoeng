@@ -1,11 +1,29 @@
-import { departments, personnelData } from '@/interface/employee'
+import { departments } from '@/interface/employee'
+import { requestAPI } from '@/lib/api'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { User, HeartHandshake, Hospital, } from 'lucide-react'
+import { User, HeartHandshake, Hospital } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 
 export const Route = createFileRoute('/_user/about/doctor/')({
   component: RouteComponent,
 })
+
+// ตรงกับ shape ที่ backend ส่ง (GET /personnel) — role = ชื่อ department ที่ admin เลือกตอนเพิ่ม
+interface Personnel {
+  id: number
+  prefix: string
+  name: string
+  lastname: string
+  role: string
+  position: string
+  img_url: string
+}
+
+const API_URL = import.meta.env.VITE_API_URL
+
+// ป้ายย่อสำหรับ pill filter — ตัดคำนำหน้า "กลุ่มงาน" ออกให้กระชับ (ชื่อเต็มยังโชว์ที่ divider/empty state)
+const shortDeptName = (name: string) => name.replace(/^กลุ่มงาน/, '').trim() || name
 
 const DEPT_COLORS: Record<string, string> = {
   0: 'from-green-50 to-emerald-100/60',
@@ -23,15 +41,22 @@ const DEPT_COLORS: Record<string, string> = {
   12: 'from-fuchsia-50 to-fuchsia-100/60',
 }
 
-
-
 function RouteComponent() {
   const [activeTab, setActiveTab] = useState(departments[0].id)
   const pillsRef = useRef<HTMLDivElement>(null)
 
-  const filteredPersonnel = personnelData.filter(p => p.deptId === activeTab)
-  const activeDept = departments.find(d => d.id === activeTab)
-  const activeDeptIndex = departments.findIndex(d => d.id === activeTab)
+  const { data: personnelData = [], isLoading } = useQuery<Personnel[]>({
+    queryKey: ['personnel'],
+    queryFn: async () => {
+      const resp = await requestAPI<Personnel[]>({ method: 'GET', url: '/personnel', disableToken: true })
+      return resp.success ? resp.data ?? [] : []
+    },
+  })
+
+  const activeDept = departments.find((d) => d.id === activeTab)
+  // group ตามชื่อ department (role ที่ admin เลือก === dept.name)
+  const filteredPersonnel = personnelData.filter((p) => p.role === activeDept?.name)
+  const activeDeptIndex = departments.findIndex((d) => d.id === activeTab)
   const cardBg = DEPT_COLORS[activeDeptIndex % Object.keys(DEPT_COLORS).length] ?? DEPT_COLORS[0]
 
   // Scroll active pill into view
@@ -65,7 +90,7 @@ function RouteComponent() {
         >
           {departments.map((dept) => {
             const isActive = activeTab === dept.id
-            const count = personnelData.filter(p => p.deptId === dept.id).length
+            const count = personnelData.filter((p) => p.role === dept.name).length
             return (
               <button
                 key={dept.id}
@@ -80,7 +105,7 @@ function RouteComponent() {
                   }
                 `}
               >
-                {dept.name}
+                {shortDeptName(dept.name)}
                 {count > 0 && (
                   <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none
                     ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'}
@@ -103,7 +128,9 @@ function RouteComponent() {
         </div>
 
         {/* ─── Cards ─── */}
-        {filteredPersonnel.length > 0 ? (
+        {isLoading ? (
+          <p className="text-center py-24 text-[14px] text-gray-400">กำลังโหลดข้อมูลบุคลากร...</p>
+        ) : filteredPersonnel.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {filteredPersonnel.map((person) => (
               <div
@@ -117,9 +144,9 @@ function RouteComponent() {
                   <div className="w-16 h-16 rounded-full border-[3px] border-white shadow-md
                                   bg-gray-100 overflow-hidden flex items-center justify-center
                                   translate-y-8 group-hover:scale-105 transition-transform duration-300">
-                    {person.imageUrl ? (
+                    {person.img_url ? (
                       <img
-                        src={person.imageUrl}
+                        src={`${API_URL}${person.img_url}`}
                         alt={person.name}
                         className="w-full h-full object-cover"
                       />
@@ -132,10 +159,10 @@ function RouteComponent() {
                 {/* Body */}
                 <div className="pt-10 pb-4 px-3 text-center">
                   <p className="text-[13px] font-bold text-gray-900 leading-snug group-hover:text-green-700 transition-colors">
-                    {person.prefix} {person.name}
+                    {person.prefix} {person.name} {person.lastname}
                   </p>
                   <p className="text-[11px] text-green-600 font-medium mt-1 leading-snug">
-                    {person.specialty}
+                    {person.position || person.role}
                   </p>
                   <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-center gap-1 text-[11px] text-gray-400">
                     <Hospital className="w-3 h-3" />
@@ -167,7 +194,7 @@ function RouteComponent() {
             </div>
             <div className="text-center">
               <p className="text-[14px] font-semibold text-gray-400">ยังไม่มีข้อมูลบุคลากร</p>
-              <p className="text-[12px] text-gray-300 mt-1">ในแผนก{activeDept?.name}</p>
+              <p className="text-[12px] text-gray-300 mt-1">ใน{activeDept?.name}</p>
             </div>
           </div>
         )}

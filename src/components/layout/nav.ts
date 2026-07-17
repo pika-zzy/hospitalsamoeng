@@ -1,10 +1,13 @@
 import {
   LayoutDashboard,
+  LayoutGrid,
   Megaphone,
   Calendar,
   ShieldCheck,
   Users,
   Settings,
+  AppWindow,
+  Images,
 } from 'lucide-react'
 
 // Sidebar navigation model — shared between AdminShell (renders the sidebar)
@@ -25,7 +28,7 @@ export const NAV: NavItem[] = [
     match: '/admin/dashboard',
   },
   {
-    label: 'ข่าวประชาสัมพันธ์',
+    label: 'รายการข่าวสาร',
     icon: Megaphone,
     to: '/admin/news/news/summary',
     match: '/admin/news',
@@ -48,20 +51,43 @@ export const NAV: NavItem[] = [
     label: 'ITA',
     icon: ShieldCheck,
     to: '/admin/ITA',
-    match: '/',
+    match: '/admin/ITA',
     children: [
       { label: 'รายการเอกสาร', to: '/admin/ITA' },
-      { label: 'ปีงบประมาณ', to: '' },
+      { label: 'เพิ่มเอกสาร', to: '/admin/ITA/create' },
+
     ],
   },
   {
-    label: 'บุคลากร',
+    label: 'จัดการบุคลากร',
     icon: Users,
-    to: '/admin/dashboard',
-    match: '/',
+    to: '/admin/personnel',
+    match: '/admin/personnel',
     children: [
-      { label: 'รายชื่อบุคลากร', to: '' },
-      { label: 'เพิ่มบุคลากร', to: '' },
+      { label: 'รายการบุคลากร', to: '/admin/personnel' },
+      { label: 'เพิ่มบุคลากร', to: '/admin/personnel/create' },
+    ],
+  },
+  {
+    label: 'รูปสไลด์หน้าแรก',
+    icon: Images,
+    to: '/admin/hero',
+    match: '/admin/hero',
+  },
+  {
+    label: 'จัดการ Popup',
+    icon: AppWindow,
+    to: '/admin/popup',
+    match: '/admin/popup',
+  },
+  {
+    label: 'เมนูบริการเจ้าหน้าที่',
+    icon: LayoutGrid,
+    to: '/admin/staftmenu',
+    match: '/admin/staftmenu',
+    children: [
+      { label: 'รายการเมนู', to: '/admin/staftmenu' },
+      { label: 'เพิ่มเมนู', to: '/admin/staftmenu/create' },
     ],
   },
   {

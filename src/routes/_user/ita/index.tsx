@@ -192,13 +192,13 @@ function RouteComponent() {
                                     target="_blank" rel="noopener noreferrer"
                                     className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-gray-100 bg-gray-50
                                                hover:border-emerald-200 hover:bg-emerald-50/50 transition-all duration-150 group mb-1.5">
-                                    <div className="w-7 h-7 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center flex-shrink-0">
+                                    <div className="w-7 h-7 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center shrink-0">
                                       <span className="text-[9px] font-bold text-red-500">PDF</span>
                                     </div>
                                     <span className="flex-1 text-xs text-gray-600 group-hover:text-emerald-700 transition-colors">
                                       {file.Title || item.item_label}
                                     </span>
-                                    <Download className="w-3.5 h-3.5 text-gray-300 group-hover:text-emerald-500 transition-colors flex-shrink-0" />
+                                    <Download className="w-3.5 h-3.5 text-gray-300 group-hover:text-emerald-500 transition-colors shrink-0" />
                                   </a>
                                 ))}
                               </div>

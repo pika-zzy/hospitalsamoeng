@@ -5,6 +5,13 @@
     <link rel="icon" type="image/svg+xml" href="/images.PNG" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>hospital-web</title>
+    <!-- FIX: take scroll restoration off the browser as early as possible so a
+         reload (F5) at the bottom of a page starts at the top instead of the
+         browser re-applying the old position before the app can. The router
+         (see router.ts) then owns scroll behavior for client-side navigation. -->
+    <script>
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    </script>
   </head>
   <body>
     <div id="root"></div>

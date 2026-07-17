@@ -1,12 +1,33 @@
 import { Link, useNavigate, useLocation } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import { LogOut, Bell } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { clearToken } from '@/lib/auth'
+import { clearToken, getRole } from '@/lib/auth'
+import { requestAPI } from '@/lib/api'
 import { NAV } from './nav'
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
+  const role = getRole()
+
+  // สิทธิ์เมนูของ role นี้ (menu key = NAV.to) — admin ไม่ต้องดึง เห็นทุกเมนูเสมอ
+  const { data: allowedMenus } = useQuery<string[]>({
+    queryKey: ['role-permissions', role],
+    enabled: role !== null && role !== 'admin',
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const resp = await requestAPI<string[]>({ method: 'GET', url: `/roles/${role}/permissions` })
+      return resp.success ? resp.data : []
+    },
+  })
+
+  // admin หรือยังโหลดไม่เสร็จ → เห็นทุกเมนู (กัน sidebar กะพริบ/ว่างระหว่างโหลด)
+  // ยังไม่เคยตั้งค่า (list ว่าง) → เห็นทุกเมนู ให้ตรงกับหน้าจัดการสิทธิ์
+  const visibleNav =
+    role === 'admin' || !allowedMenus || allowedMenus.length === 0
+      ? NAV
+      : NAV.filter((item) => allowedMenus.includes(item.to))
 
   const handleLogout = () => {
     clearToken()
@@ -37,7 +58,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           <ul className="space-y-1">
-            {NAV.map((item) => {
+            {visibleNav.map((item) => {
               const isActive = location.pathname.startsWith(item.match)
 
               return (
@@ -49,16 +70,16 @@ export function AdminShell({ children }: { children: ReactNode }) {
                     }`}
                   >
                     {isActive && (
-                      <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-teal" />
+                      <span className="absolute left-0 top-1.5 bottom-1.5 w-0.75 rounded-full bg-teal" />
                     )}
-                    <item.icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-teal' : 'text-faint'}`} />
+                    <item.icon className={`w-4.5 h-4.5 shrink-0 ${isActive ? 'text-teal' : 'text-faint'}`} />
                     <span>{item.label}</span>
                   </Link>
 
                   {/* Sub-items reveal automatically when this section is active —
                       no separate expand/collapse click required. */}
                   {item.children && isActive && (
-                    <ul className="mt-1 mb-1 ml-[29px] pl-3 space-y-0.5 border-l border-line">
+                    <ul className="mt-1 mb-1 ml-7.25 pl-3 space-y-0.5 border-l border-line">
                       {item.children.map((child) => {
                         const isChildActive = location.pathname === child.to
                         return (
@@ -114,7 +135,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               className="relative w-9 h-9 rounded-sm flex items-center justify-center text-muted transition-colors hover:bg-white"
               aria-label="การแจ้งเตือน"
             >
-              <Bell className="w-[18px] h-[18px]" />
+              <Bell className="w-4.5 h-4.5" />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-brass" />
             </button>
             <div className="flex items-center gap-2.5 pl-2 border-l border-line">

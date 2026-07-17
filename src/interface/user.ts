@@ -1,10 +1,9 @@
-// System user (ผู้ใช้งานในระบบ) returned by GET /users.
-// Shape mirrors the `user` object in LoginData (see login.ts): id, name, role.
-// NOTE: `is_active` is assumed to be the boolean status flag from the backend.
-// If the API uses a different field (e.g. `status: string`), update here.
+// System user (ผู้ใช้งานในระบบ) returned by GET /users, GET /users/:id, POST /users.
+// FIX: field is `username` (mirrors backend model.User json tag) — was `name`,
+// which only exists in the login response's user object, not the /users endpoints.
 export interface SystemUser {
   id: number
-  name: string
+  username: string
   role: string
   is_active: boolean
 }

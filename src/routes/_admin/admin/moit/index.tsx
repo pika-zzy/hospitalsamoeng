@@ -1,3 +1,4 @@
+import { InlineEdit } from '@/components/ui/inline-edit'
 import { requestAPI } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -13,29 +14,16 @@ interface MoitItem { ID: number; Label: string; TopicID: number }
 interface MoitTopic { ID: number; Label: string; MoitID: number; Items: MoitItem[] }
 interface Moit { ID: number; Name: string; Description: string; YearID: number }
 
-function InlineEdit({ value, onSave, onCancel, placeholder = '', multiline = false }: {
-  value: string; onSave: (val: string) => void; onCancel: () => void; placeholder?: string; multiline?: boolean
-}) {
-  const [val, setVal] = useState(value)
-  return (
-    <div className="flex items-start gap-2 flex-1">
-      {multiline ? (
-        <textarea autoFocus value={val} onChange={(e) => setVal(e.target.value)} placeholder={placeholder} rows={2}
-          className="flex-1 px-3 py-1.5 text-sm border border-teal-400 rounded-lg focus:ring-2 focus:ring-teal-500/20 outline-none resize-none" />
-      ) : (
-        <input autoFocus type="text" value={val} onChange={(e) => setVal(e.target.value)} placeholder={placeholder}
-          className="flex-1 px-3 py-1.5 text-sm border border-teal-400 rounded-lg focus:ring-2 focus:ring-teal-500/20 outline-none" />
-      )}
-      <button onClick={() => val.trim() && onSave(val.trim())}
-        className="w-7 h-7 rounded-lg bg-teal-500 hover:bg-teal-600 flex items-center justify-center shrink-0 transition-colors mt-0.5">
-        <Check className="w-3.5 h-3.5 text-white" />
-      </button>
-      <button onClick={onCancel}
-        className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center shrink-0 transition-colors mt-0.5">
-        <X className="w-3.5 h-3.5 text-gray-500" />
-      </button>
-    </div>
-  )
+// NOTE: เลขข้อใหญ่ (หัวข้อหลัก) แอดมินพิมพ์เอง เพราะเป็นเลขตายตัวตามเทมเพลต ITA
+// (ไม่ใช่ลำดับที่แสดง) — extractLeadingNumber ดึงเลขนั้นออกมาเป็น "เลขพ่อ"
+// แล้วเลขลูก (หัวข้อย่อย) auto = เลขพ่อ.ลำดับลูก เช่น พ่อ 3 → ลูก 3.1, 3.2, 3.3
+// stripLeadingNumber ใช้กับลูก: ตัดเลขที่อาจฝังมากับ Label เดิม ไม่ให้ซ้อนเลข auto
+function extractLeadingNumber(label: string): string {
+  const m = label.match(/^\s*(\d+(?:\.\d+)*)/)
+  return m ? m[1] : ''
+}
+function stripLeadingNumber(label: string): string {
+  return label.replace(/^\s*\d+(?:\.\d+)*[).]?\s+/, '')
 }
 
 function RouteComponent() {
@@ -198,7 +186,7 @@ function RouteComponent() {
                 <div className="flex items-center gap-2">
                   <input autoFocus type="number" value={newYear} onChange={(e) => setNewYear(e.target.value)} placeholder="เช่น 2570"
                     className="w-24 px-3 py-1.5 text-sm border border-teal-400 rounded-xl focus:ring-2 focus:ring-teal-500/20 outline-none" />
-                  <button onClick={() => { const y = parseInt(newYear); if (y > 2500) createYear.mutate(y) }}
+                  <button onClick={() => { const y = parseInt(newYear); if (y >= 2500 && y <= 2600) createYear.mutate(y) }}
                     className="w-7 h-7 rounded-lg bg-teal-500 hover:bg-teal-600 flex items-center justify-center transition-colors">
                     <Check className="w-3.5 h-3.5 text-white" />
                   </button>
@@ -275,9 +263,11 @@ function RouteComponent() {
                     <div className="border-t border-gray-50 px-5 py-3 space-y-2">
                       {topics.length === 0 && <p className="text-xs text-gray-400 py-2">ยังไม่มีหัวข้อหลัก</p>}
 
-                      {topics.map((topic) => {
+                      {topics.map((topic, ti) => {
                         const isTopicOpen = openTopic === topic.ID
                         const isEditingTopic = editingTopic === topic.ID
+                        // เลขพ่อ = เลขที่แอดมินพิมพ์ในหัวข้อหลัก (fallback = ลำดับ ถ้าไม่ได้ใส่เลข)
+                        const topicNum = extractLeadingNumber(topic.Label) || String(ti + 1)
                         return (
                           <div key={topic.ID} className="rounded-xl border border-line overflow-hidden">
                             <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 group">
@@ -302,15 +292,15 @@ function RouteComponent() {
 
                             {isTopicOpen && (
                               <div className="px-4 py-2 space-y-1.5">
-                                {(topic.Items ?? []).map((item) => (
+                                {(topic.Items ?? []).map((item, ii) => (
                                   <div key={item.ID} className="flex items-start gap-2 py-1.5 group/item">
                                     <div className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5" />
                                     {editingItem === item.ID ? (
-                                      <InlineEdit value={item.Label} multiline placeholder="หัวข้อย่อย..."
+                                      <InlineEdit value={stripLeadingNumber(item.Label)} multiline placeholder="หัวข้อย่อย (พิมพ์แค่ข้อความ ไม่ต้องใส่เลข)..."
                                         onSave={(label) => updateItem.mutate({ id: item.ID, label })} onCancel={() => setEditingItem(null)} />
                                     ) : (
                                       <>
-                                        <p className="flex-1 text-xs text-gray-600 leading-relaxed">{item.Label}</p>
+                                        <p className="flex-1 text-xs text-gray-600 leading-relaxed"><span className="text-teal-600 font-medium">{topicNum}.{ii + 1}</span> {stripLeadingNumber(item.Label)}</p>
                                         <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity shrink-0">
                                           <button onClick={() => setEditingItem(item.ID)} className="w-6 h-6 rounded-lg hover:bg-gray-100 flex items-center justify-center">
                                             <Pencil className="w-3 h-3 text-gray-400" />
@@ -327,7 +317,7 @@ function RouteComponent() {
                                 {addingItemFor === topic.ID ? (
                                   <div className="flex items-center gap-2 mt-2">
                                     <div className="w-1.5 h-1.5 rounded-full bg-teal-300 shrink-0" />
-                                    <InlineEdit value="" multiline placeholder="เช่น 1.1 มีบันทึกข้อความ..."
+                                    <InlineEdit value="" multiline placeholder="เช่น มีบันทึกข้อความ... (ไม่ต้องพิมพ์เลข ระบบใส่ให้)"
                                       onSave={(label) => createItem.mutate({ topicId: topic.ID, label })} onCancel={() => setAddingItemFor(null)} />
                                   </div>
                                 ) : (
@@ -344,7 +334,7 @@ function RouteComponent() {
 
                       {addingTopicFor === moit.ID ? (
                         <div className="rounded-xl border border-teal-200 bg-teal-50/50 px-4 py-3">
-                          <InlineEdit value="" multiline placeholder="เช่น 1. คำสั่ง / ประกาศ ที่ระบุกรอบแนวทาง..."
+                          <InlineEdit value="" multiline placeholder="เช่น 3. คำสั่ง / ประกาศ ที่ระบุกรอบแนวทาง... (ใส่เลขข้อใหญ่ด้วย)"
                             onSave={(label) => createTopic.mutate({ moitId: moit.ID, label })} onCancel={() => setAddingTopicFor(null)} />
                         </div>
                       ) : (
