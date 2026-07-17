@@ -1,7 +1,17 @@
 import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsInProd } from '@tanstack/react-router-devtools'
+import { lazy, Suspense } from 'react'
 import { Toaster } from 'sonner'
 
+// NOTE: load Router Devtools only in development. In a production build
+// import.meta.env.PROD is statically true, so this lazy import is tree-shaken
+// out entirely — the floating devtools panel no longer ships to end users.
+const RouterDevtools = import.meta.env.PROD
+  ? () => null
+  : lazy(() =>
+      import('@tanstack/react-router-devtools').then((res) => ({
+        default: res.TanStackRouterDevtools,
+      })),
+    )
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -20,7 +30,9 @@ function RootLayout() {
       </main>
 
       <Toaster richColors position="top-center" />
-      <TanStackRouterDevtoolsInProd />
+      <Suspense>
+        <RouterDevtools />
+      </Suspense>
     </div>
   )
 }
