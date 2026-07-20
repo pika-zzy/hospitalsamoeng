@@ -29,7 +29,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
       ? NAV
       : NAV.filter((item) => allowedMenus.includes(item.to))
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // CRIT-01: แจ้ง server ให้เพิกถอน token ปัจจุบัน (bump token_version) — best-effort
+    // ถ้า network ล่มก็ยังต้อง logout ฝั่ง client ต่อได้ ไม่บล็อค UX
+    try {
+      await requestAPI({ method: 'POST', url: '/logout' })
+    } catch {
+      // เงียบไว้ — การล้าง token ฝั่ง client ด้านล่างสำคัญกว่า
+    }
     clearToken()
     navigate({ to: '/admin/login', replace: true })
   }
