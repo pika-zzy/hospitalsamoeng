@@ -20,7 +20,7 @@ export class APIError extends Error {
     headers: Record<string, string>;
     reason: string;
 
-    constructor(data: IAPIResponse<any>) {
+    constructor(data: IAPIResponse<unknown>) {
         super(`[HTTP API] Error! "${data.message}"`);
         this.httpStatus = data.httpStatus;
         this.headers = data.headers;
@@ -28,17 +28,17 @@ export class APIError extends Error {
     }
 }
 
-export async function requestAPI<D extends {}>(options: {
+export async function requestAPI<D extends object>(options: {
     method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
     url: string;           // ใส่แค่ "/news" ได้เลย
     baseURL?: string;      // เผื่ออยาก override เป็น url อื่น
     body?: unknown;
-    query?: Record<string, any>;
+    query?: Record<string, string | number | boolean | null | undefined>;
     headers?: Record<string, string>;
     disableToken?: boolean;
     throwHTTPError?: boolean;
 }): Promise<IAPIResponse<D>> {
-    let body: any = null;
+    let body: BodyInit | null = null;
 
     const headers: HeadersInit = {
         ...options.headers,
@@ -77,7 +77,11 @@ export async function requestAPI<D extends {}>(options: {
 
     // 3. ต่อ Query Params (ถ้ามี)
     if (options.query) {
-        finalUrl += `?${new URLSearchParams(options.query).toString()}`;
+        const params = new URLSearchParams();
+        for (const [key, value] of Object.entries(options.query)) {
+            params.append(key, String(value));
+        }
+        finalUrl += `?${params.toString()}`;
     }
     // ---------------------------------------------------------
 
@@ -98,6 +102,19 @@ export async function requestAPI<D extends {}>(options: {
             signal
         });
         clearTimeout(timeoutId);
+
+        // CRIT-01: token ถูกเพิกถอน/หมดอายุฝั่ง server (ปิดบัญชี/ลบ user/logout ทุกอุปกรณ์)
+        // route guard ฝั่ง client เช็คแค่ exp จึงไม่รู้ → เมื่อ API ตอบ 401 ทั้งที่แนบ token มา
+        // ให้เคลียร์ token แล้วเด้งไปหน้า login กันผู้ใช้ค้างในสภาพ zombie
+        // ยกเว้น endpoint auth เอง (/login, /logout) และตอนอยู่หน้า login อยู่แล้ว (กัน redirect loop)
+        if (resp.status === 401 && token && !options.disableToken) {
+            const isAuthEndpoint = finalUrl.includes('/login') || finalUrl.includes('/logout');
+            const path = window.location.pathname;
+            if (!isAuthEndpoint && path.startsWith('/admin') && path !== '/admin/login') {
+                localStorage.removeItem('admin_token');
+                window.location.href = '/admin/login';
+            }
+        }
 
         const js = await resp.json();
 
@@ -134,6 +151,6 @@ export async function requestAPI<D extends {}>(options: {
             success: false,
             message: e instanceof Error ? e.message : 'Connection timeout',
             data: null,
-        } as any; 
+        } satisfies IAPIResponse<D>;
     }
 }
