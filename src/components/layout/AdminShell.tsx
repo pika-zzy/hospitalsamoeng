@@ -1,10 +1,15 @@
 import { Link, useNavigate, useLocation } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { LogOut, Bell } from 'lucide-react'
+import { toast } from 'sonner'
 import type { ReactNode } from 'react'
 import { clearToken, getRole } from '@/lib/auth'
+import { useIdleLogout } from '@/lib/useIdleLogout'
 import { requestAPI } from '@/lib/api'
 import { NAV } from './nav'
+
+// ออกจากระบบอัตโนมัติเมื่อไม่มีการใช้งานนานเกินกำหนด (idle timeout)
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000 // 30 นาที
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
@@ -40,6 +45,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
     clearToken()
     navigate({ to: '/admin/login', replace: true })
   }
+
+  // เงียบเกิน 30 นาที → เตะออก (นับใหม่ทุกครั้งที่ขยับ จึงไม่โดนตัดกลางงาน)
+  useIdleLogout(IDLE_TIMEOUT_MS, () => {
+    toast.info('ออกจากระบบอัตโนมัติเนื่องจากไม่มีการใช้งานเป็นเวลานาน')
+    handleLogout()
+  })
 
   const currentSection = NAV.find((item) => location.pathname.startsWith(item.match))
 

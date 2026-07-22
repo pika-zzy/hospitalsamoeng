@@ -1,3 +1,5 @@
+import { getToken, clearToken } from "./auth";
+
 interface IAPIResponseBase {
     httpStatus: number;
     headers: Record<string, string>;
@@ -43,7 +45,7 @@ export async function requestAPI<D extends object>(options: {
     const headers: HeadersInit = {
         ...options.headers,
     };
-    const token = localStorage.getItem("admin_token");
+    const token = getToken();
 
     if (token && !options.disableToken) {
     headers["Authorization"] = `Bearer ${token}`;
@@ -111,7 +113,7 @@ export async function requestAPI<D extends object>(options: {
             const isAuthEndpoint = finalUrl.includes('/login') || finalUrl.includes('/logout');
             const path = window.location.pathname;
             if (!isAuthEndpoint && path.startsWith('/admin') && path !== '/admin/login') {
-                localStorage.removeItem('admin_token');
+                clearToken();
                 window.location.href = '/admin/login';
             }
         }
