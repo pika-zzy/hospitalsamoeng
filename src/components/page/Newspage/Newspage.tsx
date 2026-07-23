@@ -69,7 +69,7 @@ export default function News_page() {
     // REFACTOR: layout ใหม่ตาม mockup "แบบ G" (2026-07-15) — section โปร่งใสวางบนพื้น mint
     // ของหน้าแรก การ์ดข่าวเป็นแถวแนวตั้งมีปฏิทินวันที่ซ้าย, ปุ่ม "ดูทั้งหมด" ย้ายขึ้นหัว section
     // logic query/tabs/navigate เดิมทั้งหมด
-    <section className="py-16 px-4">
+    <section className="pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
 
         {/* ─── Section Header ─── */}

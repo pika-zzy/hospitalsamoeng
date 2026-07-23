@@ -4,8 +4,8 @@ import type { HeroSlide } from '@/interface/hero'
 import { requestAPI } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { CloudUpload, ImageOff, Info, Trash2, X } from 'lucide-react'
-import { useState } from 'react'
+import { CloudUpload, ImageOff, Info, Pencil, Trash2, X } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
 export const Route = createFileRoute('/_admin/admin/hero/')({
@@ -18,6 +18,7 @@ function RouteComponent() {
   const qc = useQueryClient()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [orderInput, setOrderInput] = useState('')
+  const [editingText, setEditingText] = useState<HeroSlide | null>(null)
 
   const { data: slides = [], isLoading } = useQuery<HeroSlide[]>({
     queryKey: ['hero'],
@@ -159,6 +160,16 @@ function RouteComponent() {
 
                     <Button
                       type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setEditingText(slide)}
+                      className="rounded-sm h-9 shrink-0 gap-1.5 border-line text-muted hover:bg-paper"
+                    >
+                      <Pencil className="h-3.5 w-3.5" /> ข้อความ
+                    </Button>
+
+                    <Button
+                      type="button"
                       variant="destructive"
                       size="icon"
                       title={isLastSlide ? 'ลบรูปสุดท้ายไม่ได้ ต้องเหลืออย่างน้อย 1 รูป' : 'ลบรูปนี้'}
@@ -166,7 +177,7 @@ function RouteComponent() {
                       onClick={() => {
                         if (window.confirm('ลบรูปสไลด์นี้ใช่ไหมครับ?')) deleteSlide.mutate(slide.ID)
                       }}
-                      className="rounded-sm h-9 w-9 shrink-0 disabled:opacity-40"
+                      className="rounded-sm h-9 w-9 shrink-0 disabled:opacity-40 bg-red-600"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -231,6 +242,124 @@ function RouteComponent() {
           </div>
         </div>
       )}
+
+      {editingText && (
+        <HeroTextModal slide={editingText} onClose={() => setEditingText(null)} />
+      )}
+    </div>
+  )
+}
+
+const inputCls =
+  'w-full px-3 py-2 rounded-sm border border-line bg-white text-ink outline-none focus:border-teal focus:ring-2 focus:ring-teal/20'
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-sm font-medium text-muted">{label}</Label>
+      {children}
+    </div>
+  )
+}
+
+// Modal แก้ข้อความ overlay ของสไลด์ (per-slide) + สวิตช์เปิด/ปิดข้อความ
+function HeroTextModal({ slide, onClose }: { slide: HeroSlide; onClose: () => void }) {
+  const qc = useQueryClient()
+  const [form, setForm] = useState({
+    badge: slide.badge,
+    title: slide.title,
+    subtitle: slide.subtitle,
+    button_text: slide.button_text,
+    button_link: slide.button_link,
+    show_text: slide.show_text,
+  })
+
+  const set = (k: keyof typeof form, v: string | boolean) =>
+    setForm((f) => ({ ...f, [k]: v }))
+
+  const save = useMutation({
+    mutationFn: (data: typeof form) =>
+      requestAPI({ method: 'PUT', url: `/hero/${slide.ID}`, body: data }),
+    onSuccess: (resp) => {
+      if (!resp.success) {
+        toast.error(resp.message || 'บันทึกไม่สำเร็จ')
+        return
+      }
+      toast.success('บันทึกข้อความสไลด์แล้ว')
+      qc.invalidateQueries({ queryKey: ['hero'] })
+      onClose()
+    },
+    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
+  })
+
+  return (
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div
+        className="bg-white rounded-md w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 sm:p-8"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-semibold text-ink">แก้ข้อความสไลด์</h2>
+          <button onClick={onClose} className="w-8 h-8 rounded-sm hover:bg-paper flex items-center justify-center" aria-label="ปิด">
+            <X className="w-4 h-4 text-muted" />
+          </button>
+        </div>
+
+        {/* สวิตช์เปิด/ปิดข้อความทั้งก้อน */}
+        <div className="flex items-center justify-between rounded-sm border border-line bg-paper/40 px-4 py-3 mb-5">
+          <div>
+            <p className="text-sm font-medium text-ink">แสดงข้อความบนสไลด์นี้</p>
+            <p className="text-xs text-muted">ปิด = โชว์แค่รูปเปล่า ไม่มีข้อความ</p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={form.show_text}
+            onClick={() => set('show_text', !form.show_text)}
+            className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${form.show_text ? 'bg-teal' : 'bg-line'}`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${form.show_text ? 'translate-x-5' : ''}`}
+            />
+          </button>
+        </div>
+
+        {/* ช่องข้อความ — จางลงเมื่อปิดการแสดงข้อความ */}
+        <div className={`space-y-4 ${form.show_text ? '' : 'opacity-50 pointer-events-none'}`}>
+          <Field label="ป้ายด้านบน (badge)">
+            <input value={form.badge} onChange={(e) => set('badge', e.target.value)} placeholder="เช่น โรงพยาบาลชุมชน อ.สะเมิง" className={inputCls} />
+          </Field>
+          <Field label="หัวข้อใหญ่ (Enter เพื่อขึ้นบรรทัดใหม่)">
+            <textarea value={form.title} onChange={(e) => set('title', e.target.value)} rows={2} className={`${inputCls} resize-none`} />
+          </Field>
+          <Field label="คำโปรย (Enter เพื่อขึ้นบรรทัดใหม่)">
+            <textarea value={form.subtitle} onChange={(e) => set('subtitle', e.target.value)} rows={3} className={`${inputCls} resize-none`} />
+          </Field>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="ข้อความปุ่ม">
+              <input value={form.button_text} onChange={(e) => set('button_text', e.target.value)} placeholder="เช่น ติดต่อเรา" className={inputCls} />
+            </Field>
+            <Field label="ลิงก์ปุ่ม (path ในเว็บ)">
+              <input value={form.button_link} onChange={(e) => set('button_link', e.target.value)} placeholder="เช่น /about/contact" className={inputCls} />
+            </Field>
+          </div>
+          <p className="text-xs text-muted">เว้นช่องไหนว่าง = ไม่แสดงส่วนนั้น (เช่น ไม่กรอกข้อความปุ่ม = ไม่มีปุ่ม)</p>
+        </div>
+
+        <div className="flex gap-3 pt-6">
+          <Button type="button" variant="outline" className="w-1/3 h-11 rounded-sm border-line text-muted hover:bg-paper font-medium" onClick={onClose}>
+            ยกเลิก
+          </Button>
+          <Button
+            type="button"
+            disabled={save.isPending}
+            onClick={() => save.mutate(form)}
+            className="w-2/3 h-11 bg-teal hover:bg-teal/90 text-white font-semibold rounded-sm transition-colors disabled:opacity-50"
+          >
+            {save.isPending ? 'กำลังบันทึก...' : 'บันทึกข้อความ'}
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
