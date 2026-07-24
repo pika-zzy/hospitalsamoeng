@@ -1,13 +1,23 @@
 // Admin auth token helpers — single source of truth (แก้ที่เดียว ใช้ทั่วโปรเจค).
 // Kept out of route.tsx so that file only exports components (React Fast Refresh
 // requires it) and so AdminShell can reuse this without a circular import.
+//
+// NOTE: token เก็บใน sessionStorage (ไม่ใช่ localStorage) ตั้งใจให้ session หายเมื่อ
+// ปิดแท็บ/ปิด browser → ต้อง login ใหม่ทุกครั้งที่เปิดใหม่ กันสภาพ "ค้าง login ทิ้งไว้".
+// ทุกที่ที่ต้องอ่าน/เขียน/ลบ token ต้องผ่าน helper เหล่านี้เท่านั้น ห้ามแตะ storage ตรง ๆ.
 const AUTH_KEY = "admin_token"
 
 export function getToken() {
-  return localStorage.getItem(AUTH_KEY)
+  return sessionStorage.getItem(AUTH_KEY)
+}
+
+export function setToken(token: string) {
+  sessionStorage.setItem(AUTH_KEY, token)
 }
 
 export function clearToken() {
+  sessionStorage.removeItem(AUTH_KEY)
+  // เผื่อมี token ค้างจากเวอร์ชันก่อนที่เคยเก็บใน localStorage — ล้างทิ้งด้วย
   localStorage.removeItem(AUTH_KEY)
   document.cookie = `${AUTH_KEY}=; Max-Age=0; path=/`
 }

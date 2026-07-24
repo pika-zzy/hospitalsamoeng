@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react'
 import { useMutation } from '@tanstack/react-query'
 import type { LoginData, UserInfo } from '@/interface/login'
 import { requestAPI, type IAPIResponse } from '@/lib/api'
+import { setToken } from '@/lib/auth'
 
 export const Route = createFileRoute('/_admin/admin/login/')({
   component: RouteComponent,
@@ -33,7 +34,7 @@ function RouteComponent() {
     loginadmin.mutate(formData, {
       onSuccess: (res) => {
         if (!res.success || !res.data) return
-        localStorage.setItem("admin_token", res.data.token)
+        setToken(res.data.token)
         navigate({ to: "/admin/dashboard", replace: true })
       },
       onError: (err) => {

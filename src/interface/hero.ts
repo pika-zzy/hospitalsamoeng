@@ -5,4 +5,11 @@ export interface HeroSlide {
     ID: number;
     image_url: string;
     order: number;
+    // ข้อความ overlay ต่อสไลด์ (admin แก้เอง) — show_text=false = โชว์แค่รูป
+    badge: string;
+    title: string;
+    subtitle: string;
+    button_text: string;
+    button_link: string;
+    show_text: boolean;
 }
