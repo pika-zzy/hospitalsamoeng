@@ -26,7 +26,9 @@ export const Navbarlist: MenuItem[] = [
         id: 2,
         name: "เกี่ยวกับเรา",
         submenu: [
-            { name: "ประวัติ", link: "/about/history" },
+            // ซ่อนชั่วคราว: หน้า /about/history ยังไม่มีเนื้อหาประวัติจริงของโรงพยาบาลสะเมิง
+            // ได้เนื้อหามาแล้วเอาบรรทัดนี้กลับมา (route ยังอยู่ ไม่ได้ลบ)
+            // { name: "ประวัติ", link: "/about/history" },
             { name: "ทีมแพทย์", link: "/about/doctor" },
             /*{ name: "ข้อมูลความปลอดภัยด้านยา", link: "/about" },*/
         ],
