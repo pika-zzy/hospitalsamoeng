@@ -1,4 +1,4 @@
-import { Phone, MapPin, Monitor, ShieldCheck, Facebook, Heart } from "lucide-react";
+import { Phone, MapPin, Monitor, ShieldCheck, Facebook, Heart, Mail } from "lucide-react";
 
 const FACEBOOK_URL =
   "https://www.facebook.com/p/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B4%E0%B8%87-%E0%B8%88%E0%B8%B1%E0%B8%87%E0%B8%AB%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B9%80%E0%B8%8A%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88-100066989703921/";
@@ -11,6 +11,7 @@ const FACEBOOK_URL =
 const MAP_EMBED_URL =
   "https://maps.google.com/maps?q=%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B4%E0%B8%87&output=embed";
 const MAP_LINK_URL = "https://maps.app.goo.gl/AnAQwPAHe7StQ35w5";
+const EMAIL = "samoenghospital.moph@gmail.com";
 
 const Footer = () => {
   return (
@@ -42,6 +43,15 @@ const Footer = () => {
             >
               <Facebook className="w-4 h-4" />
               ติดตามบน Facebook
+            </a>
+            {/* FIX: ปุ่มนี้เคย href ไป FACEBOOK_URL (ก๊อปจากปุ่มบน) และสะกดผิด
+                เปลี่ยนเป็น mailto: อีเมลจริงของโรงพยาบาล — mailto ไม่ต้องมี target/rel */}
+            <a
+              href={`mailto:${EMAIL}`}
+              className="inline-flex items-center gap-2 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-green-600 hover:text-white px-4 py-2.5 rounded-xl transition-colors"
+            >
+              <Mail className="w-4 h-4" />
+              ติดต่อทางอีเมล
             </a>
           </div>
 

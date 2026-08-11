@@ -110,13 +110,15 @@ const Navbar = () => {
 
           </ul>
 
-          {/* CTA: ปุ่มโทรแบบ mockup (ลิงก์ไปหน้าติดต่อเหมือนเดิม) */}
+          {/* CTA: ลิงก์ไปหน้าติดต่อ
+              FIX: เดิมโชว์เบอร์โทรทั้งที่กดแล้วไม่ได้โทร (ลิงก์ไป /about/contact)
+              เปลี่ยนป้ายเป็น "ติดต่อ" ให้ตรงกับสิ่งที่ปุ่มทำจริง */}
           <Link
             to="/about/contact"
             className="hidden lg:inline-flex items-center gap-2 px-5 py-2.5 bg-white border-[1.5px] border-green-200 text-green-700 text-sm font-bold rounded-full shadow-sm hover:bg-green-600 hover:border-green-600 hover:text-white transition-all duration-300 active:scale-95"
           >
             <Phone className="w-4 h-4" aria-hidden="true" />
-            053-487-114
+            ติดต่อ
           </Link>
         </div>
       </div>

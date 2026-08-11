@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Main_page from '@/components/page/Mainpage/Mainpage'
+import VisionSection from '@/components/page/Vision/Vision'
 import News_page from '@/components/page/Newspage/Newspage'
 import Activity from '@/components/page/Activity/Activity'
 import StaffPortal from '@/components/page/Staffpage'
@@ -16,6 +17,7 @@ function Home() {
   return (
     <div className="flex flex-col overflow-x-hidden font-sarabun bg-green-50">
       <Main_page />
+      <VisionSection />
       <News_page />
       <Activity />
       <StaffPortal />

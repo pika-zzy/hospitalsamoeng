@@ -33,24 +33,23 @@ export default function PopupModal() {
 
   return (
     <div
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 p-4"
       onClick={() => setClosed(true)}
     >
-      <div className="relative max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          aria-label="ปิด"
-          onClick={() => setClosed(true)}
-          className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-white text-gray-700 shadow-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
-        <img
-          src={`${API_URL}${popup.ImageURL}`}
-          alt="ประชาสัมพันธ์"
-          className="w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
-        />
-      </div>
+      <button
+        type="button"
+        aria-label="ปิด"
+        onClick={() => setClosed(true)}
+        className="fixed top-4 right-4 z-10 w-11 h-11 rounded-full bg-white/90 text-gray-700 shadow-lg flex items-center justify-center hover:bg-white transition-colors"
+      >
+        <X className="w-6 h-6" />
+      </button>
+      <img
+        src={`${API_URL}${popup.ImageURL}`}
+        alt="ประชาสัมพันธ์"
+        onClick={(e) => e.stopPropagation()}
+        className="max-w-full max-h-full w-auto h-auto object-contain"
+      />
     </div>
   )
 }
