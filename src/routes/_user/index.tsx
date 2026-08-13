@@ -3,6 +3,7 @@ import Main_page from '@/components/page/Mainpage/Mainpage'
 import VisionSection from '@/components/page/Vision/Vision'
 import News_page from '@/components/page/Newspage/Newspage'
 import Activity from '@/components/page/Activity/Activity'
+import PublicServices from '@/components/page/Publicpage'
 import StaffPortal from '@/components/page/Staffpage'
 
 
@@ -20,6 +21,7 @@ function Home() {
       <VisionSection />
       <News_page />
       <Activity />
+      <PublicServices />
       <StaffPortal />
     </div>
   )
