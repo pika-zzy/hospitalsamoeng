@@ -40,7 +40,7 @@ export default function PopupModal() {
         type="button"
         aria-label="ปิด"
         onClick={() => setClosed(true)}
-        className="fixed top-4 right-4 z-10 w-11 h-11 rounded-full bg-white/90 text-gray-700 shadow-lg flex items-center justify-center hover:bg-white transition-colors"
+        className="fixed top-4 right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#24352b] shadow-lg transition-colors hover:bg-white"
       >
         <X className="w-6 h-6" />
       </button>
@@ -48,7 +48,7 @@ export default function PopupModal() {
         src={`${API_URL}${popup.ImageURL}`}
         alt="ประชาสัมพันธ์"
         onClick={(e) => e.stopPropagation()}
-        className="max-w-full max-h-full w-auto h-auto object-contain"
+        className="max-h-full max-w-full h-auto w-auto rounded-2xl object-contain"
       />
     </div>
   )

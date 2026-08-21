@@ -1,4 +1,4 @@
-import { Phone, MapPin, Monitor, ShieldCheck, Facebook, Heart, Mail } from "lucide-react";
+import { Phone, MapPin, Monitor, ShieldCheck, Facebook, Heart, Mail, Clock3 } from "lucide-react";
 
 const FACEBOOK_URL =
   "https://www.facebook.com/p/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%E0%B8%AA%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B4%E0%B8%87-%E0%B8%88%E0%B8%B1%E0%B8%87%E0%B8%AB%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B9%80%E0%B8%8A%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88-100066989703921/";
@@ -13,104 +13,113 @@ const MAP_EMBED_URL =
 const MAP_LINK_URL = "https://maps.app.goo.gl/AnAQwPAHe7StQ35w5";
 const EMAIL = "samoenghospital.moph@gmail.com";
 
+// ทีมผู้ดูแล — โครงเดียวกันสองรายการ วนแทนการ copy บล็อกซ้ำ
+const TEAMS = [
+  { icon: Monitor, th: "นักวิชาการคอมพิวเตอร์", en: "Digital Health & Infrastructure" },
+  { icon: ShieldCheck, th: "งานประกันสุขภาพ", en: "Health Insurance & Benefits" },
+];
+
+// REDESIGN (โทน sage): เดิมฟุตเตอร์เป็น slate-900 สีน้ำเงินเทา ซึ่งหลุดจากโทนเขียวทั้งเว็บ
+// เปลี่ยนเป็นเขียวหม่นเข้ม + accent น้ำตาลไม้ ให้จบเป็นชุดเดียวกับหัวเว็บ
+// ข้อมูลทุกตัว (ที่อยู่ เบอร์ อีเมล Facebook แผนที่ ทีมผู้ดูแล เครดิต) คงไว้ครบ
 const Footer = () => {
   return (
-    <footer className="w-full bg-slate-900 text-slate-400 pt-20 pb-10 mt-20">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mb-16">
+    <footer className="w-full bg-[#24352b] pt-16 pb-8 text-[#a7bfad] sm:pt-20">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="mb-14 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-14">
 
-          {/* ── Brand ── */}
-          <div className="lg:col-span-4 space-y-6">
+          {/* ── แบรนด์ ── */}
+          <div className="space-y-6 lg:col-span-4">
             <div>
-              <h2 className="text-2xl font-black tracking-tight text-white uppercase">
-                Samoeng <span className="text-green-500">Hospital</span>
+              <h2 className="text-[22px] font-bold tracking-tight text-white">
+                โรงพยาบาลสะเมิง
               </h2>
-              <p className="text-[11px] font-bold tracking-[0.3em] text-slate-500 mt-1.5 uppercase">
-                Healthcare Center of Excellence
+              <p className="mt-1.5 text-[10.5px] font-semibold tracking-[0.22em] text-[#8aa893] uppercase">
+                Samoeng Hospital
               </p>
+              <span className="mt-4 block h-px w-12 bg-[#b08968]" aria-hidden="true" />
             </div>
 
-            <p className="text-sm leading-relaxed text-slate-400 max-w-sm">
+            <p className="max-w-sm text-[15px] leading-relaxed">
               โรงพยาบาลสะเมิง มุ่งมั่นให้บริการทางการแพทย์ที่ได้มาตรฐาน
               เข้าถึงง่าย เพื่อสุขภาวะที่ดีของพี่น้องชาวสะเมิง
             </p>
 
-            <a
-              href={FACEBOOK_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-green-600 hover:text-white px-4 py-2.5 rounded-xl transition-colors"
-            >
-              <Facebook className="w-4 h-4" />
-              ติดตามบน Facebook
-            </a>
-            {/* FIX: ปุ่มนี้เคย href ไป FACEBOOK_URL (ก๊อปจากปุ่มบน) และสะกดผิด
-                เปลี่ยนเป็น mailto: อีเมลจริงของโรงพยาบาล — mailto ไม่ต้องมี target/rel */}
-            <a
-              href={`mailto:${EMAIL}`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-green-600 hover:text-white px-4 py-2.5 rounded-xl transition-colors"
-            >
-              <Mail className="w-4 h-4" />
-              ติดต่อทางอีเมล
-            </a>
+            <div className="flex flex-wrap gap-2.5">
+              <a
+                href={FACEBOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#2f4438] px-4 py-2.5 text-[13.5px] font-medium text-[#c9dacd] transition-colors hover:bg-[#3b5546] hover:text-white"
+              >
+                <Facebook className="h-4 w-4" />
+                ติดตามบน Facebook
+              </a>
+              {/* FIX: ปุ่มนี้เคย href ไป FACEBOOK_URL (ก๊อปจากปุ่มบน) และสะกดผิด
+                  เปลี่ยนเป็น mailto: อีเมลจริงของโรงพยาบาล — mailto ไม่ต้องมี target/rel */}
+              <a
+                href={`mailto:${EMAIL}`}
+                className="inline-flex items-center gap-2 rounded-xl bg-[#2f4438] px-4 py-2.5 text-[13.5px] font-medium text-[#c9dacd] transition-colors hover:bg-[#3b5546] hover:text-white"
+              >
+                <Mail className="h-4 w-4" />
+                ติดต่อทางอีเมล
+              </a>
+            </div>
           </div>
 
-          {/* ── Contact ── */}
-          <div className="lg:col-span-4 space-y-6">
-            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-white">
+          {/* ── ติดต่อ ── */}
+          <div className="space-y-6 lg:col-span-4">
+            <h3 className="text-[11px] font-semibold tracking-[0.2em] text-white uppercase">
               ติดต่อสอบถาม
             </h3>
 
-            <ul className="space-y-4 text-sm">
+            <ul className="space-y-4 text-[15px]">
               <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-green-500" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#c9a184]" />
                 <span className="leading-relaxed">
                   1766 1269 ต.สะเมิงใต้ <br />
                   อ.สะเมิง จ.เชียงใหม่ 50250
                 </span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 shrink-0 text-green-500" />
-                <a href="tel:053487114" className="hover:text-green-400 transition-colors">
+                <Phone className="h-4 w-4 shrink-0 text-[#c9a184]" />
+                <a href="tel:053487114" className="transition-colors hover:text-white">
                   053-487-114
                 </a>
               </li>
+              <li className="flex items-center gap-3">
+                <Clock3 className="h-4 w-4 shrink-0 text-[#c9a184]" />
+                <span>เปิดบริการในเวลาราชการ 08.00 – 16.00 น.</span>
+              </li>
             </ul>
 
-            {/* Responsible teams */}
-            <div className="pt-2 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-green-500 shrink-0">
-                  <Monitor className="w-4.5 h-4.5" />
+            {/* ทีมผู้ดูแลระบบ */}
+            <div className="space-y-3 pt-2">
+              {TEAMS.map(({ icon: Icon, th, en }) => (
+                <div key={th} className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#2f4438] text-[#c9a184]">
+                    <Icon className="h-4.5 w-4.5" />
+                  </div>
+                  <div className="leading-tight">
+                    <p className="text-[13.5px] font-semibold text-white">{th}</p>
+                    <p className="text-[11.5px] text-[#6b8c76]">{en}</p>
+                  </div>
                 </div>
-                <div className="leading-tight">
-                  <p className="text-[13px] font-semibold text-white">นักวิชาการคอมพิวเตอร์</p>
-                  <p className="text-xs text-slate-500">Digital Health &amp; Infrastructure</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-green-500 shrink-0">
-                  <ShieldCheck className="w-4.5 h-4.5" />
-                </div>
-                <div className="leading-tight">
-                  <p className="text-[13px] font-semibold text-white">งานประกันสุขภาพ</p>
-                  <p className="text-xs text-slate-500">Health Insurance &amp; Benefits</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* ── Location ── */}
-          <div className="lg:col-span-4 space-y-4">
-            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-white">
+          {/* ── แผนที่ ── */}
+          <div className="space-y-4 lg:col-span-4">
+            <h3 className="text-[11px] font-semibold tracking-[0.2em] text-white uppercase">
               สถานที่ตั้ง
             </h3>
-            <div className="rounded-2xl overflow-hidden border border-slate-800">
+            <div className="overflow-hidden rounded-2xl border border-[#3b5546]">
               <iframe
                 title="แผนที่โรงพยาบาลสะเมิง"
                 src={MAP_EMBED_URL}
                 width="100%"
-                height="220"
+                height="240"
                 className="block border-0"
                 allowFullScreen
                 loading="lazy"
@@ -121,25 +130,25 @@ const Footer = () => {
               href={MAP_LINK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-green-500 hover:text-green-400 transition-colors"
+              className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#c9a184] transition-colors hover:text-white"
             >
-              <MapPin className="w-3.5 h-3.5" />
+              <MapPin className="h-3.5 w-3.5" />
               เปิดใน Google Maps
             </a>
           </div>
         </div>
 
-        {/* ── Bottom bar ── */}
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2 text-[11px] font-medium tracking-wider uppercase text-slate-500">
+        {/* ── แถบล่างสุด ── */}
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-[#2f4438] pt-7 md:flex-row">
+          <div className="flex items-center gap-2 text-[11.5px] font-medium tracking-wider text-[#6b8c76] uppercase">
             <span>© 2026 Samoeng Hospital</span>
-            <span className="hidden md:inline text-slate-700">|</span>
+            <span className="hidden text-[#3b5546] md:inline">|</span>
             <span className="inline-flex items-center gap-1">
               Dedicated to Community
-              <Heart className="w-3 h-3 text-green-600" />
+              <Heart className="h-3 w-3 text-[#b08968]" />
             </span>
           </div>
-          <p className="text-[11px] font-medium tracking-wider uppercase text-slate-500 text-center md:text-right">
+          <p className="text-center text-[11.5px] font-medium tracking-wider text-[#6b8c76] uppercase md:text-right">
             System Design by IT Team &amp; Health Insurance Department
           </p>
         </div>

@@ -1,66 +1,43 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Code, Layout, Smartphone, ArrowRight } from 'lucide-react'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { Stethoscope, ArrowLeft } from 'lucide-react'
 
 export const Route = createFileRoute('/_user/service/')({
   component: RouteComponent,
 })
 
-// 1. สร้าง Type และ Mock Data ขึ้นมาก่อน (ในอนาคตย้ายไปไฟล์ config หรือดึง API ก็ได้)
-type ServiceItem = {
-  title: string
-  description: string
-  icon: React.ElementType
-}
-
-const services: ServiceItem[] = [
-  {
-    title: 'Web Development',
-    description: 'สร้างเว็บไซต์ที่เร็ว แรง และรองรับ SEO ด้วย Tech Stack ล่าสุด',
-    icon: Code,
-  },
-  {
-    title: 'UI/UX Design',
-    description: 'ออกแบบ User Interface ที่สวยงามและใช้งานง่าย เข้าใจผู้ใช้',
-    icon: Layout,
-  },
-  {
-    title: 'Mobile Apps',
-    description: 'พัฒนาแอปพลิเคชันบนมือถือที่ลื่นไหล รองรับทั้ง iOS และ Android',
-    icon: Smartphone,
-  },
-  
-]
-
+// เนื้อหาเดิมของหน้านี้เป็น template บริษัทรับทำเว็บที่ติดมาตอนตั้งโปรเจกต์
+// (Web Development / UI-UX Design / Mobile Apps) ไม่เกี่ยวกับโรงพยาบาลเลย — ถอดออกแล้ว
+// route ยังอยู่กันลิงก์เก่าเจอ 404 (ไม่มีเมนูไหนชี้มาหน้านี้)
+// ข้อมูลบริการจริงของโรงพยาบาลอยู่ที่ section "บริการสำหรับประชาชน" บนหน้าแรก
 function RouteComponent() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      {/* Header Section */}
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-slate-900 mb-4">บริการของเรา</h1>
-        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-          เรามุ่งมั่นที่จะส่งมอบโซลูชันที่ดีที่สุดเพื่อตอบโจทย์ธุรกิจของคุณ
-          ด้วยเทคโนโลยีที่ทันสมัยและทีมงานมืออาชีพ
-        </p>
-      </div>
+    <div className="min-h-[70vh] px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl rounded-3xl border border-stone-200/80 bg-white px-6 py-14 text-center sm:px-12">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f3f7f3] text-[#4a6b57]">
+          <Stethoscope className="h-8 w-8" />
+        </div>
 
-      {/* Grid Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {services.map((service, index) => (
-          <div 
-            key={index} 
-            className="group p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-500 transition-all duration-300 cursor-pointer"
+        <h1 className="mt-6 text-3xl font-bold tracking-tight text-[#24352b]">บริการของโรงพยาบาล</h1>
+
+        <p className="mt-4 text-[17px] leading-relaxed text-stone-500">
+          ข้อมูลคลินิกและหน่วยบริการทั้งหมด อยู่ที่หัวข้อ “บริการสำหรับประชาชน” บนหน้าแรก
+        </p>
+
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 rounded-full bg-[#3b5546] px-5 py-2.5 text-[13.5px] font-semibold text-white transition-colors hover:bg-[#2f4438]"
           >
-            <div className="mb-4 inline-block p-3 bg-blue-50 rounded-lg group-hover:bg-blue-500 group-hover:text-white transition-colors">
-              <service.icon size={28} />
-            </div>
-            <h3 className="text-xl font-semibold mb-2 text-slate-800">{service.title}</h3>
-            <p className="text-slate-500 mb-4">{service.description}</p>
-            
-            <div className="flex items-center text-blue-600 font-medium group-hover:translate-x-1 transition-transform">
-              ดูรายละเอียด <ArrowRight size={16} className="ml-1" />
-            </div>
-          </div>
-        ))}
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            กลับหน้าแรก
+          </Link>
+          <Link
+            to="/about/contact"
+            className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-5 py-2.5 text-[13.5px] font-semibold text-stone-600 transition-colors hover:border-[#3b5546] hover:bg-[#3b5546] hover:text-white"
+          >
+            ติดต่อสอบถาม
+          </Link>
+        </div>
       </div>
     </div>
   )
