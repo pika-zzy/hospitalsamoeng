@@ -1,4 +1,5 @@
-import { Leaf } from "lucide-react";
+import { Quote } from "lucide-react";
+import { SectionHeading } from "@/components/page/section-heading";
 
 // NOTE: เนื้อหาวิสัยทัศน์/พันธกิจ/ค่านิยม คงที่ในโค้ด (ไม่ได้ดึงจาก API)
 // เพราะแทบไม่เปลี่ยน — ถ้าวันหนึ่งต้องให้ admin แก้เองค่อยทำเป็น resource ใหม่ทั้งชุด
@@ -23,77 +24,90 @@ const VALUES = [
   { letter: "M", en: "Management", th: "จัดการระบบอย่างมีมาตรฐาน" },
 ];
 
+// REDESIGN (โทน sage): เดิมเป็นการ์ดขาวใบใหญ่ใบเดียวยัดทุกหัวข้อ อ่านแล้วแบนไปหมด
+// ตอนนี้แยกเป็น "วิสัยทัศน์" การ์ดเขียวเข้ม (จุดเน้นของหน้า) คู่กับ "พันธกิจ" การ์ดขาว
+// แล้วต่อท้ายด้วยแถบค่านิยม LOVE SM — เนื้อหาทุกตัวคงเดิมครบ
 export default function VisionSection() {
   return (
-    // NOTE: ตาม mockup "แบบ B" ที่ user เลือก (2026-08-10) — การ์ดขาวใบใหญ่ใบเดียว
-    // จบครบทุกหัวข้อในหน้าแรก ไม่มีหน้าแยก; วางระหว่าง hero กับ "ข่าวสาร & ประกาศ"
-    // ไม่ใส่ padding ล่าง เพราะ Newspage มี pt-24 ของตัวเองอยู่แล้ว
-    <section className="pt-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* หัวข้อสำหรับ screen reader — ลำดับ heading ของหน้าไม่ขาดช่วง
-            แต่ดีไซน์แบบ B ไม่มีหัว section แบบตัวโตเหมือน section อื่น */}
-        <h2 className="sr-only">วิสัยทัศน์ พันธกิจ และค่านิยมองค์กร</h2>
+    <section className="px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <SectionHeading
+          eyebrow="Vision & Mission"
+          title="วิสัยทัศน์และพันธกิจ"
+          description="ทิศทางการทำงานของโรงพยาบาลสะเมิง และสิ่งที่เรายึดถือในการดูแลชุมชน"
+          align="center"
+        />
 
-        <div className="bg-white border border-green-100/60 rounded-3xl shadow-lg shadow-green-900/5 p-6 sm:p-9 lg:p-10">
-          {/* ─── วิสัยทัศน์ ─── */}
-          <div className="text-center pb-7 mb-7 border-b border-dashed border-green-100">
-            <p className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 border border-green-100 text-xs font-bold tracking-widest uppercase text-green-700">
-              <Leaf className="w-3.5 h-3.5" />
-              วิสัยทัศน์ · Vision
+        <div className="grid gap-5 lg:grid-cols-[1fr_1.15fr]">
+          {/* ─── วิสัยทัศน์ (การ์ดเน้น) ─── */}
+          <div className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-[#2f4438] p-8 sm:p-10">
+            {/* วงกลมจาง ๆ เป็นพื้นผิว ไม่ให้การ์ดเขียวดูตันเกินไป */}
+            <div
+              className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-[#4a6b57]/40 blur-2xl"
+              aria-hidden="true"
+            />
+
+            <div className="relative">
+              <Quote className="h-8 w-8 text-[#b08968]" aria-hidden="true" />
+              <p className="mt-5 text-[11px] font-semibold tracking-[0.2em] text-[#8aa893] uppercase">
+                วิสัยทัศน์ · Vision
+              </p>
+              <blockquote className="mt-4 text-2xl leading-snug font-bold text-balance text-white sm:text-[28px]">
+                {VISION}
+              </blockquote>
+            </div>
+
+            <p className="relative mt-10 border-t border-[#4a6b57] pt-6 text-[17px] font-semibold text-[#c9a184]">
+              “{SLOGAN}”
             </p>
-            <blockquote className="mt-4 text-xl sm:text-2xl lg:text-3xl font-bold leading-relaxed text-green-800 text-balance">
-              “{VISION}”
-            </blockquote>
           </div>
 
-          {/* ─── พันธกิจ + ค่านิยม ─── */}
-          <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-10">
-            {/* พันธกิจ */}
-            <div>
-              <h3 className="flex items-center gap-2.5 mb-4 text-lg font-bold text-gray-900">
-                <span className="w-1 h-5 rounded-full bg-green-600" aria-hidden="true" />
-                พันธกิจ
-              </h3>
-              <ol className="flex flex-col gap-3">
-                {MISSIONS.map((mission, i) => (
-                  <li key={i} className="flex gap-3 text-base leading-relaxed text-gray-600">
-                    <span
-                      className="shrink-0 w-6 h-6 rounded-lg bg-green-100 text-green-700 text-xs font-extrabold flex items-center justify-center"
-                      aria-hidden="true"
-                    >
-                      {i + 1}
-                    </span>
-                    {mission}
-                  </li>
-                ))}
-              </ol>
-            </div>
+          {/* ─── พันธกิจ ─── */}
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-8 sm:p-10">
+            <p className="text-[11px] font-semibold tracking-[0.2em] text-[#96704f] uppercase">
+              พันธกิจ · Mission
+            </p>
+            <h3 className="mt-3 text-xl font-bold text-[#24352b]">สิ่งที่เรามุ่งมั่นทำให้สำเร็จ</h3>
 
-            {/* ค่านิยมองค์กร */}
-            <div>
-              <h3 className="flex items-center gap-2.5 mb-4 text-lg font-bold text-gray-900">
-                <span className="w-1 h-5 rounded-full bg-green-600" aria-hidden="true" />
-                ค่านิยมองค์กร — LOVE SM
-              </h3>
-              <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                {VALUES.map(({ letter, en, th }) => (
-                  <li
-                    key={letter}
-                    className="flex flex-col items-center text-center bg-green-50 border border-green-100 rounded-xl px-3 py-3.5"
+            <ol className="mt-6 flex flex-col gap-5">
+              {MISSIONS.map((mission, i) => (
+                <li key={i} className="flex gap-4">
+                  <span
+                    className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#f3f7f3] text-[13px] font-bold text-[#4a6b57]"
+                    aria-hidden="true"
                   >
-                    <span className="text-2xl font-black leading-none text-green-600">{letter}</span>
-                    <span className="mt-1 text-[11px] font-semibold text-green-700">{en}</span>
-                    <span className="mt-0.5 text-sm text-gray-600">{th}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                    {i + 1}
+                  </span>
+                  <p className="text-[15px] leading-relaxed text-stone-600">{mission}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+
+        {/* ─── ค่านิยมองค์กร ─── */}
+        <div className="mt-5 rounded-3xl border border-stone-200/80 bg-white p-8 sm:p-10">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <p className="text-[11px] font-semibold tracking-[0.2em] text-[#96704f] uppercase">
+              ค่านิยมองค์กร · Core Values
+            </p>
+            <span className="text-[15px] font-bold tracking-wide text-[#4a6b57]">LOVE SM</span>
           </div>
 
-          {/* ─── คำขวัญ ─── */}
-          <p className="mt-7 pt-6 border-t border-dashed border-green-100 text-center text-lg font-semibold text-green-700">
-            “{SLOGAN}”
-          </p>
+          <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {VALUES.map(({ letter, en, th }) => (
+              <li
+                key={letter}
+                className="group rounded-2xl border border-stone-200/70 bg-[#fdfcf9] px-4 py-5 text-center transition-colors duration-300 hover:border-[#c9dacd] hover:bg-[#f3f7f3]"
+              >
+                <span className="block text-3xl leading-none font-bold text-[#4a6b57]">
+                  {letter}
+                </span>
+                <span className="mt-2 block text-[11.5px] font-semibold text-[#96704f]">{en}</span>
+                <span className="mt-1 block text-[13.5px] leading-snug text-stone-600">{th}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

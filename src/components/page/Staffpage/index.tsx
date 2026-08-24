@@ -1,8 +1,9 @@
 import { getIconColor } from "@/components/icon/colors";
+import { SectionHeading } from "@/components/page/section-heading";
 import type { StaffMenu } from "@/interface/staffmenu";
 import { requestAPI } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight, icons } from "lucide-react";
+import { ArrowUpRight, icons } from "lucide-react";
 
 export default function StaffPortal() {
   const { data: menus = [], isLoading } = useQuery<StaffMenu[]>({
@@ -16,84 +17,74 @@ export default function StaffPortal() {
 
   const isEmpty = !isLoading && menus.length === 0;
 
+  // REDESIGN (โทน sage): การ์ดแน่นขึ้นแบบแผงเมนู (app launcher) แทนการ์ดใหญ่โปร่ง ๆ
+  // logic query / skeleton / empty / isExternal เดิมทั้งหมด
   return (
-    // REFACTOR: ตาม mockup "แบบ G" (2026-07-15) — section โปร่งใสบนพื้น mint ของหน้าแรก
-    // หัว section เป็น kicker แบบเดียวกับ Newspage/Activity (ถอดแท่งเขียวซ้ายออก)
-    <section className="py-16 px-4 sm:px-6 lg:px-8 pb-20">
-      <div className="max-w-7xl mx-auto">
+    <section id="staff-portal" className="scroll-mt-24 px-4 py-20 sm:px-6 lg:scroll-mt-32 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <SectionHeading
+          eyebrow="Staff Portal"
+          title="บริการสำหรับเจ้าหน้าที่"
+          description="ระบบและเครื่องมือภายในสำหรับบุคลากรโรงพยาบาลสะเมิง"
+        />
 
-        {/* ─── Header ─── */}
-        <div className="mb-6">
-          <p className="text-xs tracking-widest text-green-500 uppercase font-semibold mb-0.5">
-            Staff &amp; Portal
-          </p>
-          <h2 className="text-3xl font-black text-gray-900 leading-none">
-            สำหรับ<span className="text-green-500">เจ้าหน้าที่</span>
-          </h2>
-        </div>
-
-        {/* ─── Empty ─── */}
-        {/* ยังไม่มีเมนูใน DB — คงหัวข้อ section ไว้ ไม่ซ่อนทั้งบล็อก */}
+        {/* ─── ยังไม่มีเมนูใน DB — คงหัวข้อ section ไว้ ไม่ซ่อนทั้งบล็อก ─── */}
         {isEmpty && (
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50/60 py-14 text-center">
-            <p className="text-sm text-gray-400">ยังไม่มีเมนูบริการสำหรับเจ้าหน้าที่</p>
+          <div className="rounded-3xl border border-dashed border-stone-300 bg-white/60 py-16 text-center">
+            <p className="text-[15px] text-stone-400">ยังไม่มีเมนูบริการสำหรับเจ้าหน้าที่</p>
           </div>
         )}
 
-        {/* ─── Grid ─── */}
+        {/* ─── ตารางเมนู ─── */}
         {!isEmpty && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {isLoading
-            ? Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-32 rounded-2xl border border-gray-100 bg-gray-50 animate-pulse"
-                />
-              ))
-            : menus.map((menu) => {
-                const color = getIconColor(menu.color);
-                // icon เก็บเป็นชื่อไอคอน lucide ที่ IconPicker ส่งมา (เช่น "Wrench")
-                const Icon = menu.icon in icons ? icons[menu.icon as keyof typeof icons] : null;
-                // ลิงก์ภายนอกเปิดแท็บใหม่, ลิงก์ภายในเว็บ (เช่น /maintenance) เปิดในแท็บเดิม
-                const isExternal = /^https?:\/\//i.test(menu.link);
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+            {isLoading
+              ? Array.from({ length: 8 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-28 animate-pulse rounded-2xl border border-stone-200/80 bg-white"
+                  />
+                ))
+              : menus.map((menu) => {
+                  const color = getIconColor(menu.color);
+                  // icon เก็บเป็นชื่อไอคอน lucide ที่ IconPicker ส่งมา (เช่น "Wrench")
+                  const Icon = menu.icon in icons ? icons[menu.icon as keyof typeof icons] : null;
+                  // ลิงก์ภายนอกเปิดแท็บใหม่, ลิงก์ภายในเว็บ (เช่น /maintenance) เปิดในแท็บเดิม
+                  const isExternal = /^https?:\/\//i.test(menu.link);
 
-                return (
-                  <a
-                    key={menu.id}
-                    href={menu.link || "#"}
-                    target={isExternal ? "_blank" : undefined}
-                    rel={isExternal ? "noopener noreferrer" : undefined}
-                    className="group flex flex-col bg-white border border-green-100/60 rounded-2xl p-5 shadow-sm shadow-green-900/5 hover:border-green-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-900/5 transition-all duration-300"
-                  >
-                    {/* Icon + Text (ไอคอนซ้าย ข้อความชิดซ้าย — อ่านง่ายกว่าจัดกึ่งกลางสำหรับข้อความไทย) */}
-                    <div className="flex items-start gap-3.5">
-                      <div className={`w-11 h-11 shrink-0 rounded-xl flex items-center justify-center ${color.bgClass} ${color.textClass}`}>
-                        {Icon ? <Icon size={21} aria-hidden="true" /> : null}
+                  return (
+                    <a
+                      key={menu.id}
+                      href={menu.link || "#"}
+                      target={isExternal ? "_blank" : undefined}
+                      rel={isExternal ? "noopener noreferrer" : undefined}
+                      className="group relative flex flex-col gap-3 rounded-2xl border border-stone-200/80 bg-white p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#c9dacd] hover:shadow-lg hover:shadow-[#24352b]/8"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${color.bgClass} ${color.textClass}`}
+                        >
+                          {Icon ? <Icon size={21} aria-hidden="true" /> : null}
+                        </div>
+                        <ArrowUpRight
+                          className="h-4 w-4 shrink-0 text-stone-300 transition-colors duration-200 group-hover:text-[#4a6b57]"
+                          aria-hidden="true"
+                        />
                       </div>
 
                       <div className="min-w-0">
-                        <p className="text-[13.5px] font-bold text-gray-900 leading-snug group-hover:text-green-700 transition-colors">
+                        <p className="text-[14.5px] leading-snug font-semibold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57]">
                           {menu.menu_name}
                         </p>
-                        <p className="mt-1 text-[11.5px] text-gray-500 leading-relaxed">
+                        <p className="mt-1 line-clamp-2 text-[12.5px] leading-relaxed text-stone-500">
                           {menu.description}
                         </p>
                       </div>
-                    </div>
-
-                    {/* Chevron — ทั้งการ์ดกดได้อยู่แล้ว ไม่ต้องมีปุ่มซ้ำ */}
-                    <div className="mt-auto pt-4 flex justify-end">
-                      <ChevronRight
-                        className="w-4 h-4 text-gray-300 group-hover:text-green-600 group-hover:translate-x-0.5 transition-all duration-200"
-                        aria-hidden="true"
-                      />
-                    </div>
-                  </a>
-                );
-              })}
-        </div>
+                    </a>
+                  );
+                })}
+          </div>
         )}
-
       </div>
     </section>
   );
