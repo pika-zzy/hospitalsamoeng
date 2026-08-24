@@ -66,7 +66,10 @@ function RouteComponent() {
           className="pointer-events-none absolute -top-24 -right-16 h-72 w-72 rounded-full bg-[#4a6b57]/40 blur-3xl"
           aria-hidden="true"
         />
-        <div className="relative mx-auto max-w-4xl">
+        {/* FIX: เดิม Link กับป้ายประเภทเป็น inline-flex ทั้งคู่ เลยตกอยู่บรรทัดเดียวกัน
+            mt-5 บน inline-flex ไม่ได้ดันลงบรรทัดใหม่ แค่เลื่อนกล่องขึ้น → ป้ายไปทับ breadcrumb
+            เปลี่ยนตัวครอบเป็น flex-col ให้แยกบรรทัดจริง ๆ */}
+        <div className="relative mx-auto flex max-w-4xl flex-col items-start gap-5">
           <Link
             to="/news"
             className="inline-flex items-center gap-2 text-[13.5px] font-medium text-[#a7bfad] transition-colors hover:text-white"
@@ -74,14 +77,17 @@ function RouteComponent() {
             <ArrowLeft className="h-4 w-4" />
             ข่าวสารและประกาศ
           </Link>
-          <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[12.5px] font-semibold text-white">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[12.5px] font-semibold text-white">
             {news.type}
           </span>
         </div>
       </div>
 
       {/* ─── เนื้อหา ─── */}
-      <div className="mx-auto -mt-16 max-w-4xl px-4 sm:px-6 lg:px-8">
+      {/* FIX: การ์ดยื่นขึ้นไปทับแถบหัวด้วย -mt-16 แต่ตัวมันเป็น static ส่วนแถบหัวเป็น relative
+          element ที่ positioned จะวาดทับ in-flow เสมอ → แถบเขียวกินหัวข้อไปครึ่งบรรทัด
+          ใส่ relative z-10 ให้การ์ดขึ้นมาอยู่ชั้นบน (แบบเดียวกับ QuickActions ที่ใช้ z-30) */}
+      <div className="relative z-10 mx-auto -mt-16 max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-3xl border border-stone-200/80 bg-white shadow-xl shadow-[#24352b]/8">
 
           <div className="border-b border-stone-100 p-7 sm:p-10">

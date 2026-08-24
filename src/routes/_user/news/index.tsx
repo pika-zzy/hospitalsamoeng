@@ -57,10 +57,13 @@ function RouteComponent() {
     return map;
   }, [data]);
 
+  // FIX: date เป็นวันที่ล้วนไม่มีเวลา ข่าววันเดียวกันเลย "เท่ากัน" ในสายตา sort — เติม id
+  // มากกว่า = เพิ่มทีหลัง เป็นตัวตัดสินรอง (บั๊กเดียวกับ Newspage.tsx บนหน้าแรก)
   const activeList = useMemo(() => {
-    return [...(data?.filter((n) => n.type === activeTab.type) ?? [])].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
+    return [...(data?.filter((n) => n.type === activeTab.type) ?? [])].sort((a, b) => {
+      const byDate = new Date(b.date).getTime() - new Date(a.date).getTime();
+      return byDate !== 0 ? byDate : b.id - a.id;
+    });
   }, [data, activeTab.type]);
 
   return (

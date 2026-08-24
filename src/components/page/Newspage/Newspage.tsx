@@ -1,4 +1,4 @@
-import { ArrowRight, Megaphone, Briefcase, FileText, ImageOff } from "lucide-react";
+import { ArrowRight, Megaphone, Briefcase, FileText } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { requestAPI } from "@/lib/api";
@@ -67,10 +67,16 @@ export default function News_page() {
   }, [data]);
 
   // โชว์เฉพาะ 4 ข่าวล่าสุดของหมวดที่เลือก (หน้าแรกเป็นตัวอย่าง ไม่ใช่ list เต็ม)
+  // FIX: field date เป็นวันที่ล้วน ไม่มีเวลา — ข่าวที่เพิ่มวันเดียวกันจะ "เท่ากัน" ในสายตา
+  // sort ทำให้ข่าวที่เพิ่งเพิ่มไม่ขึ้นเป็นล่าสุดจริง ๆ (sort เสถียร คงลำดับเดิมตาม id จากฝั่ง
+  // backend ไว้) เลยเติม id มากกว่า = เพิ่มทีหลัง เป็นตัวตัดสินรองตอนวันที่เท่ากัน
   const latest = useMemo(
     () =>
       [...(data?.filter((n) => n.type === activeTab.type) ?? [])]
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .sort((a, b) => {
+          const byDate = new Date(b.date).getTime() - new Date(a.date).getTime();
+          return byDate !== 0 ? byDate : b.id - a.id;
+        })
         .slice(0, 4),
     [data, activeTab.type],
   );
@@ -126,46 +132,78 @@ export default function News_page() {
 
         {featured ? (
           <div className={`grid gap-5 ${rest.length > 0 ? "lg:grid-cols-[1.35fr_1fr]" : ""}`}>
-            {/* ─── ข่าวล่าสุด (การ์ดใหญ่พร้อมรูป) ─── */}
-            <article
-              onClick={() => navigate({ to: "/news/$id", params: { id: String(featured.id) } })}
-              className="group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-stone-200/80 bg-white transition-shadow duration-300 hover:shadow-xl hover:shadow-[#24352b]/8"
-            >
-              <div className="relative aspect-16/9 overflow-hidden bg-[#f3f7f3]">
-                {featured.img_url ? (
+            {/* ─── ข่าวล่าสุด (การ์ดใหญ่) ───
+                มีรูป: การ์ดตั้ง รูป 16:9 ด้านบน + เนื้อหาด้านล่าง (เดิม)
+                ไม่มีรูป (ข่าวส่วนใหญ่ของโรงพยาบาลเป็นแบบนี้): การ์ดนอน แถบวันที่ซ้าย
+                แทนกล่องรูปว่าง ๆ ที่เคยมีแค่ไอคอน ImageOff ลอยอยู่ */}
+            {featured.img_url ? (
+              <article
+                onClick={() => navigate({ to: "/news/$id", params: { id: String(featured.id) } })}
+                className="group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-stone-200/80 bg-white transition-shadow duration-300 hover:shadow-xl hover:shadow-[#24352b]/8"
+              >
+                <div className="relative aspect-16/9 overflow-hidden bg-[#f3f7f3]">
                   <img
                     src={`${API_URL}${featured.img_url}`}
                     alt={featured.title}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <ImageOff className="h-10 w-10 text-[#c9dacd]" aria-hidden="true" />
-                  </div>
-                )}
-                <span className="absolute top-4 left-4 rounded-full bg-white/95 px-3.5 py-1.5 text-[12px] font-semibold text-[#3b5546] backdrop-blur-sm">
-                  ล่าสุด
-                </span>
-              </div>
+                  <span className="absolute top-4 left-4 rounded-full bg-white/95 px-3.5 py-1.5 text-[12px] font-semibold text-[#3b5546] backdrop-blur-sm">
+                    ล่าสุด
+                  </span>
+                </div>
 
-              <div className="flex flex-1 flex-col p-6 sm:p-7">
-                <p className="text-[12.5px] font-medium text-stone-400">
-                  {thaiDate(featured.date).full}
-                </p>
-                <h3 className="mt-2.5 text-xl leading-snug font-bold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57] sm:text-[22px]">
-                  {featured.title}
-                </h3>
-                {featured.description && (
-                  <p className="mt-3 line-clamp-3 text-[15px] leading-relaxed text-stone-500">
-                    {featured.description}
+                <div className="flex flex-1 flex-col p-6 sm:p-7">
+                  <p className="text-[12.5px] font-medium text-stone-400">
+                    {thaiDate(featured.date).full}
                   </p>
-                )}
-                <span className="mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#4a6b57]">
-                  อ่านรายละเอียด
-                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </span>
-              </div>
-            </article>
+                  <h3 className="mt-2.5 text-xl leading-snug font-bold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57] sm:text-[22px]">
+                    {featured.title}
+                  </h3>
+                  {featured.description && (
+                    <p className="mt-3 line-clamp-3 text-[15px] leading-relaxed text-stone-500">
+                      {featured.description}
+                    </p>
+                  )}
+                  <span className="mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#4a6b57]">
+                    อ่านรายละเอียด
+                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  </span>
+                </div>
+              </article>
+            ) : (
+              <article
+                onClick={() => navigate({ to: "/news/$id", params: { id: String(featured.id) } })}
+                className="group flex cursor-pointer overflow-hidden rounded-3xl border border-stone-200/80 bg-white transition-shadow duration-300 hover:shadow-xl hover:shadow-[#24352b]/8"
+              >
+                <div className="flex w-24 shrink-0 flex-col items-center justify-center gap-1 border-r border-stone-100 bg-[#f3f7f3] py-6 sm:w-28">
+                  <p className="text-[28px] leading-none font-bold text-[#3b5546]">
+                    {thaiDate(featured.date).day}
+                  </p>
+                  <p className="text-[11px] font-semibold text-stone-400">
+                    {thaiDate(featured.date).month}
+                  </p>
+                  <activeStyle.Icon className="mt-3 h-5 w-5 text-[#b08968]" aria-hidden="true" />
+                </div>
+
+                <div className="flex flex-1 flex-col justify-center p-6 sm:p-7">
+                  <span className="mb-2.5 inline-flex w-fit items-center rounded-full bg-[#f3f7f3] px-3 py-1 text-[11.5px] font-bold text-[#3b5546]">
+                    ล่าสุด
+                  </span>
+                  <h3 className="text-xl leading-snug font-bold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57] sm:text-[22px]">
+                    {featured.title}
+                  </h3>
+                  {featured.description && (
+                    <p className="mt-3 line-clamp-2 text-[15px] leading-relaxed text-stone-500">
+                      {featured.description}
+                    </p>
+                  )}
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#4a6b57]">
+                    อ่านรายละเอียด
+                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  </span>
+                </div>
+              </article>
+            )}
 
             {/* ─── ข่าวถัดมา (แถวเล็ก) ─── */}
             {rest.length > 0 && (
