@@ -43,8 +43,11 @@ interface ITAFile {
   FileURL: string
   YearID: number
   Year: ITAYear
-  ItemID: number
-  Item: ITAItem
+  // ไฟล์แนบได้กับข้อรอง (Item) หรือหัวข้อตรง ๆ (Topic) — มีอย่างใดอย่างหนึ่ง
+  ItemID: number | null
+  Item: ITAItem | null
+  TopicID: number | null
+  Topic: ITATopic | null
 }
 
 // --------- Grouped shape (Moit → Topic → files) ---------
@@ -127,7 +130,8 @@ function RouteComponent() {
       { moit: ITAMoit; topics: Map<number, TopicGroup> }
     >()
     for (const f of source) {
-      const topic = f.Item?.Topic
+      // ไฟล์แนบกับข้อรอง (Item) หรือกับหัวข้อตรง ๆ (Topic)
+      const topic = f.Item?.Topic ?? f.Topic
       const moit = topic?.Moit
       if (!topic || !moit) continue
       if (!moitMap.has(moit.ID)) moitMap.set(moit.ID, { moit, topics: new Map() })
@@ -138,7 +142,7 @@ function RouteComponent() {
     return Array.from(moitMap.values())
       .map((m) => {
         const topics = Array.from(m.topics.values()).sort((a, b) =>
-          a.topic.Label.localeCompare(b.topic.Label),
+          a.topic.Label.localeCompare(b.topic.Label, undefined, { numeric: true }),
         )
         return {
           moit: m.moit,
@@ -146,7 +150,7 @@ function RouteComponent() {
           fileCount: topics.reduce((s, t) => s + t.files.length, 0),
         }
       })
-      .sort((a, b) => a.moit.Name.localeCompare(b.moit.Name))
+      .sort((a, b) => a.moit.Name.localeCompare(b.moit.Name, undefined, { numeric: true }))
   }, [files, search])
 
   const totalFiles = files.length
@@ -210,7 +214,8 @@ function RouteComponent() {
     mutationFn: async ({ ita, itemLabel, title, file }: {
       ita: ITAFile; itemLabel: string; title: string; file: File | null
     }) => {
-      if (itemLabel !== ita.Item.Label) {
+      // ไฟล์ที่แนบกับหัวข้อตรง ๆ ไม่มีข้อรองให้แก้ — ข้ามไป
+      if (ita.Item && itemLabel !== ita.Item.Label) {
         const r = await requestAPI({ method: 'PUT', url: `/items/${ita.Item.ID}`, body: { label: itemLabel } })
         if (!r.success) throw new Error('update item failed')
       }
@@ -448,7 +453,7 @@ function RouteComponent() {
                                   <FileText className="w-4 h-4 text-teal-500 mt-0.5 shrink-0" />
                                   {editingFile === f.ID ? (
                                     <FileEditForm
-                                      initialItemLabel={f.Item.Label}
+                                      initialItemLabel={f.Item?.Label ?? ''}
                                       initialTitle={f.Title}
                                       pending={updateFile.isPending}
                                       onSave={({ itemLabel, title, file }) =>
@@ -460,7 +465,7 @@ function RouteComponent() {
                                     <>
                                       <div className="flex-1 min-w-0">
                                         <p className="text-sm text-gray-800 font-medium line-clamp-2">
-                                          {f.Item.Label}
+                                          {f.Item?.Label ?? 'แนบกับหัวข้อโดยตรง'}
                                         </p>
                                         <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">
                                           {f.Title}
@@ -549,7 +554,7 @@ function FileEditForm({ initialItemLabel, initialTitle, onSave, onCancel, pendin
         <label className="text-xs font-medium text-gray-500">เปลี่ยนไฟล์ PDF (ไม่เลือก = ใช้ไฟล์เดิม)</label>
         <input
           type="file"
-          accept="application/pdf,.pdf"
+          accept=".pdf,.jpg,.jpeg,.png"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           className="text-xs text-gray-600 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-teal-50 file:text-teal-600 file:text-xs file:font-medium hover:file:bg-teal-100"
         />

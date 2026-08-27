@@ -8,6 +8,7 @@ import {
   Settings,
   AppWindow,
   Images,
+  FileText,
 } from 'lucide-react'
 
 // Sidebar navigation model — shared between AdminShell (renders the sidebar)
@@ -66,6 +67,16 @@ export const NAV: NavItem[] = [
     children: [
       { label: 'รายการบุคลากร', to: '/admin/personnel' },
       { label: 'เพิ่มบุคลากร', to: '/admin/personnel/create' },
+    ],
+  },
+  {
+    label: 'หน้าเนื้อหา',
+    icon: FileText,
+    to: '/admin/content',
+    match: '/admin/content',
+    children: [
+      { label: 'รายการหน้าเนื้อหา', to: '/admin/content' },
+      { label: 'เพิ่มหน้าเนื้อหา', to: '/admin/content/create' },
     ],
   },
   {

@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
 import type ActivityInfo from "@/interface/activity_info";
 import { requestAPI } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Calendar, ArrowRight, ImageOff } from "lucide-react";
+import { SectionHeading, MoreLink } from "@/components/page/section-heading";
 
 export default function Activity() {
   const navigate = useNavigate();
@@ -24,54 +24,45 @@ export default function Activity() {
     },
   });
 
+  // FIX: เดิม sort ด้วย start_date อย่างเดียว — start_date เป็นวันที่ล้วนไม่มีเวลา
+  // กิจกรรมที่เพิ่มวันเดียวกันจึงเท่ากันในสายตา sort (sort เสถียร คงลำดับเดิมจาก backend ไว้)
+  // ตัวที่เพิ่งเพิ่มเลยไม่ขึ้นเป็นล่าสุด — เติม id เป็นตัวตัดสินรอง (บั๊กเดียวกับหน้าข่าว)
   const activities = [...(data ?? [])]
-    .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
+    .sort((a, b) => {
+      const byDate = new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+      return byDate !== 0 ? byDate : Number(b.id) - Number(a.id)
+    })
     .slice(0, 4);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
+  // REDESIGN (โทน sage): การ์ดทุกใบขนาดเท่ากัน สัดส่วนรูปคงที่ 4:3
+  // ถอด watermark "#01" มุมรูป และการ์ดหลอก "กำลังจะมาเร็วๆ นี้" ที่ทำให้ดูเหมือนเว็บยังไม่เสร็จ
+  // logic query/sort/slice/navigate เดิมทั้งหมด
   return (
-    // REFACTOR: ตาม mockup "แบบ G" (2026-07-15) — section โปร่งใสบนพื้น mint ของหน้าแรก
-    // หัว section เปลี่ยนเป็น kicker แบบเดียวกับ Newspage (ถอดแท่งเขียวซ้ายออก)
-    <div className="py-16 px-4">
-      <div className="max-w-7xl mx-auto">
+    <section id="activity" className="scroll-mt-24 px-4 pb-20 sm:px-6 lg:scroll-mt-32 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <SectionHeading
+          eyebrow="Activities & Events"
+          title="กิจกรรมล่าสุด"
+          description="ภาพบรรยากาศงานและกิจกรรมเพื่อสุขภาพของชุมชนสะเมิง"
+          action={<MoreLink onClick={() => navigate({ to: "/activity" })}>ดูกิจกรรมทั้งหมด</MoreLink>}
+        />
 
-        {/* ─── Header ─── */}
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <p className="text-xs tracking-widest text-green-500 uppercase font-semibold mb-0.5">
-              Activities &amp; Events
-            </p>
-            <h2 className="text-3xl font-black text-gray-900 leading-none">
-              กิจกรรม<span className="text-green-500">ล่าสุด</span>
-            </h2>
-          </div>
-          <button
-            onClick={() => navigate({ to: "/activity" })}
-            className="group hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-green-100
-                       text-xs font-bold text-green-700 shadow-sm
-                       hover:bg-green-600 hover:border-green-600 hover:text-white
-                       transition-all duration-200"
-          >
-            ดูทั้งหมด
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
-          </button>
-        </div>
-
-        {/* ─── Empty state ─── */}
+        {/* ─── ยังไม่มีข้อมูล ─── */}
         {activities.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-24 text-gray-300 gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <Calendar className="w-8 h-8 opacity-40" />
+          <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-dashed border-stone-300 bg-white/60 py-20">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f3f7f3]">
+              <Calendar className="h-8 w-8 text-[#c9dacd]" />
             </div>
-            <p className="text-sm italic text-gray-500">ยังไม่มีกิจกรรมในขณะนี้</p>
+            <p className="text-[15px] text-stone-400">ยังไม่มีกิจกรรมในขณะนี้</p>
           </div>
         )}
 
-        {/* ─── Grid ─── */}
+        {/* ─── ตารางการ์ด ─── */}
         {activities.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {activities.map((activity, idx) => {
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {activities.map((activity) => {
               const dateObj = new Date(activity.start_date);
               const day = dateObj.toLocaleDateString("th-TH", { day: "numeric" });
               const month = dateObj.toLocaleDateString("th-TH", { month: "short" });
@@ -81,107 +72,71 @@ export default function Activity() {
                 year: "2-digit",
               });
 
-              // First card gets a "featured" treatment when there's only 1 item
-              const isFeatured = activities.length === 1;
-
               return (
-                <div
+                <article
                   key={activity.id}
                   onClick={() => navigate({ to: `/activity/${activity.id}` })}
-                  className={`group flex flex-col bg-white rounded-2xl overflow-hidden
-                    border border-green-100/60 cursor-pointer
-                    hover:shadow-lg hover:-translate-y-1
-                    transition-all duration-300
-                    ${isFeatured ? "sm:col-span-2 lg:col-span-2" : ""}
-                  `}
+                  className="group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-stone-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#24352b]/8"
                 >
-                  {/* Image */}
-                  <div className={`relative overflow-hidden bg-green-50 ${isFeatured ? "h-64" : "h-44"}`}>
+                  {/* รูป */}
+                  <div className="relative aspect-4/3 overflow-hidden bg-[#f3f7f3]">
                     {activity.img_url ? (
                       <img
                         src={`${API_URL}${activity.img_url}`}
                         alt={activity.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-green-50 to-green-100">
-                        <ImageOff className="w-10 h-10 text-green-200" />
+                      <div className="flex h-full w-full items-center justify-center">
+                        <ImageOff className="h-9 w-9 text-[#c9dacd]" aria-hidden="true" />
                       </div>
                     )}
 
-                    {/* Gradient overlay at bottom */}
-                    <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/30 to-transparent" />
-
-                    {/* Date badge */}
-                    <div className="absolute top-3 left-3 bg-white rounded-2xl px-2.5 py-1.5 flex flex-col items-center shadow-md min-w-9.5">
-                      <span className="text-base font-black text-green-700 leading-none">{day}</span>
-                      <span className="text-[9px] text-green-500 font-semibold mt-0.5 uppercase">{month}</span>
-                    </div>
-
-                    {/* Order number watermark */}
-                    <div className="absolute bottom-3 right-3 text-[10px] font-bold text-white/60">
-                      #{String(idx + 1).padStart(2, "0")}
+                    {/* ป้ายวันที่ */}
+                    <div className="absolute top-3.5 left-3.5 flex min-w-12 flex-col items-center rounded-xl bg-white/95 px-2.5 py-1.5 backdrop-blur-sm">
+                      <span className="text-[17px] leading-none font-bold text-[#3b5546]">
+                        {day}
+                      </span>
+                      <span className="mt-0.5 text-[10.5px] font-semibold text-[#8aa893]">
+                        {month}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Content */}
-                  <div className="p-5 flex flex-col flex-1">
-                    <h3 className={`font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-green-700 transition-colors leading-snug ${isFeatured ? "text-base" : "text-sm"}`}>
+                  {/* เนื้อหา */}
+                  <div className="flex flex-1 flex-col p-5">
+                    <h3 className="line-clamp-2 text-[15.5px] leading-snug font-bold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57]">
                       {activity.title}
                     </h3>
 
                     {activity.description && (
-                      <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed flex-1">
+                      <p className="mt-2 line-clamp-2 flex-1 text-[13.5px] leading-relaxed text-stone-500">
                         {activity.description}
                       </p>
                     )}
 
-                    {/* Footer */}
-                    <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
-                        <Calendar className="w-3 h-3" />
+                    <div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-3.5">
+                      <span className="inline-flex items-center gap-1.5 text-[12px] text-stone-400">
+                        <Calendar className="h-3.5 w-3.5" />
                         {fullDate}
-                      </div>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-600
-                                       opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0">
-                        อ่านต่อ <ArrowRight className="w-3 h-3" />
                       </span>
+                      <ArrowRight
+                        className="h-4 w-4 text-stone-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-[#4a6b57]"
+                        aria-hidden="true"
+                      />
                     </div>
                   </div>
-                </div>
+                </article>
               );
             })}
-
-            {/* Filler "placeholder" cards when there's only 1 item — shows users more could appear */}
-            {activities.length === 1 && (
-              <>
-                {[1, 2].map((n) => (
-                  <div
-                    key={`placeholder-${n}`}
-                    className="hidden lg:flex flex-col items-center justify-center bg-gray-50/80 rounded-2xl border border-dashed border-gray-200 min-h-70 gap-3"
-                  >
-                    <Calendar className="w-8 h-8 text-gray-200" />
-                    <p className="text-xs text-gray-300 italic">กำลังจะมาเร็วๆ นี้</p>
-                  </div>
-                ))}
-              </>
-            )}
           </div>
         )}
 
-        {/* ─── Mobile button ─── */}
-        <div className="mt-8 md:hidden flex justify-center">
-          <Button
-            onClick={() => navigate({ to: "/activity" })}
-            className="w-full py-3.5 bg-green-50 text-green-700 font-semibold rounded-2xl
-                       text-sm hover:bg-green-100 transition-colors flex items-center justify-center gap-2"
-          >
-            ดูกิจกรรมทั้งหมด
-            <ArrowRight className="w-4 h-4" />
-          </Button>
+        {/* ปุ่มดูทั้งหมดสำหรับจอเล็ก (หัว section ซ่อนปุ่มไว้บนจอเล็ก) */}
+        <div className="mt-7 flex justify-center sm:hidden">
+          <MoreLink onClick={() => navigate({ to: "/activity" })}>ดูกิจกรรมทั้งหมด</MoreLink>
         </div>
-
       </div>
-    </div>
+    </section>
   );
 }

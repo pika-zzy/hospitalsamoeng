@@ -1,5 +1,14 @@
 import { getIconColor } from "@/components/icon/colors";
-import { Ambulance, CigaretteOff, Leaf, Pill, Smile, Stethoscope, type LucideIcon } from "lucide-react";
+import { SectionHeading } from "@/components/page/section-heading";
+import {
+  Ambulance,
+  CigaretteOff,
+  Leaf,
+  Pill,
+  Smile,
+  Stethoscope,
+  type LucideIcon,
+} from "lucide-react";
 
 // NOTE: รายการบริการสำหรับประชาชนคงที่ในโค้ด (ไม่ได้ดึงจาก API) แบบเดียวกับ Vision
 // เพราะแทบไม่เปลี่ยน — ถ้าวันหนึ่งต้องให้ admin แก้เองค่อยทำเป็น resource ใหม่ทั้งชุด
@@ -51,42 +60,38 @@ const SERVICES: PublicService[] = [
   },
 ];
 
+// REDESIGN (โทน sage): section นี้เป็น "แถบเขียวเข้มเต็มความกว้าง" ตัวเดียวของหน้าแรก
+// ทำหน้าที่เป็นจุดพักสายตากลางหน้า ไม่ให้เลื่อนยาว ๆ แล้วเจอการ์ดขาวบนพื้นครีมซ้ำไม่จบ
+// เนื้อหาบริการ 6 รายการและสีไอคอนเดิมคงไว้ครบ
 export default function PublicServices() {
   return (
-    // NOTE: ใช้โครง section เดียวกับ StaffPortal ที่อยู่ถัดลงไป (kicker + h2, การ์ดขาวบนพื้น mint)
-    // เพื่อให้สอง section ที่ติดกันอ่านเป็นชุดเดียว — การ์ดเป็น div ไม่ใช่ลิงก์ เพราะยังไม่มีหน้าปลายทาง
-    <section className="py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <section id="public-services" className="scroll-mt-24 bg-[#2f4438] px-4 py-20 sm:px-6 lg:scroll-mt-32 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <SectionHeading
+          eyebrow="Services for Public"
+          title="บริการสำหรับประชาชน"
+          description="คลินิกและหน่วยบริการที่เปิดให้ประชาชนเข้ารับบริการ พร้อมวันและเวลาทำการ"
+          tone="dark"
+        />
 
-        {/* ─── Header ─── */}
-        <div className="mb-6">
-          <p className="text-xs tracking-widest text-green-500 uppercase font-semibold mb-0.5">
-            Services for Public
-          </p>
-          <h2 className="text-3xl font-black text-gray-900 leading-none">
-            สำหรับ<span className="text-green-500">ประชาชน</span>
-          </h2>
-        </div>
-
-        {/* ─── Grid ─── */}
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {SERVICES.map(({ title, details, icon: Icon, color }) => {
             const c = getIconColor(color);
 
             return (
               <li
                 key={title}
-                className="flex items-start gap-3.5 bg-white border border-green-100/60 rounded-2xl p-5 shadow-sm shadow-green-900/5 hover:border-green-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-900/5 transition-all duration-300"
+                className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/6 p-5 transition-colors duration-300 hover:border-white/25 hover:bg-white/10"
               >
-                <div className={`w-11 h-11 shrink-0 rounded-xl flex items-center justify-center ${c.bgClass} ${c.textClass}`}>
-                  <Icon size={21} aria-hidden="true" />
+                <div
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${c.bgClass} ${c.textClass}`}
+                >
+                  <Icon size={22} aria-hidden="true" />
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-[13.5px] font-bold text-gray-900 leading-snug">
-                    {title}
-                  </p>
-                  <p className="mt-1 text-[11.5px] text-gray-500 leading-relaxed">
+                  <p className="text-[15px] leading-snug font-semibold text-white">{title}</p>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-[#a7bfad]">
                     {details.map((line) => (
                       <span key={line} className="block">
                         {line}
@@ -98,7 +103,6 @@ export default function PublicServices() {
             );
           })}
         </ul>
-
       </div>
     </section>
   );

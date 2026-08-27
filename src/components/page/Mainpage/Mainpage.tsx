@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { requestAPI } from "@/lib/api";
 import type { HeroSlide } from "@/interface/hero";
-import { Leaf } from "lucide-react";
+import { ChevronLeft, ChevronRight, Leaf } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const SLIDE_INTERVAL_MS = 5000;
@@ -43,6 +43,10 @@ export default function Main_page() {
         setCurrent((prev) => (prev + 1) % slides.length);
     }, [slides.length]);
 
+    const prev = useCallback(() => {
+        setCurrent((p) => (p - 1 + slides.length) % slides.length);
+    }, [slides.length]);
+
     // เลื่อนอัตโนมัติเฉพาะตอนมีมากกว่า 1 รูป (รูปเดียวไม่ต้องมี timer)
     // NOTE: หยุดเมื่อ user hover/focus (a11y WCAG 2.2.2 — content ที่ขยับเองต้องหยุดได้)
     // หรือเมื่อตั้งค่าลด motion ในระบบ
@@ -58,18 +62,17 @@ export default function Main_page() {
     // ข้อความ overlay ต่อสไลด์ — อ่านจากสไลด์ที่กำลังแสดง (admin กำหนดเอง)
     const activeSlide = slides[activeIndex];
 
-    // REFACTOR: hero โฉมใหม่ตาม mockup "แบบ G" ที่ user เลือก (2026-07-15) —
-    // รูปสไลด์เต็มจอ ขอบล่างเฟดละลายเข้าพื้น mint (green-50) ของหน้า ไม่มีเส้นตัด
-    // logic สไลด์ (query/autoplay/dots/clamp) คงเดิมทั้งหมด เปลี่ยนเฉพาะ layout/overlay
+    // REDESIGN (โทน sage): เดิมขอบล่าง hero ไล่เฟดเป็นสีมิ้นต์กลืนพื้นหน้า ทำให้รูปหายไปครึ่งใบ
+    // ตอนนี้ให้รูปเต็มกรอบ ใช้ overlay เขียวเข้มไล่จากซ้ายแทน — ตัวหนังสืออ่านออกโดยไม่กินรูป
+    // logic สไลด์ (query / autoplay / dots / clamp) คงเดิมทั้งหมด
     return (
-        <div
-            className="relative w-full h-115 md:h-140 overflow-hidden bg-linear-to-br from-green-800 via-green-600 to-green-400"
+        <section
+            className="relative h-[480px] w-full overflow-hidden bg-[#24352b] md:h-[600px]"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
             onFocusCapture={() => setIsPaused(true)}
             onBlurCapture={() => setIsPaused(false)}
         >
-
             {/* ชั้นรูปสไลด์ — ไล่ opacity เพื่อ cross-fade ระหว่างรูป
                 (reduced motion = เปลี่ยนทันที ไม่ fade) */}
             {slides.map((slide, i) => (
@@ -83,35 +86,33 @@ export default function Main_page() {
                 />
             ))}
 
-            {/* overlay เขียวเข้มจาง ๆ ฝั่งซ้าย — กันตัวหนังสือขาวกลืนกับรูปโทนสว่าง */}
-            <div className="absolute inset-0 bg-linear-to-r from-green-950/50 via-green-950/15 to-transparent" />
-
-            {/* หัวใจของดีไซน์: ขอบล่าง hero ละลายเข้าพื้น green-50 ของหน้า (ต้องตรงกับ bg ใน _user/index.tsx) */}
-            <div className="absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-b from-transparent via-green-50/30 to-green-50" />
+            {/* overlay: เข้มฝั่งซ้ายให้ตัวหนังสืออ่านออก + คลุมขอบล่างบาง ๆ ให้จุดสไลด์เด่น */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#16211a]/85 via-[#16211a]/45 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#16211a]/70 to-transparent" />
 
             {/* ข้อความ overlay — แสดงเฉพาะเมื่อสไลด์นี้เปิด show_text (บางรูปเอาแค่รูปเปล่าได้) */}
             {activeSlide?.show_text && (
-                <div className="relative z-10 max-w-7xl mx-auto h-full px-6 md:px-12 flex items-center">
-                    <div className="max-w-2xl pb-14">
+                <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-6 md:px-10">
+                    <div className="max-w-2xl pb-10">
                         {activeSlide.badge && (
-                            <span className="inline-flex items-center gap-1.5 bg-white/95 text-green-700 text-xs font-bold px-4 py-1.5 rounded-full shadow-sm mb-4">
-                                <Leaf className="w-3.5 h-3.5" aria-hidden="true" />
+                            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[12.5px] font-semibold text-white backdrop-blur-sm">
+                                <Leaf className="h-3.5 w-3.5 text-[#c9a184]" aria-hidden="true" />
                                 {activeSlide.badge}
                             </span>
                         )}
                         {activeSlide.title && (
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-sarabun font-bold text-white leading-tight drop-shadow-lg mb-4 whitespace-pre-line">
+                            <h1 className="mb-5 text-4xl leading-[1.15] font-bold tracking-tight whitespace-pre-line text-white drop-shadow-md md:text-5xl lg:text-[56px]">
                                 {activeSlide.title}
-                            </h2>
+                            </h1>
                         )}
                         {activeSlide.subtitle && (
-                            <p className="text-lg md:text-xl font-sarabun text-green-50 leading-relaxed drop-shadow whitespace-pre-line">
+                            <p className="max-w-xl text-[17px] leading-relaxed whitespace-pre-line text-[#c9dacd] drop-shadow md:text-lg">
                                 {activeSlide.subtitle}
                             </p>
                         )}
                         {activeSlide.button_text && (
                             <Link to={activeSlide.button_link || "/"}>
-                                <button className="mt-7 px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full shadow-lg shadow-green-600/25 transition-all duration-300 active:scale-95">
+                                <button className="mt-8 rounded-full bg-white px-8 py-3.5 text-[15px] font-semibold text-[#24352b] shadow-lg transition-colors duration-300 hover:bg-[#f2eee4]">
                                     {activeSlide.button_text}
                                 </button>
                             </Link>
@@ -120,25 +121,42 @@ export default function Main_page() {
                 </div>
             )}
 
-            {/* จุดบอกตำแหน่งสไลด์ + กดข้ามได้ — โชว์เฉพาะตอนมีหลายรูป
-                (อยู่บนโซนเฟด mint จึงใช้เม็ดสีเขียวแทนขาว ให้มองเห็นชัด) */}
+            {/* ปุ่มเลื่อนซ้าย/ขวา — โชว์เฉพาะจอใหญ่ตอนมีหลายรูป (จอเล็กใช้จุดด้านล่างพอ) */}
             {slides.length > 1 && (
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex gap-2.5">
+                <>
+                    <button
+                        onClick={prev}
+                        aria-label="สไลด์ก่อนหน้า"
+                        className="absolute top-1/2 left-5 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/25 md:inline-flex"
+                    >
+                        <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                        onClick={next}
+                        aria-label="สไลด์ถัดไป"
+                        className="absolute top-1/2 right-5 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/25 md:inline-flex"
+                    >
+                        <ChevronRight className="h-5 w-5" />
+                    </button>
+                </>
+            )}
+
+            {/* จุดบอกตำแหน่งสไลด์ + กดข้ามได้ — โชว์เฉพาะตอนมีหลายรูป */}
+            {slides.length > 1 && (
+                <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2">
                     {slides.map((slide, i) => (
                         <button
                             key={slide.ID}
                             onClick={() => setCurrent(i)}
                             aria-label={`ไปที่สไลด์ที่ ${i + 1}`}
                             aria-current={i === activeIndex}
-                            className={`h-2.5 rounded-full transition-all duration-300
-                                        ${i === activeIndex
-                                            ? "w-8 bg-green-600"
-                                            : "w-2.5 bg-green-300 hover:bg-green-400"
-                                        }`}
+                            className={`h-1 rounded-full transition-all duration-300 ${
+                                i === activeIndex ? "w-10 bg-white" : "w-5 bg-white/40 hover:bg-white/70"
+                            }`}
                         />
                     ))}
                 </div>
             )}
-        </div>
+        </section>
     );
 }

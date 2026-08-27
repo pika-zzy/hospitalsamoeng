@@ -11,31 +11,31 @@ export const Route = createFileRoute('/_user/about/history/')({
 // (route ยังอยู่ กันคนที่เคยบุ๊กมาร์ก/ลิงก์เก่าเจอ 404) — ได้เนื้อหาจริงเมื่อไหร่ค่อยเขียนทับหน้านี้
 function RouteComponent() {
   return (
-    <div className="bg-green-50 min-h-[70vh] px-4 py-20">
-      <div className="max-w-2xl mx-auto text-center bg-white border border-green-100/60 rounded-3xl shadow-lg shadow-green-900/5 px-6 py-14 sm:px-12">
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-green-50 text-green-600 flex items-center justify-center">
-          <FileClock className="w-8 h-8" />
+    <div className="min-h-[70vh] px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl rounded-3xl border border-stone-200/80 bg-white px-6 py-14 text-center sm:px-12">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f3f7f3] text-[#4a6b57]">
+          <FileClock className="h-8 w-8" />
         </div>
 
-        <h1 className="mt-6 text-3xl font-bold text-gray-900">ประวัติความเป็นมา</h1>
+        <h1 className="mt-6 text-3xl font-bold tracking-tight text-[#24352b]">ประวัติความเป็นมา</h1>
 
-        <p className="mt-3 text-lg leading-relaxed text-gray-600">
+        <p className="mt-4 text-[17px] leading-relaxed text-stone-500">
           ขออภัย ขณะนี้อยู่ระหว่างการจัดทำข้อมูลประวัติความเป็นมาของโรงพยาบาลสะเมิง
           <br className="hidden sm:block" />
           หากต้องการสอบถามข้อมูล สามารถติดต่อโรงพยาบาลได้โดยตรง
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-green-600 text-white text-sm font-bold shadow-sm hover:bg-green-700 transition-colors"
+            className="inline-flex items-center gap-2 rounded-full bg-[#3b5546] px-5 py-2.5 text-[13.5px] font-semibold text-white transition-colors hover:bg-[#2f4438]"
           >
-            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             กลับหน้าแรก
           </Link>
           <Link
             to="/about/contact"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border-[1.5px] border-green-200 text-green-700 text-sm font-bold hover:bg-green-600 hover:border-green-600 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-5 py-2.5 text-[13.5px] font-semibold text-stone-600 transition-colors hover:border-[#3b5546] hover:bg-[#3b5546] hover:text-white"
           >
             ติดต่อสอบถาม
           </Link>
