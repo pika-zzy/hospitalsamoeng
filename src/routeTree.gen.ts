@@ -40,6 +40,7 @@ import { Route as AdminAdminITAIndexRouteImport } from './routes/_admin/admin/IT
 import { Route as AdminAdminStaftmenuCreateRouteImport } from './routes/_admin/admin/staftmenu/create'
 import { Route as AdminAdminPersonnelCreateRouteImport } from './routes/_admin/admin/personnel/create'
 import { Route as AdminAdminEmployeeUsermanetmintRouteImport } from './routes/_admin/admin/employee/usermanetmint'
+import { Route as AdminAdminContentCreateRouteImport } from './routes/_admin/admin/content/create'
 import { Route as AdminAdminITACreateRouteImport } from './routes/_admin/admin/ITA/create'
 import { Route as AdminAdminNewsNewsSummaryRouteImport } from './routes/_admin/admin/news/news.summary'
 import { Route as AdminAdminEmployeeStaffserviceSummaryRouteImport } from './routes/_admin/admin/employee/staffservice.summary'
@@ -203,6 +204,11 @@ const AdminAdminEmployeeUsermanetmintRoute =
     path: '/admin/employee/usermanetmint',
     getParentRoute: () => AdminRouteRoute,
   } as any)
+const AdminAdminContentCreateRoute = AdminAdminContentCreateRouteImport.update({
+  id: '/admin/content/create',
+  path: '/admin/content/create',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminAdminITACreateRoute = AdminAdminITACreateRouteImport.update({
   id: '/admin/ITA/create',
   path: '/admin/ITA/create',
@@ -241,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/news/': typeof UserNewsIndexRoute
   '/service/': typeof UserServiceIndexRoute
   '/admin/ITA/create': typeof AdminAdminITACreateRoute
+  '/admin/content/create': typeof AdminAdminContentCreateRoute
   '/admin/employee/usermanetmint': typeof AdminAdminEmployeeUsermanetmintRoute
   '/admin/personnel/create': typeof AdminAdminPersonnelCreateRoute
   '/admin/staftmenu/create': typeof AdminAdminStaftmenuCreateRoute
@@ -276,6 +283,7 @@ export interface FileRoutesByTo {
   '/news': typeof UserNewsIndexRoute
   '/service': typeof UserServiceIndexRoute
   '/admin/ITA/create': typeof AdminAdminITACreateRoute
+  '/admin/content/create': typeof AdminAdminContentCreateRoute
   '/admin/employee/usermanetmint': typeof AdminAdminEmployeeUsermanetmintRoute
   '/admin/personnel/create': typeof AdminAdminPersonnelCreateRoute
   '/admin/staftmenu/create': typeof AdminAdminStaftmenuCreateRoute
@@ -314,6 +322,7 @@ export interface FileRoutesById {
   '/_user/news/': typeof UserNewsIndexRoute
   '/_user/service/': typeof UserServiceIndexRoute
   '/_admin/admin/ITA/create': typeof AdminAdminITACreateRoute
+  '/_admin/admin/content/create': typeof AdminAdminContentCreateRoute
   '/_admin/admin/employee/usermanetmint': typeof AdminAdminEmployeeUsermanetmintRoute
   '/_admin/admin/personnel/create': typeof AdminAdminPersonnelCreateRoute
   '/_admin/admin/staftmenu/create': typeof AdminAdminStaftmenuCreateRoute
@@ -351,6 +360,7 @@ export interface FileRouteTypes {
     | '/news/'
     | '/service/'
     | '/admin/ITA/create'
+    | '/admin/content/create'
     | '/admin/employee/usermanetmint'
     | '/admin/personnel/create'
     | '/admin/staftmenu/create'
@@ -386,6 +396,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/service'
     | '/admin/ITA/create'
+    | '/admin/content/create'
     | '/admin/employee/usermanetmint'
     | '/admin/personnel/create'
     | '/admin/staftmenu/create'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/_user/news/'
     | '/_user/service/'
     | '/_admin/admin/ITA/create'
+    | '/_admin/admin/content/create'
     | '/_admin/admin/employee/usermanetmint'
     | '/_admin/admin/personnel/create'
     | '/_admin/admin/staftmenu/create'
@@ -669,6 +681,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminEmployeeUsermanetmintRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/admin/content/create': {
+      id: '/_admin/admin/content/create'
+      path: '/admin/content/create'
+      fullPath: '/admin/content/create'
+      preLoaderRoute: typeof AdminAdminContentCreateRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/admin/ITA/create': {
       id: '/_admin/admin/ITA/create'
       path: '/admin/ITA/create'
@@ -704,6 +723,7 @@ interface AdminRouteRouteChildren {
   AdminAdminDashboardRoute: typeof AdminAdminDashboardRoute
   AdminAdminIndexRoute: typeof AdminAdminIndexRoute
   AdminAdminITACreateRoute: typeof AdminAdminITACreateRoute
+  AdminAdminContentCreateRoute: typeof AdminAdminContentCreateRoute
   AdminAdminEmployeeUsermanetmintRoute: typeof AdminAdminEmployeeUsermanetmintRoute
   AdminAdminPersonnelCreateRoute: typeof AdminAdminPersonnelCreateRoute
   AdminAdminStaftmenuCreateRoute: typeof AdminAdminStaftmenuCreateRoute
@@ -726,6 +746,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAdminDashboardRoute: AdminAdminDashboardRoute,
   AdminAdminIndexRoute: AdminAdminIndexRoute,
   AdminAdminITACreateRoute: AdminAdminITACreateRoute,
+  AdminAdminContentCreateRoute: AdminAdminContentCreateRoute,
   AdminAdminEmployeeUsermanetmintRoute: AdminAdminEmployeeUsermanetmintRoute,
   AdminAdminPersonnelCreateRoute: AdminAdminPersonnelCreateRoute,
   AdminAdminStaftmenuCreateRoute: AdminAdminStaftmenuCreateRoute,

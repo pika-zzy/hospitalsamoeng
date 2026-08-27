@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label'
 import type { ContentGroup, ContentSection } from '@/interface/content'
 import { requestAPI } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import {
   ChevronDown,
   ExternalLink,
@@ -28,10 +28,12 @@ export const Route = createFileRoute('/_admin/admin/content/')({
 
 const API_URL = import.meta.env.VITE_API_URL
 
+// typed as string เพื่อให้ผ่าน typed-route ของ TanStack
+const CREATE_PATH: string = '/admin/content/create'
+
 function RouteComponent() {
   const qc = useQueryClient()
   const [openSlug, setOpenSlug] = useState<string | null>(null)
-  const [addingPage, setAddingPage] = useState(false)
 
   const { data: sections = [], isLoading } = useQuery<ContentSection[]>({
     queryKey: ['content-sections'],
@@ -84,145 +86,16 @@ function RouteComponent() {
         </div>
       )}
 
+      {/* ฟอร์มสร้างหน้าอยู่คนละหน้า (/admin/content/create) ตามแบบเดียวกับ
+          บุคลากร/ข่าว/กิจกรรม — sidebar จะได้มีเมนูย่อย "รายการ / เพิ่ม" เหมือนกันทุกหมวด */}
       <div className="mt-4">
-        {addingPage ? (
-          <AddSectionForm
-            nextOrder={sections.length + 1}
-            onDone={() => {
-              setAddingPage(false)
-              qc.invalidateQueries({ queryKey: ['content-sections'] })
-            }}
-            onCancel={() => setAddingPage(false)}
-          />
-        ) : (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setAddingPage(true)}
-            className="border-line text-muted hover:bg-paper h-10 w-full gap-1.5 rounded-md border-dashed"
-          >
-            <Plus className="h-4 w-4" /> เพิ่มหน้าใหม่
-          </Button>
-        )}
-      </div>
-    </div>
-  )
-}
-
-/** ตั้ง slug จากชื่อไทยอัตโนมัติไม่ได้ (backend รับแค่ ascii) — เดาให้เท่าที่เดาได้
- *  แล้วให้คนแก้เอง ดีกว่าปล่อยช่องว่างให้งงว่าต้องใส่อะไร */
-function slugHint(title: string) {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-function AddSectionForm({
-  nextOrder,
-  onDone,
-  onCancel,
-}: {
-  nextOrder: number
-  onDone: () => void
-  onCancel: () => void
-}) {
-  const [title, setTitle] = useState('')
-  const [slug, setSlug] = useState('')
-  const [description, setDescription] = useState('')
-
-  const create = useMutation({
-    mutationFn: () =>
-      requestAPI({
-        method: 'POST',
-        url: '/content/sections',
-        body: {
-          slug: slug.trim(),
-          title: title.trim(),
-          description: description.trim(),
-          sort_order: nextOrder,
-        },
-      }),
-    onSuccess: (resp) => {
-      if (!resp.success) {
-        // เคสหลักคือ slug ซ้ำ หรือ slug ไม่มีตัวอักษรอังกฤษเลย — โชว์ข้อความจาก backend ตรง ๆ
-        toast.error(resp.message || 'เพิ่มหน้าไม่สำเร็จ')
-        return
-      }
-      toast.success('เพิ่มหน้าแล้ว')
-      onDone()
-    },
-    onError: () => toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'),
-  })
-
-  return (
-    <div className="border-teal/30 bg-teal/5 space-y-3 rounded-md border border-dashed p-5">
-      <p className="text-ink text-sm font-semibold">เพิ่มหน้าใหม่</p>
-
-      <div>
-        <Label className="text-muted text-xs">ชื่อหน้า</Label>
-        <input
-          autoFocus
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value)
-            if (!slug.trim()) setSlug(slugHint(e.target.value))
-          }}
-          placeholder="เช่น แนวทางปฏิบัติป้องกันการติดเชื้อ"
-          className="border-line text-ink focus:border-teal focus:ring-teal/20 mt-1 w-full rounded-sm border bg-white px-3 py-2 text-sm outline-none focus:ring-2"
-        />
-      </div>
-
-      <div>
-        <Label className="text-muted text-xs">ที่อยู่หน้า (ภาษาอังกฤษ)</Label>
-        <div className="mt-1 flex items-center gap-1.5">
-          <span className="text-faint shrink-0 text-sm">/about/</span>
-          <input
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            placeholder="infection-control"
-            className="border-line text-ink focus:border-teal focus:ring-teal/20 min-w-0 flex-1 rounded-sm border bg-white px-3 py-2 text-sm outline-none focus:ring-2"
-          />
-        </div>
-        <p className="text-faint mt-1 text-xs">
-          ใช้ได้เฉพาะ a-z 0-9 และขีด — <span className="text-ink font-semibold">ตั้งแล้วแก้ไม่ได้</span>{' '}
-          เพราะเป็นลิงก์ที่คนบันทึก/ส่งต่อกันไปแล้ว
-        </p>
-      </div>
-
-      <div>
-        <Label className="text-muted text-xs">คำอธิบายใต้ชื่อหน้า (ไม่บังคับ)</Label>
-        <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="border-line text-ink focus:border-teal focus:ring-teal/20 mt-1 w-full rounded-sm border bg-white px-3 py-2 text-sm outline-none focus:ring-2"
-        />
-      </div>
-
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          size="sm"
-          disabled={!title.trim() || !slug.trim() || create.isPending}
-          onClick={() => create.mutate()}
-          className="bg-teal h-9 rounded-sm text-white disabled:opacity-40"
+        <Link
+          to={CREATE_PATH}
+          className="border-line text-muted hover:bg-paper flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-dashed text-sm transition-colors"
         >
-          {create.isPending ? 'กำลังบันทึก...' : 'สร้างหน้า'}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={onCancel}
-          className="border-line text-muted hover:bg-paper h-9 rounded-sm"
-        >
-          ยกเลิก
-        </Button>
+          <Plus className="h-4 w-4" /> เพิ่มหน้าใหม่
+        </Link>
       </div>
-
-      <p className="text-faint text-xs">
-        สร้างเสร็จแล้วหน้านี้จะไปอยู่ในเมนู "เกี่ยวกับเรา" บนเว็บให้เอง
-      </p>
     </div>
   )
 }

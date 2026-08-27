@@ -74,6 +74,10 @@ export const NAV: NavItem[] = [
     icon: FileText,
     to: '/admin/content',
     match: '/admin/content',
+    children: [
+      { label: 'รายการหน้าเนื้อหา', to: '/admin/content' },
+      { label: 'เพิ่มหน้าเนื้อหา', to: '/admin/content/create' },
+    ],
   },
   {
     label: 'รูปสไลด์หน้าแรก',
