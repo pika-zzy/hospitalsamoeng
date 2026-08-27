@@ -1,13 +1,11 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMemo } from 'react';
-import { Megaphone, Briefcase, Calendar, ArrowRight, FileText, ImageOff } from 'lucide-react';
+import { Megaphone, Briefcase, Calendar, ArrowRight, FileText, Paperclip, Image as ImageIcon } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { requestAPI } from '@/lib/api';
 import { NEWS_TABS, type NewsInfo, type NewsTabKey } from '@/interface/newinfo';
 import { PageHero } from '@/components/page/page-hero';
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 // ไอคอนต่อหมวด — เป็นเรื่องเฉพาะหน้านี้ ส่วนตัว key/type/label มาจาก NEWS_TABS ที่เดียว
 // Record<NewsTabKey, …> บังคับว่าเพิ่มประเภทข่าวใหม่ต้องมาใส่ไอคอนที่นี่ ไม่งั้น TypeScript error
@@ -117,50 +115,57 @@ function RouteComponent() {
               <article
                 key={info.id}
                 onClick={() => navigate({ to: "/news/$id", params: { id: String(info.id) } })}
-                className="group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-stone-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#24352b]/8"
+                className="group flex cursor-pointer flex-col gap-3 overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#24352b]/8"
               >
-                {/* รูปข่าว — NewsInfo มี img_url อยู่แล้ว หน้านี้เดิมไม่ได้เอามาแสดง */}
-                <div className="relative aspect-16/10 overflow-hidden bg-[#f3f7f3]">
-                  {info.img_url ? (
-                    <img
-                      src={`${API_URL}${info.img_url}`}
-                      alt={info.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <ImageOff className="h-9 w-9 text-[#c9dacd]" aria-hidden="true" />
-                    </div>
-                  )}
-                  <span className="absolute top-3.5 left-3.5 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[11.5px] font-semibold text-[#3b5546] backdrop-blur-sm">
-                    <activeStyle.Icon className="h-3.5 w-3.5" />
+                {/* REDESIGN 2026-08-26: เดิมการ์ดจองพื้นที่รูป aspect-16/10 ไว้ทุกใบ
+                    แต่ข่าวของโรงพยาบาลเป็นประกาศราชการ ไม่มีรูปปกและไม่มีคำโปรย
+                    ทั้งหน้าจึงเป็นกล่องเทาเปล่ากับย่อหน้าว่าง — คืนพื้นที่นั้นให้หัวข้อแทน
+
+                    รอบสอง (หลังกู้รูปข่าว 11 รูป): เคยลองโชว์ภาพย่อเฉพาะใบที่มีรูป แต่ไม่เวิร์ก —
+                    รูปของจริงเป็น "สแกนประกาศ A4 แนวตั้ง" ไม่ใช่รูปข่าว พอ object-cover เหลือแค่
+                    แถบหัวกระดาษอ่านไม่ออก และการ์ดในแถวเดียวกันสูงไม่เท่ากันจนหน้าเป็นรู
+                    -> หน้ารวมไม่โชว์รูปเลย บอกด้วยป้าย "รูปภาพ" ที่ท้ายการ์ดแทน
+                    คนที่อยากเห็นกดเข้าไปดูเต็ม ๆ ที่หน้ารายละเอียด (/news/$id แสดงภาพเต็ม) */}
+
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#c9dacd] bg-[#f3f7f3] px-2.5 py-0.5 text-[11.5px] font-semibold text-[#3b5546]">
+                    <activeStyle.Icon className="h-3 w-3" aria-hidden="true" />
                     {activeTab.label}
                   </span>
-                </div>
-
-                <div className="flex flex-1 flex-col p-5">
                   <span className="inline-flex items-center gap-1.5 text-[12px] text-stone-400">
-                    <Calendar className="h-3.5 w-3.5" />
+                    <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
                     {new Date(info.date).toLocaleDateString("th-TH", {
                       day: 'numeric', month: 'long', year: 'numeric'
                     })}
                   </span>
+                </div>
 
-                  <h2 className="mt-2.5 line-clamp-2 text-[15.5px] leading-snug font-bold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57]">
-                    {info.title}
-                  </h2>
+                <h2 className="line-clamp-4 flex-1 text-[15.5px] leading-relaxed font-bold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57]">
+                  {info.title}
+                </h2>
 
-                  <p className="mt-2 line-clamp-2 flex-1 text-[13.5px] leading-relaxed text-stone-500">
-                    {info.description}
-                  </p>
-
-                  <div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-3.5">
-                    <span className="text-[13px] font-semibold text-[#4a6b57]">อ่านรายละเอียด</span>
+                <div className="mt-1 flex items-center justify-between border-t border-stone-100 pt-3.5">
+                  {/* ข่าวที่มีแต่รูป (ประกาศสแกน) ต้องบอกให้รู้ว่ามีของให้ดู ไม่งั้นดูเหมือนข่าวเปล่า */}
+                  {info.file_url ? (
+                    <span className="inline-flex items-center gap-1.5 text-[12.5px] text-stone-500">
+                      <Paperclip className="h-3.5 w-3.5" aria-hidden="true" />
+                      เอกสารแนบ
+                    </span>
+                  ) : info.img_url ? (
+                    <span className="inline-flex items-center gap-1.5 text-[12.5px] text-stone-500">
+                      <ImageIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                      รูปภาพ
+                    </span>
+                  ) : (
+                    <span />
+                  )}
+                  <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#4a6b57]">
+                    อ่านรายละเอียด
                     <ArrowRight
-                      className="h-4 w-4 text-stone-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-[#4a6b57]"
+                      className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
                       aria-hidden="true"
                     />
-                  </div>
+                  </span>
                 </div>
               </article>
             ))}

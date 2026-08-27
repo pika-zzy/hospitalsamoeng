@@ -3,6 +3,7 @@ import { requestAPI } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Calendar, ImageOff } from 'lucide-react';
+import { useMemo } from 'react';
 import { PageHero } from '@/components/page/page-hero';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -29,6 +30,19 @@ function RouteComponent() {
             throw new Error("Failed to fetch news");
         },
     });
+
+    // FIX: หน้านี้เดิม "ไม่ได้ sort เลย" — วาดตามลำดับที่ backend ส่งมา (id น้อย→มาก = เก่าขึ้นก่อน)
+    // เรียงใหม่→เก่าด้วย start_date + ตัดสินรองด้วย id (มากกว่า = เพิ่มทีหลัง)
+    // เพราะ start_date เป็นวันที่ล้วนไม่มีเวลา กิจกรรมวันเดียวกันจึง "เท่ากัน" ในสายตา sort
+    // (ID ใน interface เป็น string ต้องแปลงเป็นเลขก่อนลบกัน ไม่งั้นได้ NaN)
+    const activities = useMemo(
+        () =>
+            [...(data ?? [])].sort((a, b) => {
+                const byDate = new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+                return byDate !== 0 ? byDate : Number(b.id) - Number(a.id)
+            }),
+        [data],
+    );
 
     // REDESIGN (โทน sage): หัวหน้าใช้ PageHero ชุดเดียวกับหน้าในอื่น ๆ
     // การ์ดยังเป็นแผ่นภาพแนวตั้งเหมือนเดิม แต่เพิ่มวันที่ + fallback ตอนไม่มีรูป
@@ -70,7 +84,7 @@ function RouteComponent() {
                 {/* รายการกิจกรรม */}
                 {data !== undefined && data.length > 0 && (
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {data.map((activity) => (
+                        {activities.map((activity) => (
                             <article
                                 key={activity.id}
                                 onClick={() => navigate({ to: `/activity/${activity.id}` })}

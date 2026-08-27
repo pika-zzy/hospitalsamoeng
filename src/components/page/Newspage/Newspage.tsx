@@ -1,4 +1,4 @@
-import { ArrowRight, Megaphone, Briefcase, FileText } from "lucide-react";
+import { ArrowRight, Megaphone, Briefcase, FileText, Paperclip, Image as ImageIcon } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { requestAPI } from "@/lib/api";
@@ -6,8 +6,6 @@ import { NEWS_TABS, type NewsInfo, type NewsTabKey } from "@/interface/newinfo";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SectionHeading, MoreLink } from "@/components/page/section-heading";
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 // ไอคอน/ข้อความว่างต่อหมวด — เฉพาะของหน้าแรก (layout คนละแบบกับหน้า /news)
 // ส่วน key/type/label มาจาก NEWS_TABS ที่เดียว. Record<NewsTabKey, …> บังคับว่าเพิ่ม
@@ -33,6 +31,8 @@ function thaiDate(value: string) {
   return {
     day: d.toLocaleDateString("th-TH", { day: "numeric" }),
     month: d.toLocaleDateString("th-TH", { month: "short" }),
+    // th-TH คืน "พ.ศ. 2569" — กล่องวันที่มีที่แค่ตัวเลข ตัดคำนำหน้าออก
+    year: d.toLocaleDateString("th-TH", { year: "numeric" }).replace("พ.ศ. ", ""),
     full: d.toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" }),
   };
 }
@@ -81,11 +81,11 @@ export default function News_page() {
     [data, activeTab.type],
   );
 
-  // REDESIGN (โทน sage): เดิมเป็นแถวยาว 4 แถวหน้าตาเหมือนกันหมด และ "ไม่ได้ใช้รูปข่าว"
-  // ทั้งที่ NewsInfo มี img_url อยู่แล้ว — ตอนนี้ข่าวล่าสุดเป็นการ์ดใหญ่มีรูป
-  // ที่เหลือเป็นแถวเล็กข้าง ๆ. logic query/tabs/navigate เดิมทั้งหมด
-  const featured = latest[0];
-  const rest = latest.slice(1);
+  // REDESIGN 2026-08-26: กลับมาเป็น "แถวรายการ" ทุกข่าวหน้าตาเดียวกัน
+  // เหตุผล: ข่าวของโรงพยาบาลเป็นประกาศราชการ — ทั้ง 47 ข่าวในระบบไม่มีรูปปกและไม่มีคำโปรย
+  // แต่หัวข้อยาว 80-202 ตัวอักษร โครงการ์ดใหญ่+แถวเล็กเดิมจึงเหลือแต่กล่องว่างกับหัวข้อที่โดนตัด
+  // แถวรายการให้พื้นที่หัวข้อเต็ม และบอกได้ตั้งแต่ยังไม่คลิกว่ามีเอกสารแนบไหม
+  // logic query/tabs/navigate เดิมทั้งหมด
 
   return (
     <section id="news" className="scroll-mt-24 px-4 pb-20 sm:px-6 lg:scroll-mt-32 lg:px-8">
@@ -130,112 +130,58 @@ export default function News_page() {
           })}
         </div>
 
-        {featured ? (
-          <div className={`grid gap-5 ${rest.length > 0 ? "lg:grid-cols-[1.35fr_1fr]" : ""}`}>
-            {/* ─── ข่าวล่าสุด (การ์ดใหญ่) ───
-                มีรูป: การ์ดตั้ง รูป 16:9 ด้านบน + เนื้อหาด้านล่าง (เดิม)
-                ไม่มีรูป (ข่าวส่วนใหญ่ของโรงพยาบาลเป็นแบบนี้): การ์ดนอน แถบวันที่ซ้าย
-                แทนกล่องรูปว่าง ๆ ที่เคยมีแค่ไอคอน ImageOff ลอยอยู่ */}
-            {featured.img_url ? (
-              <article
-                onClick={() => navigate({ to: "/news/$id", params: { id: String(featured.id) } })}
-                className="group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-stone-200/80 bg-white transition-shadow duration-300 hover:shadow-xl hover:shadow-[#24352b]/8"
-              >
-                <div className="relative aspect-16/9 overflow-hidden bg-[#f3f7f3]">
-                  <img
-                    src={`${API_URL}${featured.img_url}`}
-                    alt={featured.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <span className="absolute top-4 left-4 rounded-full bg-white/95 px-3.5 py-1.5 text-[12px] font-semibold text-[#3b5546] backdrop-blur-sm">
-                    ล่าสุด
-                  </span>
-                </div>
+        {latest.length > 0 ? (
+          <div className="flex flex-col gap-3">
+            {latest.map((info) => {
+              const { day, month, year } = thaiDate(info.date);
+              return (
+                <article
+                  key={info.id}
+                  onClick={() => navigate({ to: "/news/$id", params: { id: String(info.id) } })}
+                  className="group flex cursor-pointer items-start gap-4 rounded-2xl border border-stone-200/80 bg-white p-4 transition-colors duration-200 hover:border-[#c9dacd] hover:bg-[#fdfcf9] sm:gap-5 sm:p-5"
+                >
+                  {/* กล่องวันที่แทนรูป — ข่าวประกาศไม่มีรูปปก แต่ "วันที่" คือสิ่งที่คนมองหาก่อน */}
+                  <div className="w-16 shrink-0 rounded-xl border border-[#c9dacd] bg-[#f3f7f3] py-2.5 text-center transition-colors duration-200 group-hover:bg-[#e4ece5]">
+                    <p className="text-[22px] leading-none font-bold text-[#24352b]">{day}</p>
+                    <p className="mt-1 text-[11.5px] leading-none font-semibold text-[#4a6b57]">{month}</p>
+                    <p className="mt-1 text-[10.5px] leading-none text-stone-400">{year}</p>
+                  </div>
 
-                <div className="flex flex-1 flex-col p-6 sm:p-7">
-                  <p className="text-[12.5px] font-medium text-stone-400">
-                    {thaiDate(featured.date).full}
-                  </p>
-                  <h3 className="mt-2.5 text-xl leading-snug font-bold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57] sm:text-[22px]">
-                    {featured.title}
-                  </h3>
-                  {featured.description && (
-                    <p className="mt-3 line-clamp-3 text-[15px] leading-relaxed text-stone-500">
-                      {featured.description}
-                    </p>
-                  )}
-                  <span className="mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#4a6b57]">
+                  {/* ไม่โชว์ภาพย่อ — รูปข่าวของจริงเป็นสแกนประกาศ A4 แนวตั้ง ย่อลงกล่องนอนแล้ว
+                      เหลือแต่แถบหัวกระดาษ อ่านไม่ออก (เหตุผลเดียวกับหน้า /news)
+                      บอกด้วยป้าย "รูปภาพ" แทน ของจริงไปดูเต็ม ๆ ที่หน้ารายละเอียด */}
+
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <h3 className="text-[15.5px] leading-relaxed font-semibold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57]">
+                      {info.title}
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-[#c9dacd] bg-[#f3f7f3] px-2.5 py-0.5 text-[11.5px] font-semibold text-[#3b5546]">
+                        <activeStyle.Icon className="h-3 w-3" aria-hidden="true" />
+                        {activeTab.label}
+                      </span>
+                      {/* ข่าวที่มีแต่รูป (ประกาศสแกน) ต้องบอกให้รู้ว่ามีของให้ดู ไม่งั้นดูเหมือนข่าวเปล่า */}
+                      {info.file_url ? (
+                        <span className="inline-flex items-center gap-1.5 text-[12.5px] text-stone-500">
+                          <Paperclip className="h-3.5 w-3.5" aria-hidden="true" />
+                          เอกสารแนบ
+                        </span>
+                      ) : info.img_url ? (
+                        <span className="inline-flex items-center gap-1.5 text-[12.5px] text-stone-500">
+                          <ImageIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                          รูปภาพ
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <span className="hidden shrink-0 items-center gap-1.5 self-center text-[13.5px] font-semibold text-[#4a6b57] lg:inline-flex">
                     อ่านรายละเอียด
                     <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                   </span>
-                </div>
-              </article>
-            ) : (
-              <article
-                onClick={() => navigate({ to: "/news/$id", params: { id: String(featured.id) } })}
-                className="group flex cursor-pointer overflow-hidden rounded-3xl border border-stone-200/80 bg-white transition-shadow duration-300 hover:shadow-xl hover:shadow-[#24352b]/8"
-              >
-                <div className="flex w-24 shrink-0 flex-col items-center justify-center gap-1 border-r border-stone-100 bg-[#f3f7f3] py-6 sm:w-28">
-                  <p className="text-[28px] leading-none font-bold text-[#3b5546]">
-                    {thaiDate(featured.date).day}
-                  </p>
-                  <p className="text-[11px] font-semibold text-stone-400">
-                    {thaiDate(featured.date).month}
-                  </p>
-                  <activeStyle.Icon className="mt-3 h-5 w-5 text-[#b08968]" aria-hidden="true" />
-                </div>
-
-                <div className="flex flex-1 flex-col justify-center p-6 sm:p-7">
-                  <span className="mb-2.5 inline-flex w-fit items-center rounded-full bg-[#f3f7f3] px-3 py-1 text-[11.5px] font-bold text-[#3b5546]">
-                    ล่าสุด
-                  </span>
-                  <h3 className="text-xl leading-snug font-bold text-[#24352b] transition-colors duration-200 group-hover:text-[#4a6b57] sm:text-[22px]">
-                    {featured.title}
-                  </h3>
-                  {featured.description && (
-                    <p className="mt-3 line-clamp-2 text-[15px] leading-relaxed text-stone-500">
-                      {featured.description}
-                    </p>
-                  )}
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#4a6b57]">
-                    อ่านรายละเอียด
-                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                  </span>
-                </div>
-              </article>
-            )}
-
-            {/* ─── ข่าวถัดมา (แถวเล็ก) ─── */}
-            {rest.length > 0 && (
-              <div className="flex flex-col gap-3">
-                {rest.map((info) => {
-                  const { day, month } = thaiDate(info.date);
-                  return (
-                    <article
-                      key={info.id}
-                      onClick={() =>
-                        navigate({ to: "/news/$id", params: { id: String(info.id) } })
-                      }
-                      className="group flex flex-1 cursor-pointer items-center gap-4 rounded-2xl border border-stone-200/80 bg-white p-4 transition-colors duration-200 hover:border-[#c9dacd] hover:bg-[#fdfcf9]"
-                    >
-                      <div className="w-14 shrink-0 rounded-xl bg-[#f3f7f3] py-2.5 text-center transition-colors duration-200 group-hover:bg-[#e4ece5]">
-                        <p className="text-lg leading-none font-bold text-[#3b5546]">{day}</p>
-                        <p className="mt-1 text-[11px] font-semibold text-[#8aa893]">{month}</p>
-                      </div>
-
-                      <p className="line-clamp-2 min-w-0 flex-1 text-[15px] leading-snug font-semibold text-stone-700 transition-colors duration-200 group-hover:text-[#24352b]">
-                        {info.title}
-                      </p>
-
-                      <ArrowRight
-                        className="h-4 w-4 shrink-0 text-stone-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-[#4a6b57]"
-                        aria-hidden="true"
-                      />
-                    </article>
-                  );
-                })}
-              </div>
-            )}
+                </article>
+              );
+            })}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-stone-300 bg-white/60 py-20 text-stone-400">

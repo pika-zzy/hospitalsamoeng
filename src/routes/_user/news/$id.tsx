@@ -2,7 +2,7 @@ import { type NewsInfo } from '@/interface/newinfo'
 import { requestAPI } from '@/lib/api'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ArrowLeft, FileText, ExternalLink, Calendar, Newspaper } from 'lucide-react'
+import { ArrowLeft, FileText, ExternalLink, Calendar, Newspaper, Download, Info } from 'lucide-react'
 
 export const Route = createFileRoute('/_user/news/$id')({
   component: RouteComponent,
@@ -54,6 +54,10 @@ function RouteComponent() {
   const fullImageUrl = news.img_url?.startsWith('http')
     ? news.img_url
     : `${apiBase}${news.img_url}`;
+
+  // ชื่อไฟล์ตอนดาวน์โหลด — ไฟล์บนดิสก์ชื่อเป็น timestamp ล้วน (1787651181507113500.pdf)
+  // ดาวน์โหลดหลายใบแล้วแยกไม่ออกว่าอันไหนคืออะไร ใช้หัวข้อข่าวแทน (backend sanitize ต่อให้)
+  const downloadName = news.title.slice(0, 80);
 
   // REDESIGN (โทน sage): เดิมแถบหัวเปลี่ยนสีเขียว/teal ตามประเภทข่าว ทำให้หน้าเดียวกันดูคนละเว็บ
   // ตอนนี้ใช้แถบเขียวเข้มชุดเดียวกับหน้าในอื่น ๆ แล้วบอกประเภทข่าวด้วยป้ายแทน
@@ -110,28 +114,61 @@ function RouteComponent() {
             )}
           </div>
 
-          {news.file_url ? (
+          {/* ─── เอกสารแนบ (PDF) ───
+              backend อนุญาตไฟล์แนบข่าวเป็น .pdf เท่านั้น (allowedPDFExt) ส่วนรูปเป็นฟิลด์แยก
+              เดิมเป็น file_url ? ... : img_url && ... — ข่าวที่มีทั้งสองอย่างจะไม่เห็นรูปเลย
+              ตอนนี้แยกเป็นสองบล็อกอิสระ มีอะไรก็แสดงอันนั้น ไม่มีก็ไม่วางกล่องเปล่าไว้ */}
+          {news.file_url && (
             <>
-              {/* ─── เอกสารแนบ (PDF) ─── */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 bg-[#fdfcf9] px-7 py-4 sm:px-10">
                 <span className="inline-flex items-center gap-2 text-[14.5px] font-semibold text-[#24352b]">
                   <FileText size={19} className="text-[#b08968]" />
                   เอกสารแนบ (PDF)
                 </span>
 
-                {/* ปุ่มเปิด PDF แท็บใหม่ (จำเป็นมากบนมือถือที่มักแสดง iframe PDF ไม่ค่อยดี) */}
-                <a
-                  href={`${fullFileUrl}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-4 py-2 text-[13px] font-semibold text-[#3b5546] transition-colors hover:border-[#3b5546] hover:bg-[#3b5546] hover:text-white"
-                >
-                  เปิดดูเต็มจอ <ExternalLink size={15} />
-                </a>
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* ดาวน์โหลดจริง: ไฟล์อยู่คนละ origin กับหน้าเว็บ attribute download ของ <a>
+                      จึงถูกเบราว์เซอร์เมิน ต้องให้ backend ส่ง Content-Disposition ผ่าน ?download= */}
+                  <a
+                    href={`${fullFileUrl}?download=${encodeURIComponent(downloadName)}`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-4 py-2 text-[13px] font-semibold text-[#3b5546] transition-colors hover:border-[#3b5546] hover:bg-[#3b5546] hover:text-white"
+                  >
+                    <Download size={15} /> ดาวน์โหลด
+                  </a>
+                  <a
+                    href={`${fullFileUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-4 py-2 text-[13px] font-semibold text-[#3b5546] transition-colors hover:border-[#3b5546] hover:bg-[#3b5546] hover:text-white"
+                  >
+                    เปิดดูเต็มจอ <ExternalLink size={15} />
+                  </a>
+                </div>
               </div>
 
-              <div className="relative h-150 w-full bg-stone-100">
-                {/* ใช้ Iframe ในการฝัง PDF */}
+              {/* จอเล็กไม่ฝัง PDF: iframe สูง 600px บนจอกว้าง 390px ทำให้ตัวหนังสือในเอกสาร
+                  เล็กจนอ่านไม่ออก ต้องซูมทุกครั้ง — ให้กดเปิดในตัวอ่าน PDF ของเครื่องแทน */}
+              <a
+                href={`${fullFileUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 border-b border-stone-100 px-7 py-6 transition-colors hover:bg-[#fdfcf9] sm:hidden"
+              >
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#f3f7f3] text-[#b08968]">
+                  <FileText size={22} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14.5px] font-semibold text-[#24352b]">
+                    เปิดอ่านเอกสารแนบ
+                  </span>
+                  <span className="mt-0.5 block text-[12.5px] text-stone-500">
+                    ไฟล์ PDF · เปิดในแท็บใหม่
+                  </span>
+                </span>
+                <ExternalLink size={17} className="shrink-0 text-stone-400" />
+              </a>
+
+              <div className="relative hidden h-150 w-full bg-stone-100 sm:block">
                 <iframe
                   src={`${fullFileUrl}#toolbar=0`}
                   title={news.title}
@@ -139,18 +176,32 @@ function RouteComponent() {
                 />
               </div>
             </>
-          ) : (
-            news.img_url && (
-              <div className="p-7 sm:p-10">
-                <div className="relative h-100 w-full overflow-hidden rounded-2xl bg-[#f3f7f3] md:h-125">
-                  <img
-                    src={`${fullImageUrl}`}
-                    alt={news.title}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+          )}
+
+          {news.img_url && (
+            <div className="border-b border-stone-100 p-7 sm:p-10">
+              <div className="relative h-100 w-full overflow-hidden rounded-2xl bg-[#f3f7f3] md:h-125">
+                <img
+                  src={`${fullImageUrl}`}
+                  alt={news.title}
+                  className="h-full w-full object-cover"
+                />
               </div>
-            )
+            </div>
+          )}
+
+          {/* ประกาศที่เว็บเก่าไม่ได้แนบอะไรมาเลย (15 ข่าวในระบบ) — เดิมได้หน้าว่าง
+              มีแค่หัวข้อกับปุ่มย้อนกลับ จนดูเหมือนเว็บพัง */}
+          {!news.file_url && !news.img_url && !news.description && (
+            <div className="flex items-start gap-3 border-b border-stone-100 bg-[#fdfcf9] px-7 py-6 sm:px-10">
+              <Info size={19} className="mt-0.5 shrink-0 text-[#b08968]" aria-hidden="true" />
+              <p className="text-[14.5px] leading-relaxed text-stone-600">
+                ประกาศนี้ไม่มีเอกสารแนบหรือรายละเอียดเพิ่มเติม
+                <span className="mt-1 block text-[13.5px] text-stone-500">
+                  หากต้องการข้อมูลเพิ่มเติม ติดต่อโรงพยาบาลได้ที่ 053-487-114 ในเวลาราชการ
+                </span>
+              </p>
+            </div>
           )}
 
           {/* ─── ปุ่มย้อนกลับ ─── */}

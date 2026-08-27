@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
 import { requestAPI } from '@/lib/api'
+import { compareThaiLabels } from '@/lib/thai-label-sort'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Upload, X, Save, CheckCircle2, ChevronRight, Plus, ChevronDown, FileText } from 'lucide-react'
@@ -30,6 +31,9 @@ interface MoitItem {
   ID: number
   TopicID: number
   Label: string
+  // ข้อรองซ้อนได้ 1 ชั้น — null = ข้อชั้นบนสุด
+  // (แทนกติกาเดิมที่ต้องพิมพ์ "›" ในชื่อหัวข้อเพื่อสร้างชั้นซ้อน)
+  ParentID: number | null
 }
 
 interface MoitTopic {
@@ -39,8 +43,25 @@ interface MoitTopic {
   Items: MoitItem[]
 }
 
+// ชนิดไฟล์ที่ ITA รับ — ต้องตรงกับ allowedITAExt ฝั่ง backend
+// MOIT บางข้อขอหลักฐานเป็นภาพถ่าย/อินโฟกราฟิก ไม่ใช่ PDF อย่างเดียว
+const ITA_ACCEPT = '.pdf,.jpg,.jpeg,.png'
+const ITA_REJECT_MSG = 'อัปโหลดได้เฉพาะไฟล์ PDF, JPG หรือ PNG เท่านั้น'
+const ITA_MIME = ['application/pdf', 'image/jpeg', 'image/png']
+
+function isAllowedITAFile(file: File) {
+  return ITA_MIME.includes(file.type)
+}
+
 interface RowFile {
   item_id: number
+  title: string
+  file: File | null
+}
+
+// ไฟล์ที่แนบกับหัวข้อโดยตรง (ไม่ผ่านข้อรอง)
+interface TopicRowFile {
+  topic_id: number
   title: string
   file: File | null
 }
@@ -304,14 +325,44 @@ function AddTopicInline({ moitID, onSuccess }: AddTopicInlineProps) {
   )
 }
 
+// เรียงข้อรองแบบต้นไม้: ข้อชั้นบนสุดเรียงตามเลขนำหน้า แล้วตามด้วยข้อย่อยของตัวเอง
+// คืน depth มาด้วยเพื่อให้ UI ย่อหน้าให้เห็นว่าอันไหนเป็นลูก
+function orderItemsAsTree(items: MoitItem[]): { item: MoitItem; depth: number }[] {
+  // ใช้ตัวเทียบเดียวกับหน้าสาธารณะ ไม่งั้น admin เห็นลำดับหนึ่ง ประชาชนเห็นอีกลำดับ
+  // (localeCompare เพียว ๆ เรียงชื่อเดือนไทยตามตัวอักษร ไม่ใช่ตามเวลา)
+  const byLabel = (a: MoitItem, b: MoitItem) => compareThaiLabels(a.Label, b.Label)
+
+  const roots = items.filter((i) => i.ParentID == null).sort(byLabel)
+  const out: { item: MoitItem; depth: number }[] = []
+
+  for (const root of roots) {
+    out.push({ item: root, depth: 0 })
+    for (const child of items.filter((i) => i.ParentID === root.ID).sort(byLabel)) {
+      out.push({ item: child, depth: 1 })
+    }
+  }
+
+  // กันข้อมูลเพี้ยน: ข้อที่อ้างแม่ที่ไม่มีอยู่จริงจะไม่หายไปจากหน้าจอ
+  for (const orphan of items.filter(
+    (i) => i.ParentID != null && !items.some((x) => x.ID === i.ParentID),
+  )) {
+    out.push({ item: orphan, depth: 0 })
+  }
+
+  return out
+}
+
 // --------- Inline Add Item (หัวข้อย่อย) ---------
 interface AddItemInlineProps {
   topicID: number
+  /** ข้อที่เลือกเป็น "ข้อแม่" ได้ = ข้อชั้นบนสุดของหัวข้อนี้เท่านั้น (ระบบรองรับชั้นเดียว) */
+  parentChoices: MoitItem[]
   onSuccess: () => void
 }
 
-function AddItemInline({ topicID, onSuccess }: AddItemInlineProps) {
+function AddItemInline({ topicID, parentChoices, onSuccess }: AddItemInlineProps) {
   const [label, setLabel] = useState('')
+  const [parentID, setParentID] = useState<number | null>(null)
   const [error, setError] = useState('')
 
   const mutation = useMutation({
@@ -319,7 +370,7 @@ function AddItemInline({ topicID, onSuccess }: AddItemInlineProps) {
       const resp = await requestAPI({
         method: 'POST',
         url: `/topics/${topicID}/items`,
-        body: { label, Label: label },
+        body: { label, Label: label, parent_id: parentID },
       })
       if (resp.success) return resp
       throw new Error('Failed to add item')
@@ -327,6 +378,7 @@ function AddItemInline({ topicID, onSuccess }: AddItemInlineProps) {
     onSuccess: () => {
       onSuccess()
       setLabel('')
+      setParentID(null)
       setError('')
       toast.success('เพิ่มหัวข้อย่อยแล้ว')
     },
@@ -344,6 +396,27 @@ function AddItemInline({ topicID, onSuccess }: AddItemInlineProps) {
 
   return (
     <div className="p-3.5 rounded-xl bg-teal-50/50 border border-dashed border-teal-200">
+      {/* เลือกข้อแม่ = สร้างชั้นซ้อน เช่น "2. มีแบบสรุปผลฯ" ที่มีลูกเป็นเอกสารรายเดือน
+          ระบบรองรับซ้อนชั้นเดียว จึงให้เลือกได้เฉพาะข้อชั้นบนสุด */}
+      {parentChoices.length > 0 && (
+        <div className="mb-2">
+          <label className="block text-[11px] text-gray-500 mb-1">อยู่ใต้ข้อ (ไม่บังคับ)</label>
+          <select
+            value={parentID ?? ''}
+            onChange={(e) => setParentID(e.target.value ? Number(e.target.value) : null)}
+            className="w-full px-3 py-2 text-xs border border-teal-200 rounded-lg bg-white
+                       focus:border-teal-400 focus:ring-2 focus:ring-teal-400/20 outline-none"
+          >
+            <option value="">— ไม่มี (เป็นข้อชั้นบนสุด) —</option>
+            {parentChoices.map((p) => (
+              <option key={p.ID} value={p.ID}>
+                {p.Label.length > 70 ? `${p.Label.slice(0, 70)}…` : p.Label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className="flex gap-2">
         <textarea
           autoFocus
@@ -378,6 +451,7 @@ function RouteComponent() {
   const [selectedYearID, setSelectedYearID] = useState<number | null>(null)
   const [selectedMoitID, setSelectedMoitID] = useState<number | null>(null)
   const [rows, setRows] = useState<Record<number, RowFile>>({})
+  const [topicRows, setTopicRows] = useState<Record<number, TopicRowFile>>({})
   // จำนวนไฟล์ที่เพิ่งอัปโหลดสำเร็จ — ไม่ null = เปิด modal แจ้งเสร็จ
   const [doneCount, setDoneCount] = useState<number | null>(null)
   const [showAddYear, setShowAddYear] = useState(false)
@@ -385,6 +459,7 @@ function RouteComponent() {
   const [addingTopic, setAddingTopic] = useState(false)
   const [addingItemFor, setAddingItemFor] = useState<number | null>(null)
   const fileRefs = useRef<Record<number, HTMLInputElement | null>>({})
+  const topicFileRefs = useRef<Record<number, HTMLInputElement | null>>({})
 
   // ดึงปีทั้งหมด
   const { data: years = [], isLoading: loadingYears } = useQuery<ITAYear[]>({
@@ -490,6 +565,7 @@ function RouteComponent() {
     setSelectedYearID(val ? Number(val) : null)
     setSelectedMoitID(null)
     setRows({})
+    setTopicRows({})
     setShowAddMoit(false)
     setAddingTopic(false)
     setAddingItemFor(null)
@@ -498,12 +574,27 @@ function RouteComponent() {
   const handleMoitChange = (val: string) => {
     setSelectedMoitID(val ? Number(val) : null)
     setRows({})
+    setTopicRows({})
     setAddingTopic(false)
     setAddingItemFor(null)
   }
 
   const invalidateTopics = () =>
     qc.invalidateQueries({ queryKey: ['moit-topics', selectedMoitID] })
+
+  // ไฟล์ที่แนบกับ "หัวข้อ" ตรง ๆ (หัวข้อที่ไม่มีข้อรอง) — แยก state ออกจาก rows ของข้อรอง
+  // เพื่อไม่ให้ id ชนกัน (topic กับ item เป็นคนละตาราง id เดินคนละชุด)
+  const updateTopicRow = (topic_id: number, field: 'title' | 'file', value: string | File | null) => {
+    setTopicRows((prev) => ({
+      ...prev,
+      [topic_id]: { ...(prev[topic_id] ?? { topic_id, title: '', file: null }), [field]: value },
+    }))
+  }
+
+  const clearTopicFile = (topic_id: number) => {
+    updateTopicRow(topic_id, 'file', null)
+    if (topicFileRefs.current[topic_id]) topicFileRefs.current[topic_id]!.value = ''
+  }
 
   const updateRow = (item_id: number, field: 'title' | 'file', value: string | File | null) => {
     setRows((prev) => ({
@@ -518,27 +609,38 @@ function RouteComponent() {
   }
 
   const filledRows = Object.values(rows).filter((r) => r.file)
+  const filledTopicRows = Object.values(topicRows).filter((r) => r.file)
   const totalItems = Object.values(rows).length
+  // จำนวนไฟล์ที่พร้อมอัปทั้งหมด = ของข้อรอง + ของหัวข้อ
+  const filledCount = filledRows.length + filledTopicRows.length
 
   const saveMutation = useMutation({
     mutationFn: async () => {
       // snapshot รายการที่จะอัป แล้วเช็คผลรายไฟล์ (requestAPI ไม่ throw ตอน error — คืน success:false)
-      const targets = filledRows
+      // ไฟล์ของข้อรอง (item_id) และไฟล์ที่แนบกับหัวข้อตรง ๆ (topic_id) ยิง endpoint เดียวกัน
+      const targets: Array<{ item_id?: number; topic_id?: number; title: string; file: File }> = [
+        ...filledRows.map((r) => ({ item_id: r.item_id, title: r.title, file: r.file! })),
+        ...filledTopicRows.map((r) => ({ topic_id: r.topic_id, title: r.title, file: r.file! })),
+      ]
       const results = await Promise.all(
         targets.map((r) => {
           const fd = new FormData()
-          fd.append('item_id', String(r.item_id))
+          if (r.item_id !== undefined) fd.append('item_id', String(r.item_id))
+          if (r.topic_id !== undefined) fd.append('topic_id', String(r.topic_id))
           fd.append('title', r.title)
           fd.append('year_id', String(selectedYearID))
-          fd.append('file', r.file!)
+          fd.append('file', r.file)
           return requestAPI({ method: 'POST', url: '/ita/upload', body: fd })
         }),
       )
-      return targets.map((t, i) => ({ item_id: t.item_id, ok: results[i].success }))
+      return targets.map((t, i) => ({
+        item_id: t.item_id, topic_id: t.topic_id, ok: results[i].success,
+      }))
     },
     onSuccess: (outcomes) => {
-      const okIDs = outcomes.filter((o) => o.ok).map((o) => o.item_id)
-      const failCount = outcomes.length - okIDs.length
+      const okIDs = outcomes.filter((o) => o.ok && o.item_id !== undefined).map((o) => o.item_id!)
+      const okTopicIDs = outcomes.filter((o) => o.ok && o.topic_id !== undefined).map((o) => o.topic_id!)
+      const failCount = outcomes.length - okIDs.length - okTopicIDs.length
 
       // เคลียร์เฉพาะรายการที่อัปสำเร็จ — รายการที่พลาดคงไฟล์ไว้ให้ลองใหม่
       setRows((prev) => {
@@ -550,6 +652,18 @@ function RouteComponent() {
       })
       okIDs.forEach((id) => {
         const ref = fileRefs.current[id]
+        if (ref) ref.value = ''
+      })
+
+      setTopicRows((prev) => {
+        const next = { ...prev }
+        okTopicIDs.forEach((id) => {
+          if (next[id]) next[id] = { ...next[id], title: '', file: null }
+        })
+        return next
+      })
+      okTopicIDs.forEach((id) => {
+        const ref = topicFileRefs.current[id]
         if (ref) ref.value = ''
       })
 
@@ -722,9 +836,9 @@ function RouteComponent() {
                                    bg-teal-100 text-teal-700 text-xs font-bold mr-2">3</span>
                   อัปโหลดเอกสาร — {selectedMoit.Name}
                 </p>
-                {filledRows.length > 0 && (
+                {filledCount > 0 && (
                   <span className="text-xs text-teal-600 font-medium bg-teal-50 px-2.5 py-1 rounded-full">
-                    {filledRows.length} / {totalItems} รายการ
+                    {filledCount} / {totalItems} รายการ
                   </span>
                 )}
               </div>
@@ -741,7 +855,7 @@ function RouteComponent() {
                     </div>
                   )}
                   {topics
-                    .sort((a, b) => a.Label.localeCompare(b.Label))
+                    .sort((a, b) => a.Label.localeCompare(b.Label, undefined, { numeric: true }))
                     .map((topic) => (
                       <div key={topic.ID} className="px-6 py-5">
                         <div className="flex items-start gap-2 mb-4">
@@ -751,10 +865,70 @@ function RouteComponent() {
                           </p>
                         </div>
 
+                        {/* แนบไฟล์กับหัวข้อโดยตรง — ใช้กับหัวข้อที่ไม่มีข้อรอง
+                            (เดิมต้องสร้างข้อรองหลอกขึ้นมารับไฟล์) */}
+                        <div className="ml-6 mb-3">
+                          {(() => {
+                            const trow = topicRows[topic.ID]
+                            const hasTopicFile = !!trow?.file
+                            return (
+                              <div className="flex items-center gap-2 rounded-lg border border-dashed border-line bg-gray-50/60 px-3 py-2">
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-[11px] text-gray-400">แนบไฟล์กับหัวข้อนี้โดยตรง</p>
+                                  {hasTopicFile && (
+                                    <input
+                                      type="text"
+                                      placeholder="ชื่อเอกสาร (ถ้าต้องการระบุเพิ่มเติม)"
+                                      value={trow.title}
+                                      onChange={(e) => updateTopicRow(topic.ID, 'title', e.target.value)}
+                                      className="mt-1.5 w-full px-3 py-1.5 text-xs border border-line rounded-lg bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all placeholder:text-gray-300"
+                                    />
+                                  )}
+                                </div>
+                                <div className="shrink-0 flex items-center gap-2">
+                                  {hasTopicFile ? (
+                                    <>
+                                      <span className="text-[11px] text-teal-600 font-medium max-w-25 truncate hidden sm:block">
+                                        {trow.file!.name}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => clearTopicFile(topic.ID)}
+                                        className="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200 flex items-center justify-center transition-colors"
+                                      >
+                                        <X className="w-3 h-3 text-red-500" />
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-line hover:border-teal-400 text-xs text-gray-500 hover:text-teal-600 cursor-pointer transition-all duration-200 whitespace-nowrap">
+                                      <Upload className="w-3.5 h-3.5" />
+                                      แนบไฟล์
+                                      <input
+                                        type="file"
+                                        accept={ITA_ACCEPT}
+                                        className="hidden"
+                                        ref={(el) => { topicFileRefs.current[topic.ID] = el }}
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0]
+                                          if (!file) return
+                                          if (!isAllowedITAFile(file)) {
+                                            toast.error(ITA_REJECT_MSG)
+                                            return
+                                          }
+                                          updateTopicRow(topic.ID, 'file', file)
+                                        }}
+                                      />
+                                    </label>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })()}
+                        </div>
+
                         <div className="space-y-2.5 ml-6">
-                          {(topic.Items ?? [])
-                            .sort((a, b) => a.Label.localeCompare(b.Label))
-                            .map((item) => {
+                          {orderItemsAsTree(topic.Items ?? [])
+                            .map(({ item, depth }) => {
                               const row = rows[item.ID]
                               const hasFile = !!row?.file
                               const existing = existingByItem.get(item.ID) ?? []
@@ -764,6 +938,7 @@ function RouteComponent() {
                                 <div
                                   key={item.ID}
                                   className={`rounded-xl border p-3.5 transition-all duration-200
+                                    ${depth > 0 ? 'ml-5 border-l-2 border-l-teal-200' : ''}
                                     ${hasFile
                                       ? 'border-teal-200 bg-teal-50/40'
                                       : hasExisting
@@ -838,17 +1013,17 @@ function RouteComponent() {
                                                           text-xs text-gray-500 hover:text-teal-600
                                                           cursor-pointer transition-all duration-200 whitespace-nowrap">
                                           <Upload className="w-3.5 h-3.5" />
-                                          {hasExisting ? 'อัปโหลดเพิ่ม' : 'อัปโหลด PDF'}
+                                          {hasExisting ? 'อัปโหลดเพิ่ม' : 'อัปโหลดไฟล์'}
                                           <input
                                             type="file"
-                                            accept=".pdf"
+                                            accept={ITA_ACCEPT}
                                             className="hidden"
                                             ref={(el) => { fileRefs.current[item.ID] = el }}
                                             onChange={(e) => {
                                               const file = e.target.files?.[0]
                                               if (!file) return
-                                              if (file.type !== 'application/pdf') {
-                                                toast.error('อัปโหลดได้เฉพาะไฟล์ PDF เท่านั้น')
+                                              if (!isAllowedITAFile(file)) {
+                                                toast.error(ITA_REJECT_MSG)
                                                 return
                                               }
                                               updateRow(item.ID, 'file', file)
@@ -865,6 +1040,7 @@ function RouteComponent() {
                             {addingItemFor === topic.ID ? (
                               <AddItemInline
                                 topicID={topic.ID}
+                                parentChoices={(topic.Items ?? []).filter((i) => i.ParentID == null)}
                                 onSuccess={() => {
                                   invalidateTopics()
                                   setAddingItemFor(null)
@@ -909,14 +1085,14 @@ function RouteComponent() {
           )}
 
           {/* Save */}
-          {selectedMoit && totalItems > 0 && (
+          {selectedMoit && (totalItems > 0 || topics.length > 0) && (
             <Button
               type="button"
-              disabled={saveMutation.isPending || filledRows.length === 0}
+              disabled={saveMutation.isPending || filledCount === 0}
               onClick={() => saveMutation.mutate()}
               className={`w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2
                          transition-all duration-200
-                         ${filledRows.length > 0
+                         ${filledCount > 0
                            ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm hover:shadow-md'
                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                          }`}
@@ -933,7 +1109,7 @@ function RouteComponent() {
               ) : (
                 <>
                   <Save className="w-4 h-4" />
-                  บันทึก {filledRows.length > 0 ? `${filledRows.length} รายการ` : `ข้อมูล`}
+                  บันทึก {filledCount > 0 ? `${filledCount} รายการ` : `ข้อมูล`}
                 </>
               )}
             </Button>

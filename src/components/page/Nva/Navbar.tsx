@@ -2,10 +2,12 @@ import { useState } from "react"
 import { Link, useMatchRoute } from "@tanstack/react-router"
 import { ChevronDown, Clock3, MapPin, MenuIcon, Phone, Siren, X } from "lucide-react"
 import logo from "/src/assets/logo2.png"
-import { Navbarlist } from "@/interface/menu"
+import { useNavbarList } from "@/lib/use-navbar-list"
 
 const Navbar = () => {
   const matchRoute = useMatchRoute()
+  // เมนู = โครงในโค้ด + หน้าเนื้อหาที่สร้างจากหลังบ้าน (ดู useNavbarList)
+  const navbarList = useNavbarList()
   const [openMenuId, setOpenMenuId] = useState<number | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -72,7 +74,7 @@ const Navbar = () => {
 
             {/* เมนูจอใหญ่ */}
             <ul className="hidden items-center gap-1 lg:flex">
-              {Navbarlist.map((menu) => {
+              {navbarList.map((menu) => {
                 const active = menu.link ? isActive(menu.link) : openMenuId === menu.id
 
                 return (
@@ -178,7 +180,7 @@ const Navbar = () => {
         {/* ── เมนูจอเล็ก ── */}
         {isMobileMenuOpen && (
           <div className="absolute w-full border-t border-stone-200 bg-[#fdfcf9] px-5 py-4 shadow-xl lg:hidden">
-            {Navbarlist.map((menu) => (
+            {navbarList.map((menu) => (
               <div key={menu.id} className="border-b border-stone-100 last:border-0">
                 {!menu.submenu ? (
                   <Link

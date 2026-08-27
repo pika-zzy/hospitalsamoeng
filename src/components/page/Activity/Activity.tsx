@@ -24,8 +24,14 @@ export default function Activity() {
     },
   });
 
+  // FIX: เดิม sort ด้วย start_date อย่างเดียว — start_date เป็นวันที่ล้วนไม่มีเวลา
+  // กิจกรรมที่เพิ่มวันเดียวกันจึงเท่ากันในสายตา sort (sort เสถียร คงลำดับเดิมจาก backend ไว้)
+  // ตัวที่เพิ่งเพิ่มเลยไม่ขึ้นเป็นล่าสุด — เติม id เป็นตัวตัดสินรอง (บั๊กเดียวกับหน้าข่าว)
   const activities = [...(data ?? [])]
-    .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
+    .sort((a, b) => {
+      const byDate = new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+      return byDate !== 0 ? byDate : Number(b.id) - Number(a.id)
+    })
     .slice(0, 4);
 
   const API_URL = import.meta.env.VITE_API_URL;
