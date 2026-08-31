@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { requestAPI } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
-import { Download, ShieldCheck, Search, X } from "lucide-react";
+import { Download, ShieldCheck, Search, X, FileText, FileImage } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { PageHero } from '@/components/page/page-hero';
 import { compareThaiLabels, leadingNumber } from '@/lib/thai-label-sort';
@@ -149,7 +149,7 @@ function splitMoitName(name: string): { no: string; rest: string } {
   return { no: m[1], rest: m[2].trim() };
 }
 
-// ป้ายชนิดไฟล์จากนามสกุลใน FileURL — ITA รับได้ทั้ง PDF และรูป
+// ชนิดไฟล์จากนามสกุลใน FileURL — ITA รับได้ทั้ง PDF และรูป
 function fileKind(url: string): string {
   const ext = url.split("?")[0].split(".").pop()?.toLowerCase() ?? "";
   if (ext === "jpg" || ext === "jpeg") return "JPG";
@@ -157,26 +157,83 @@ function fileKind(url: string): string {
   return "PDF";
 }
 
-function FileLink({ file, apiUrl, fallbackLabel }: {
+// ไอคอนหน้าลิงก์เอกสาร — ตัวหนังสือ "PDF/JPG" ในกรอบเล็ก ๆ อ่านยากตอนวางในบรรทัดเดียว
+// จึงใช้ไอคอนแทน แต่ยังบอกชนิดไฟล์ให้ screen reader ผ่าน aria-label ของลิงก์
+function FileKindIcon({ url, className }: { url: string; className?: string }) {
+  const Icon = fileKind(url) === "PDF" ? FileText : FileImage;
+  return <Icon className={className} aria-hidden="true" />;
+}
+
+// REDESIGN (2026-08-31): เดิมทุกไฟล์เป็น "กล่องดาวน์โหลดเอกสาร" ใต้ชื่อข้อ
+// ไฟล์ ITA ที่ย้ายมาจากเว็บเก่าแทบไม่มี Title กล่องจึงขึ้นคำว่า "ดาวน์โหลดเอกสาร"
+// ซ้ำกันทั้งหน้า = อ่านสองบรรทัดต่อหนึ่งเอกสาร โดยบรรทัดล่างไม่ให้ข้อมูลเพิ่มเลย
+// ตอนนี้ **ตัวชื่อข้อคือลิงก์** กดที่ข้อได้เลย (278 จาก 280 ข้อมีไฟล์เดียวอยู่แล้ว
+// และหัวข้อย่อยที่แขวนไฟล์ตรง ๆ 45 หัวข้อก็ไฟล์เดียวทั้งหมด)
+// ข้อที่มีหลายไฟล์ยังกางเป็นรายการย่อยใต้ชื่อข้อ — ไม่งั้นจะไม่รู้ว่ากดแล้วได้ไฟล์ไหน
+function DocLink({ label, file, apiUrl, tone = "item" }: {
+  label: string;
   file: ITAFile;
   apiUrl: string;
-  fallbackLabel?: string;
+  tone?: "item" | "topic";
 }) {
+  const topic = tone === "topic";
   return (
     <a
       href={`${apiUrl}${file.FileURL}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group mb-1.5 flex items-center gap-3 rounded-xl border border-stone-200/80 bg-[#fdfcf9] px-4 py-3 transition-all duration-150 hover:border-[#c9dacd] hover:bg-[#f3f7f3]"
+      aria-label={`${label} (ไฟล์ ${fileKind(file.FileURL)})`}
+      className="group -mx-2 flex items-start gap-2.5 rounded-lg px-2 py-1.5 transition-colors duration-150 hover:bg-[#f3f7f3]"
     >
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#dcc3ab] bg-[#f2eee4]">
-        <span className="text-[9px] font-bold text-[#96704f]">{fileKind(file.FileURL)}</span>
+      <FileKindIcon
+        url={file.FileURL}
+        className={`shrink-0 text-[#b08968] transition-colors group-hover:text-[#96704f] ${
+          topic ? "mt-0.5 h-4.5 w-4.5" : "mt-0.75 h-4 w-4"
+        }`}
+      />
+      <span
+        className={`flex-1 leading-relaxed underline-offset-4 transition-colors group-hover:underline ${
+          topic
+            ? "text-[14.5px] font-semibold text-[#3b5546] group-hover:text-[#24352b]"
+            : "text-[13px] text-stone-500 group-hover:text-[#24352b]"
+        }`}
+      >
+        {label}
       </span>
-      <span className="flex-1 text-[13.5px] text-stone-600 transition-colors group-hover:text-[#24352b]">
-        {file.Title || fallbackLabel || "ดาวน์โหลดเอกสาร"}
-      </span>
-      <Download className="h-4 w-4 shrink-0 text-stone-300 transition-colors group-hover:text-[#4a6b57]" />
+      <Download
+        className={`mt-1 h-3.5 w-3.5 shrink-0 text-stone-300 transition-colors group-hover:text-[#4a6b57] ${
+          topic ? "h-4 w-4" : ""
+        }`}
+      />
     </a>
+  );
+}
+
+// ข้อหนึ่งข้อพร้อมเอกสารของมัน
+//   ไฟล์เดียว  -> ชื่อข้อเป็นลิงก์ตรง ๆ
+//   หลายไฟล์  -> ชื่อข้อเป็นหัว แล้วกางไฟล์ไว้ข้างใต้ (ใช้ชื่อไฟล์เป็นข้อความลิงก์)
+function ItemDocs({ label, files, apiUrl }: {
+  label: string;
+  files: ITAFile[];
+  apiUrl: string;
+}) {
+  if (files.length === 0) return null;
+  if (files.length === 1) return <DocLink label={label} file={files[0]} apiUrl={apiUrl} />;
+
+  return (
+    <div>
+      <p className="mb-1 px-0.5 text-[13px] leading-relaxed text-stone-500">{label}</p>
+      <div className="ml-3 border-l-2 border-[#e4ece5] pl-3.5">
+        {files.map((file, i) => (
+          <DocLink
+            key={file.ID}
+            label={file.Title || `เอกสารที่ ${i + 1}`}
+            file={file}
+            apiUrl={apiUrl}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -364,8 +421,9 @@ function RouteComponent() {
   //   4. ช่องค้นหา ค้นถึงชื่อ MOIT / หัวข้อย่อย / ชื่อเอกสาร -> กรองสารบัญ
   //   5. แยกเลข MOIT ออกมาเป็นป้าย + ชื่อเต็มไม่ตัด (เดิม line-clamp-1 ตัดกลางประโยค)
   //   6. บอกจำนวนหัวข้อ/เอกสารของปีที่เลือก
-  // ที่ยัง "ไม่ทำ" โดยตั้งใจ: ข้อความลิงก์ไฟล์ยังเป็น "ดาวน์โหลดเอกสาร" เหมือนเดิม
-  // (user ตัดสินใจปล่อยไว้แล้ว) และไม่แตะ logic group / API
+  //
+  // REDESIGN รอบสาม (2026-08-31): เอากล่อง "ดาวน์โหลดเอกสาร" ออก — ชื่อข้อคือลิงก์เลย
+  // (เหตุผลอยู่ที่หัว DocLink) ไม่แตะ logic group / API
   return (
     <div className="pb-20">
       <PageHero
@@ -532,71 +590,76 @@ function RouteComponent() {
                       <div className="divide-y divide-stone-100">
                         {sections.map((section) => (
                           <div key={section.key} className="px-5 py-5 sm:px-6">
-                            <p className="mb-3.5 text-[14.5px] leading-relaxed font-semibold text-[#3b5546]">
-                              {section.label}
-                            </p>
+                            {/* หัวข้อย่อยที่แขวนไฟล์ไว้ตรง ๆ ไฟล์เดียวและไม่มีข้อรอง
+                                — ตัวหัวข้อเองคือลิงก์ ไม่ต้องมีบรรทัดเอกสารซ้อนใต้ชื่อ */}
+                            {section.files.length === 1 && section.entries.length === 0 ? (
+                              <DocLink
+                                label={section.label}
+                                file={section.files[0]}
+                                apiUrl={API_URL}
+                                tone="topic"
+                              />
+                            ) : (
+                              <>
+                                <p className="mb-3 text-[14.5px] leading-relaxed font-semibold text-[#3b5546]">
+                                  {section.label}
+                                </p>
 
-                            <div className="ml-1 flex flex-col gap-3">
-                              {/* ไฟล์ที่แนบกับหัวข้อตรง ๆ (หัวข้อที่ไม่มีข้อรอง) — แสดงก่อนข้อรองเสมอ */}
-                              {section.files.length > 0 && (
-                                <div>
-                                  {section.files.map((file) => (
-                                    <FileLink key={file.ID} file={file} apiUrl={API_URL} />
+                                <div className="ml-1 flex flex-col gap-2">
+                                  {/* ไฟล์ที่แนบกับหัวข้อตรง ๆ — แสดงก่อนข้อรองเสมอ */}
+                                  {section.files.map((file, i) => (
+                                    <DocLink
+                                      key={file.ID}
+                                      label={file.Title || `เอกสารที่ ${i + 1}`}
+                                      file={file}
+                                      apiUrl={API_URL}
+                                    />
                                   ))}
-                                </div>
-                              )}
 
-                              {section.entries.map((entry) =>
-                                entry.isGroup ? (
-                                  /* ข้อที่มีลูก เช่น "2. มีแบบสรุปผลฯ" ที่ตัวเองไม่มีไฟล์
-                                     แต่มีเอกสารรายเดือนอยู่ข้างใน
-                                     NOTE: ชื่อข้อใช้สไตล์ "เดียวกันเป๊ะ" กับข้อที่ไม่มีลูก (ข้อ 1, ข้อ 3)
-                                     เพราะมันเป็นข้อระดับเดียวกัน — ถ้าทำให้ตัวใหญ่/เข้มกว่าจะดูเหมือน
-                                     เป็นหัวข้อคนละชั้น ความเป็น "กลุ่ม" สื่อด้วยการย่อหน้า + เส้นซ้ายของลูกพอแล้ว */
-                                  <div key={entry.key}>
-                                    <p className="mb-2 text-[13px] leading-relaxed text-stone-500">
-                                      {entry.label}
-                                    </p>
+                                  {section.entries.map((entry) =>
+                                    entry.isGroup ? (
+                                      /* ข้อที่มีลูก เช่น "2. มีแบบสรุปผลฯ" ที่ตัวเองไม่มีไฟล์
+                                         แต่มีเอกสารรายเดือนอยู่ข้างใน
+                                         NOTE: ชื่อข้อใช้สไตล์ "เดียวกันเป๊ะ" กับข้อที่ไม่มีลูก (ข้อ 1, ข้อ 3)
+                                         เพราะมันเป็นข้อระดับเดียวกัน — ถ้าทำให้ตัวใหญ่/เข้มกว่าจะดูเหมือน
+                                         เป็นหัวข้อคนละชั้น ความเป็น "กลุ่ม" สื่อด้วยการย่อหน้า + เส้นซ้ายของลูกพอแล้ว */
+                                      <div key={entry.key}>
+                                        <p className="mb-1 px-0.5 text-[13px] leading-relaxed text-stone-500">
+                                          {entry.label}
+                                        </p>
 
-                                    <div className="ml-3 border-l-2 border-[#e4ece5] pl-3.5">
-                                      {entry.files.map((file) => (
-                                        <FileLink key={file.ID} file={file} apiUrl={API_URL} />
-                                      ))}
-
-                                      {entry.children.map((item) => (
-                                        <div key={item.item_id} className="mb-2.5 last:mb-0">
-                                          <p className="mb-2 text-[13px] leading-relaxed text-stone-500">
-                                            {item.item_label}
-                                          </p>
-                                          {item.files.map((file) => (
-                                            <FileLink
+                                        <div className="ml-3 flex flex-col gap-1 border-l-2 border-[#e4ece5] pl-3.5">
+                                          {entry.files.map((file, i) => (
+                                            <DocLink
                                               key={file.ID}
+                                              label={file.Title || `เอกสารที่ ${i + 1}`}
                                               file={file}
                                               apiUrl={API_URL}
-                                              fallbackLabel={item.item_label}
+                                            />
+                                          ))}
+
+                                          {entry.children.map((item) => (
+                                            <ItemDocs
+                                              key={item.item_id}
+                                              label={item.item_label}
+                                              files={item.files}
+                                              apiUrl={API_URL}
                                             />
                                           ))}
                                         </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div key={entry.key}>
-                                    <p className="mb-2 text-[13px] leading-relaxed text-stone-500">
-                                      {entry.label}
-                                    </p>
-                                    {entry.files.map((file) => (
-                                      <FileLink
-                                        key={file.ID}
-                                        file={file}
+                                      </div>
+                                    ) : (
+                                      <ItemDocs
+                                        key={entry.key}
+                                        label={entry.label}
+                                        files={entry.files}
                                         apiUrl={API_URL}
-                                        fallbackLabel={entry.label}
                                       />
-                                    ))}
-                                  </div>
-                                ),
-                              )}
-                            </div>
+                                    ),
+                                  )}
+                                </div>
+                              </>
+                            )}
                           </div>
                         ))}
                       </div>
