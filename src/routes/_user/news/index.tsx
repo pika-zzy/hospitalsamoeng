@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { requestAPI } from '@/lib/api';
 import { NEWS_TABS, type NewsInfo, type NewsTabKey } from '@/interface/newinfo';
 import { PageHero } from '@/components/page/page-hero';
+import { useSeo } from '@/lib/seo';
 
 // ไอคอนต่อหมวด — เป็นเรื่องเฉพาะหน้านี้ ส่วนตัว key/type/label มาจาก NEWS_TABS ที่เดียว
 // Record<NewsTabKey, …> บังคับว่าเพิ่มประเภทข่าวใหม่ต้องมาใส่ไอคอนที่นี่ ไม่งั้น TypeScript error
@@ -28,6 +29,11 @@ export const Route = createFileRoute('/_user/news/')({
 })
 
 function RouteComponent() {
+  useSeo({
+    title: 'ข่าวสารและประกาศ',
+    description: 'ข่าวประชาสัมพันธ์ ประกาศรับสมัครงาน และประกาศจัดซื้อจัดจ้างของโรงพยาบาลสะเมิง',
+  })
+
   const { data } = useQuery<NewsInfo[]>({
     queryKey: ["news"],
     refetchOnWindowFocus: false,

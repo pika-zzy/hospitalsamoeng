@@ -1,10 +1,31 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/images.PNG" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>hospital-web</title>
+
+    <!-- ค่าเริ่มต้นของทั้งเว็บ — แต่ละหน้าเขียนทับด้วย useSeo (src/lib/seo.ts) ตอน render
+         ค่าตรงนี้คือสิ่งที่ crawler ที่ไม่รัน JS (เช่นตัวดึงการ์ดลิงก์ของไลน์/เฟซบุ๊ก) จะเห็น -->
+    <title>โรงพยาบาลสะเมิง จังหวัดเชียงใหม่</title>
+    <meta
+      name="description"
+      content="โรงพยาบาลสะเมิง อำเภอสะเมิง จังหวัดเชียงใหม่ — ข่าวสารและประกาศ จัดซื้อจัดจ้าง กิจกรรม บริการผู้ป่วย และข้อมูล ITA คุณธรรมและความโปร่งใส โทร 053-487-124"
+    />
+    <meta name="theme-color" content="#3b5546" />
+
+    <meta property="og:site_name" content="โรงพยาบาลสะเมิง" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="th_TH" />
+    <meta property="og:title" content="โรงพยาบาลสะเมิง จังหวัดเชียงใหม่" />
+    <meta
+      property="og:description"
+      content="โรงพยาบาลสะเมิง อำเภอสะเมิง จังหวัดเชียงใหม่ — ข่าวสารและประกาศ จัดซื้อจัดจ้าง กิจกรรม บริการผู้ป่วย และข้อมูล ITA คุณธรรมและความโปร่งใส โทร 053-487-124"
+    />
+    <!-- TODO: รูปนี้เป็นโลโก้ 225×225 การ์ดแชร์จะสวยกว่านี้ถ้ามีรูปหน้าปก 1200×630
+         วางไว้ที่ public/og-image.jpg แล้วแก้ทั้ง href ตรงนี้และ DEFAULT_IMAGE ใน src/lib/seo.ts -->
+    <meta property="og:image" content="/images.PNG" />
+    <meta name="twitter:card" content="summary_large_image" />
     <!-- FIX: take scroll restoration off the browser as early as possible so a
          reload (F5) at the bottom of a page starts at the top instead of the
          browser re-applying the old position before the app can. The router

@@ -5,6 +5,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Calendar, ImageOff } from 'lucide-react';
 import { useMemo } from 'react';
 import { PageHero } from '@/components/page/page-hero';
+import { useSeo } from '@/lib/seo';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,6 +14,11 @@ export const Route = createFileRoute('/_user/activity/')({
 })
 
 function RouteComponent() {
+    useSeo({
+        title: 'คลังกิจกรรม',
+        description: 'ภาพกิจกรรมและโครงการต่าง ๆ ของโรงพยาบาลสะเมิง',
+    })
+
     const navigate = useNavigate();
 
     const { data } = useQuery<ActivityInfo[]>({

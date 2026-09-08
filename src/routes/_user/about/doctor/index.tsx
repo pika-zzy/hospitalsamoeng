@@ -5,6 +5,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { User } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { PageHero } from '@/components/page/page-hero'
+import { useSeo } from '@/lib/seo'
 
 export const Route = createFileRoute('/_user/about/doctor/')({
   component: RouteComponent,
@@ -27,6 +28,11 @@ const API_URL = import.meta.env.VITE_API_URL
 const shortDeptName = (name: string) => name.replace(/^กลุ่มงาน/, '').trim() || name
 
 function RouteComponent() {
+  useSeo({
+    title: 'ทีมแพทย์และบุคลากร',
+    description: 'ทำเนียบแพทย์และบุคลากรของโรงพยาบาลสะเมิง แยกตามกลุ่มงาน',
+  })
+
   const [activeTab, setActiveTab] = useState(departments[0].id)
   const pillsRef = useRef<HTMLDivElement>(null)
 

@@ -3,6 +3,7 @@ import { requestAPI } from '@/lib/api'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowLeft, FileText, ExternalLink, Calendar, Newspaper, Download, Info } from 'lucide-react'
+import { useSeo } from '@/lib/seo'
 
 export const Route = createFileRoute('/_user/news/$id')({
   component: RouteComponent,
@@ -26,6 +27,14 @@ function RouteComponent() {
   });
 
   const news = data || null;
+
+  // ต้องอยู่ก่อน early return ด้านล่าง (กฎของ hooks) — ระหว่างโหลดจะได้ค่ากลางของเว็บไปก่อน
+  // แล้วอัปเดตเป็นหัวข้อข่าวจริงเมื่อข้อมูลมาถึง
+  useSeo({
+    title: news?.title,
+    description: news?.description,
+    image: news?.img_url,
+  })
 
   if (!news) {
     return (
@@ -198,7 +207,7 @@ function RouteComponent() {
               <p className="text-[14.5px] leading-relaxed text-stone-600">
                 ประกาศนี้ไม่มีเอกสารแนบหรือรายละเอียดเพิ่มเติม
                 <span className="mt-1 block text-[13.5px] text-stone-500">
-                  หากต้องการข้อมูลเพิ่มเติม ติดต่อโรงพยาบาลได้ที่ 053-487-114 ในเวลาราชการ
+                  หากต้องการข้อมูลเพิ่มเติม ติดต่อโรงพยาบาลได้ที่ 053-487-124 ในเวลาราชการ
                 </span>
               </p>
             </div>

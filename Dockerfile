@@ -8,6 +8,12 @@ WORKDIR /app
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
+# NOTE: VITE_SITE_URL = โดเมนสาธารณะของเว็บ (เช่น https://samoenghospital.moph.go.th)
+# ใช้ทำ canonical / og:url ใน src/lib/seo.ts — ไม่ตั้งค่าไว้ = ไม่ใส่แท็กพวกนั้นเลย
+# (URL ผิดแย่กว่าไม่มี) พอได้โดเมนจากกระทรวงแล้วให้ตั้งเป็น Build Arg ใน Dokploy แล้ว rebuild
+ARG VITE_SITE_URL
+ENV VITE_SITE_URL=$VITE_SITE_URL
+
 COPY package.json package-lock.json ./
 RUN npm ci
 

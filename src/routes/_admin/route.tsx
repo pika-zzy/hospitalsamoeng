@@ -1,6 +1,7 @@
 import { Outlet, createFileRoute, redirect, useLocation } from "@tanstack/react-router"
 import { AdminShell } from "@/components/layout/AdminShell"
 import { getToken, clearToken, isValidToken } from "@/lib/auth"
+import { useSeo } from "@/lib/seo"
 
 // ── Route ─────────────────────────────────────────
 export const Route = createFileRoute("/_admin")({
@@ -31,6 +32,10 @@ export const Route = createFileRoute("/_admin")({
 function AdminLayout() {
   const location = useLocation()
   const isLoginPage = location.pathname === "/admin/login"
+
+  // ครอบทุกหน้าหลังบ้านในทีเดียว — robots.txt กัน crawler ที่เคารพกติกาอยู่แล้ว
+  // meta robots เป็นด่านที่สองเผื่อมีคนลิงก์เข้ามาตรง ๆ
+  useSeo({ title: "ระบบจัดการ", noindex: true })
 
   if (isLoginPage) {
     return <Outlet />

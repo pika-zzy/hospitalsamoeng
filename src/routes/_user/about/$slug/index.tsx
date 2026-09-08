@@ -7,6 +7,7 @@ import { requestAPI } from '@/lib/api'
 import { PageHero } from '@/components/page/page-hero'
 import type { ContentGroup, ContentSection } from '@/interface/content'
 import { yearsOf } from '@/interface/content'
+import { useSeo } from '@/lib/seo'
 
 // หน้าเนื้อหาที่แก้ได้จากหลังบ้าน — route เดียวเสิร์ฟทุกหน้า (/about/drug-safety,
 // /about/ethics-club, /about/pdpa และหน้าที่ admin สร้างเพิ่มทีหลัง)
@@ -43,6 +44,9 @@ function RouteComponent() {
       return resp.success ? (resp.data ?? null) : null
     },
   })
+
+  // ต้องอยู่ก่อน early return ด้านล่าง (กฎของ hooks)
+  useSeo({ title: data?.title, description: data?.description })
 
   const groups = useMemo(() => data?.groups ?? [], [data])
   const years = useMemo(() => yearsOf(groups), [groups])

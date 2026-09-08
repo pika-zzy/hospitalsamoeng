@@ -1,0 +1,10 @@
+# โรงพยาบาลสะเมิง — robots.txt
+# หน้าสาธารณะเปิดให้ค้นเจอได้ทั้งหมด ยกเว้นระบบหลังบ้าน
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+
+# เพิ่มบรรทัดนี้เมื่อได้โดเมนจากกระทรวงและทำ sitemap แล้ว:
+# Sitemap: https://<โดเมน>/sitemap.xml

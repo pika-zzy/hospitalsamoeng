@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ChevronDown, Facebook, MapPin, Phone, PhoneCall, Siren } from 'lucide-react'
 import { useState } from 'react'
 import { PageHero } from '@/components/page/page-hero'
+import { useSeo } from '@/lib/seo'
 
 export const Route = createFileRoute('/_user/about/contact/')({
   component: RouteComponent,
@@ -15,6 +16,12 @@ const FACEBOOK_URL =
 // ซ้อนอยู่ใน <ul> จนโครงสร้างเพี้ยน — จัดใหม่เป็นสองคอลัมน์ชัด ๆ โทนเดียวกับทั้งเว็บ
 // logic เดิมทั้งหมด (selectedCategory / selectedGroup / รายการเบอร์ต่อจาก ContactInfo)
 function RouteComponent() {
+  useSeo({
+    title: 'ติดต่อเรา',
+    description:
+      'ที่อยู่ แผนที่ เบอร์โทรศัพท์ และหมายเลขติดต่อภายในของโรงพยาบาลสะเมิง อำเภอสะเมิง จังหวัดเชียงใหม่ 50250 โทร 053-487-124',
+  })
+
   const [selectedCategory, setSelectedCategory] = useState("");
   const selectedGroup = ContactInfo.find(
     (g) => g.category === selectedCategory
@@ -47,8 +54,8 @@ function RouteComponent() {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-4.5 w-4.5 shrink-0 text-[#8aa893]" />
-                <a href="tel:053487114" className="font-medium transition-colors hover:text-[#3b5546]">
-                  053-487-114
+                <a href="tel:053487124" className="font-medium transition-colors hover:text-[#3b5546]">
+                  053-487-124
                 </a>
               </li>
               <li className="flex items-center gap-3">
@@ -89,7 +96,7 @@ function RouteComponent() {
             </h2>
 
             <p className="mt-4 text-[13.5px] leading-relaxed text-stone-500">
-              โทร 053-487-114 แล้วกดเบอร์ต่อตามหน่วยงานที่ต้องการ
+              โทร 053-487-124 แล้วกดเบอร์ต่อตามหน่วยงานที่ต้องการ
             </p>
 
             {/* เลือกแผนก */}
