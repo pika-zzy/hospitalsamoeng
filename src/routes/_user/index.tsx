@@ -6,6 +6,7 @@ import News_page from '@/components/page/Newspage/Newspage'
 import Activity from '@/components/page/Activity/Activity'
 import PublicServices from '@/components/page/Publicpage'
 import StaffPortal from '@/components/page/Staffpage'
+import { useSeo } from '@/lib/seo'
 
 export const Route = createFileRoute('/_user/')({
   component: Home,
@@ -14,6 +15,9 @@ export const Route = createFileRoute('/_user/')({
 // REDESIGN (โทน sage): พื้นหน้าเว็บย้ายไปประกาศที่ _user/route.tsx แล้ว
 // หน้าแรกจึงเหลือแค่ลำดับ section — QuickActions แทรกใต้ hero และลอยทับขอบ hero ขึ้นไป
 function Home() {
+  // หน้าแรกใช้ชื่อเว็บเดี่ยว ๆ (ไม่ส่ง title) + คำอธิบายกลางจาก seo.ts
+  useSeo({})
+
   return (
     <div className="flex flex-col overflow-x-hidden">
       <Main_page />

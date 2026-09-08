@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Stethoscope, ArrowLeft } from 'lucide-react'
+import { useSeo } from '@/lib/seo'
 
 export const Route = createFileRoute('/_user/service/')({
   component: RouteComponent,
@@ -10,6 +11,9 @@ export const Route = createFileRoute('/_user/service/')({
 // route ยังอยู่กันลิงก์เก่าเจอ 404 (ไม่มีเมนูไหนชี้มาหน้านี้)
 // ข้อมูลบริการจริงของโรงพยาบาลอยู่ที่ section "บริการสำหรับประชาชน" บนหน้าแรก
 function RouteComponent() {
+  // noindex: หน้านี้เหลือไว้กันลิงก์เก่า 404 เท่านั้น ไม่มีเนื้อหาให้ค้นหา
+  useSeo({ title: 'บริการของโรงพยาบาล', noindex: true })
+
   return (
     <div className="min-h-[70vh] px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl rounded-3xl border border-stone-200/80 bg-white px-6 py-14 text-center sm:px-12">

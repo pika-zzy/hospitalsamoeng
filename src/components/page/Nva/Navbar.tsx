@@ -34,11 +34,11 @@ const Navbar = () => {
 
           <div className="flex items-center gap-5">
             <a
-              href="tel:053487114"
+              href="tel:053487124"
               className="inline-flex items-center gap-1.5 transition-colors hover:text-white"
             >
               <Phone className="h-3.5 w-3.5 text-[#c9a184]" aria-hidden="true" />
-              053-487-114
+              053-487-124
             </a>
             <a
               href="tel:1669"
@@ -238,11 +238,11 @@ const Navbar = () => {
             {/* ติดต่อ + ฉุกเฉิน — จอเล็กไม่มีแถบบนสุด จึงยกมาไว้ท้ายเมนู */}
             <div className="mt-4 grid grid-cols-2 gap-2.5">
               <a
-                href="tel:053487114"
+                href="tel:053487124"
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#c9dacd] px-4 py-3 text-[13.5px] font-semibold text-[#3b5546]"
               >
                 <Phone className="h-4 w-4" aria-hidden="true" />
-                053-487-114
+                053-487-124
               </a>
               <a
                 href="tel:1669"

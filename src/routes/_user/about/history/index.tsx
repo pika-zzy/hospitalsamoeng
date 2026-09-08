@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { FileClock, ArrowLeft } from 'lucide-react'
+import { useSeo } from '@/lib/seo'
 
 export const Route = createFileRoute('/_user/about/history/')({
   component: RouteComponent,
@@ -10,6 +11,9 @@ export const Route = createFileRoute('/_user/about/history/')({
 // "อยู่ระหว่างจัดทำ" ไปก่อน และซ่อนเมนู "ประวัติ" ใน interface/menu.ts แล้ว
 // (route ยังอยู่ กันคนที่เคยบุ๊กมาร์ก/ลิงก์เก่าเจอ 404) — ได้เนื้อหาจริงเมื่อไหร่ค่อยเขียนทับหน้านี้
 function RouteComponent() {
+  // noindex จนกว่าจะได้เนื้อหาประวัติจริง — หน้า "อยู่ระหว่างจัดทำ" ไม่ควรขึ้นผลค้นหา
+  useSeo({ title: 'ประวัติโรงพยาบาล', noindex: true })
+
   return (
     <div className="min-h-[70vh] px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl rounded-3xl border border-stone-200/80 bg-white px-6 py-14 text-center sm:px-12">

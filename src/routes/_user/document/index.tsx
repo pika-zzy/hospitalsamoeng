@@ -3,12 +3,18 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { ChevronDown, FileText, Download } from 'lucide-react'
 import { PageHero } from '@/components/page/page-hero'
+import { useSeo } from '@/lib/seo'
 
 export const Route = createFileRoute('/_user/document/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  useSeo({
+    title: 'ดาวน์โหลดเอกสาร',
+    description: 'แบบฟอร์มและเอกสารดาวน์โหลดของงานการเจ้าหน้าที่ ธุรการ การเงิน และพัสดุ โรงพยาบาลสะเมิง',
+  })
+
   const [openId, setOpenId] = useState<number | null>(null)
 
   const toggle = (id: number) => {

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Calendar, Info, ChevronLeft, ImageOff } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useSeo } from '@/lib/seo';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -29,6 +30,13 @@ function RouteComponent() {
       throw new Error("Failed to fetch news");
     },
   });
+
+  // ต้องอยู่ก่อน early return ด้านล่าง (กฎของ hooks) — ข้อมูลมาแล้วค่อยอัปเดตเป็นชื่อกิจกรรมจริง
+  useSeo({
+    title: activity?.title,
+    description: activity?.description,
+    image: activity?.img_url,
+  })
 
   const navigate = useNavigate()
   const [isPortrait, setIsPortrait] = useState(false)

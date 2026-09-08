@@ -5,6 +5,7 @@ import { Download, ShieldCheck, Search, X, FileText, FileImage } from "lucide-re
 import { useMemo, useRef, useState } from "react";
 import { PageHero } from '@/components/page/page-hero';
 import { compareThaiLabels, leadingNumber } from '@/lib/thai-label-sort';
+import { useSeo } from '@/lib/seo';
 
 // --------- Types (ตรง gorm.Model + no json tag = Pascal Case) ---------
 interface ITAYear {
@@ -242,6 +243,12 @@ export const Route = createFileRoute('/_user/ita/')({
 })
 
 function RouteComponent() {
+  useSeo({
+    title: 'ITA คุณธรรมและความโปร่งใส',
+    description:
+      'เอกสารการประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ (ITA) โรงพยาบาลสะเมิง แยกตามปีงบประมาณและหัวข้อ MOIT',
+  })
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   const { data: rawData = [], isLoading } = useQuery<ITAFile[]>({
