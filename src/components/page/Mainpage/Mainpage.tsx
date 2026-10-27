@@ -80,7 +80,9 @@ export default function Main_page() {
     // logic สไลด์ (query / autoplay / dots / clamp) คงเดิมทั้งหมด
     return (
         <section
-            className="relative w-full touch-pan-y overflow-hidden bg-[#24352b] md:h-[600px]"
+            // pb-16 ในจอเล็ก: QuickActions ใช้ -mt-12 (48px) ลอยขึ้นมาทับขอบล่าง hero
+            // เว้นที่ไว้ 64px ให้ชื่อกับจุดสไลด์พ้นการ์ด — จอใหญ่ข้อความอยู่กลางอยู่แล้วจึงไม่ต้องเว้น
+            className="relative w-full touch-pan-y overflow-hidden bg-[#24352b] pb-16 md:h-[600px] md:pb-0"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
             onFocusCapture={() => setIsPaused(true)}
